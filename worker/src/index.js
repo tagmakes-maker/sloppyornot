@@ -117,7 +117,8 @@ async function runAgent(step, input, env) {
     },
     body: JSON.stringify({
       model: env.ANTHROPIC_MODEL,
-      max_tokens: 1024,
+
+      max_tokens: 2048,
       system: systemPrompt,
       messages: [{ role: "user", content: JSON.stringify(input) }],
     }),
@@ -129,11 +130,18 @@ async function runAgent(step, input, env) {
   }
 
   const data = await res.json();
+  if (!data.content || data.content.length === 0) {
+    throw new Error("Anthropic returned no content: " + JSON.stringify(data));
+  }
+  if (!data.content[0].text) {
+    throw new Error("Anthropic content[0] has no text: " + JSON.stringify(data.content[0]));
+  }
   const text = data.content[0].text;
 
   // parse the first JSON object out of the reply
   const match = text.match(/\{[\s\S]*\}/);
-  if (!match) throw new Error("no JSON in agent reply");
+
+  if (!match) throw new Error("no JSON in agent reply: " + text.slice(0, 200));
   const result = JSON.parse(match[0]);
 
   // append to agentlog
@@ -295,22 +303,37 @@ export default {
 
     // Issue #9: agent runtime
     const observeMatch = path.match(/^\/agent\/observe\/([^\/]+)$/);
-    if (observeMatch && method === "POST") return handleObserve(observeMatch[1], env);
+    if (observeMatch && method === "POST") {
+      try { return await handleObserve(observeMatch[1], env); }
+      catch (e) { return json({ error: e.message }, 500); }
+    }
 
     const findGapMatch = path.match(/^\/agent\/find-gap\/([^\/]+)$/);
-    if (findGapMatch && method === "POST") return handleFindGap(findGapMatch[1], env);
+    if (findGapMatch && method === "POST") {
+      try { return await handleFindGap(findGapMatch[1], env); }
+      catch (e) { return json({ error: e.message }, 500); }
+    }
 
     const proposeMatch = path.match(/^\/agent\/propose\/([^\/]+)$/);
-    if (proposeMatch && method === "POST") return handlePropose(proposeMatch[1], env);
+    if (proposeMatch && method === "POST") {
+      try { return await handlePropose(proposeMatch[1], env); }
+      catch (e) { return json({ error: e.message }, 500); }
+    }
 
     if (path === "/agent/log" && method === "GET") return handleAgentLog(env);
 
     // Issue #10: approvals
     const approveMatch = path.match(/^\/matches\/([^\/]+)\/approve$/);
-    if (approveMatch && method === "POST") return handleApprove(approveMatch[1], request, env);
+    if (approveMatch && method === "POST") {
+      try { return await handleApprove(approveMatch[1], request, env); }
+      catch (e) { return json({ error: e.message }, 500); }
+    }
 
     const rejectMatch = path.match(/^\/matches\/([^\/]+)\/reject$/);
-    if (rejectMatch && method === "POST") return handleReject(rejectMatch[1], request, env);
+    if (rejectMatch && method === "POST") {
+      try { return await handleReject(rejectMatch[1], request, env); }
+      catch (e) { return json({ error: e.message }, 500); }
+    }
 
     return json({ error: "not found", path }, 404);
   },
