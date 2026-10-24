@@ -1,0 +1,257 @@
+{
+  "exported_from": "https://api.sloppyornot.com",
+  "exported_before": "scripts/reset-demo.sh wiped the live store",
+  "agentlog": [
+    {
+      "step": "find-gap",
+      "at": "2026-10-24T23:31:49.922Z",
+      "input_summary": "unknown",
+      "result": {
+        "product_id": "floodwatch-chs",
+        "gap": "onboarding",
+        "metric": "human_review.understood_immediately",
+        "value": 0.27,
+        "why": "Charleston drivers who want to avoid flooded streets before they commute are interested in FloodWatch CHS (would_use 0.84), but only 27 percent understood it on first look and reviewers kept asking what the colored pins mean, so new users leave before they reach the alerts that make the product valuable."
+      }
+    },
+    {
+      "step": "find-gap",
+      "at": "2026-10-24T23:32:02.153Z",
+      "input_summary": "unknown",
+      "result": {
+        "product_id": "floodwatch-chs",
+        "gap": "onboarding",
+        "metric": "human_review.understood_immediately",
+        "value": 0.25,
+        "why": "Charleston drivers who would use FloodWatch CHS (would_use 0.85, verified with 11 swipes) cannot tell on first look what the colored pins mean, so the product's strong core of crowdsourced reports and tide alerts never reaches the commuters who need it."
+      }
+    },
+    {
+      "step": "find-gap",
+      "at": "2026-10-24T23:32:04.383Z",
+      "input_summary": "unknown",
+      "result": {
+        "product_id": "floodwatch-chs",
+        "gap": "onboarding",
+        "metric": "human_review.understood_immediately",
+        "value": 0.25,
+        "why": "Charleston drivers who commute through tidal streets clearly want FloodWatch CHS (would_use 0.85, verified with 11 swipes), but only about a quarter understood it on first look and reviewers asked what the colored pins mean, so a quick explanation of the map would turn that demand into real use."
+      }
+    },
+    {
+      "step": "observe",
+      "at": "2026-10-24T23:32:50.098Z",
+      "input_summary": "unknown",
+      "result": {
+        "strengths": [
+          "would_use",
+          "feels_distinctive",
+          "easy_to_use",
+          "performance",
+          "tide-data",
+          "crowdsourcing"
+        ],
+        "weaknesses": [
+          "onboarding"
+        ],
+        "agent_observation": {
+          "at": "2026-10-24T23:35:00Z",
+          "note": "The human review is verified at 12 swipes. would_use rose from 0.82 to 0.865 and feels_distinctive is 0.835, but understood_immediately fell from about 0.30 to 0.225, so onboarding is still the only weakness and it has gotten slightly worse. Automated checks are clean (performance 81, accessibility 74, 0 console errors), and looks_like_slop is low at 0.0825, so the remaining gap is helping new users understand the map on first look.",
+          "source": "human_review"
+        }
+      }
+    },
+    {
+      "step": "find-gap",
+      "at": "2026-10-24T23:32:52.546Z",
+      "input_summary": "unknown",
+      "result": {
+        "product_id": "floodwatch-chs",
+        "gap": "onboarding",
+        "metric": "human_review.understood_immediately",
+        "value": 0.225,
+        "why": "Charleston drivers who want route alerts before a flooded commute strongly want FloodWatch CHS (would_use 0.865), but only 22.5 percent understood it on first look and reviewers kept asking what the colored pins mean, so the map's value is lost before new users know where to start."
+      }
+    },
+    {
+      "step": "find-gap",
+      "at": "2026-10-24T23:32:54.595Z",
+      "input_summary": "unknown",
+      "result": {
+        "product_id": "floodwatch-chs",
+        "gap": "onboarding",
+        "metric": "human_review.understood_immediately",
+        "value": 0.225,
+        "why": "Charleston drivers clearly want FloodWatch CHS (would_use 0.865) but only about 22 percent understood it on first look, and with the human review verified at 12 swipes, unclear colored pins mean new users may leave before they get a route alert."
+      }
+    },
+    {
+      "step": "find-gap",
+      "at": "2026-10-24T23:33:11.457Z",
+      "input_summary": "floodwatch-chs",
+      "result": {
+        "product_id": "floodwatch-chs",
+        "gap": "onboarding",
+        "metric": "human_review.understood_immediately",
+        "value": 0.225,
+        "why": "Charleston commuters need to read the flood map at a glance before they drive, but only about 22 percent of 12 verified reviewers understood it on first look and several asked what the colored pins mean, so a clearer first-run explanation is the one thing standing between strong demand and real use."
+      }
+    },
+    {
+      "step": "propose-match",
+      "at": "2026-10-24T23:33:21.553Z",
+      "input_summary": "floodwatch-chs",
+      "result": {
+        "product_a_id": "floodwatch-chs",
+        "proposal": {
+          "product_id": "firstrun",
+          "fills_gap": "onboarding",
+          "reason": "FloodWatch CHS has strong demand (would_use 0.865 across 12 verified swipes), but only 22.5 percent of reviewers understood it on first look, and several asked what the colored pins mean. FirstRun exists to fix exactly this. Onboarding is its first listed capability, it proves the skill with its own understood_immediately of 0.86, and its contextual tooltips could explain the pin colors and tide alerts the first time a commuter meets them. Charleston drivers need to read the map at a glance before they leave, so a short guided first run turns existing interest into real use without the FloodWatch team designing a tour from scratch. One caution is that FirstRun scores 47 on accessibility, so its tooltips should be checked against FloodWatch's 74 before launch.",
+          "confidence": 0.84
+        },
+        "memory_reference": "This choice builds on the 2026-10-24T13:42:00Z observation that three swipe comments asked what the colored pins mean, and on the 2026-10-24T23:35:00Z observation that understood_immediately fell from about 0.30 to 0.225 while onboarding stayed the only weakness. There are no prior human rejections for floodwatch-chs to learn from.",
+        "considered": [
+          {
+            "product_id": "firstrun",
+            "eligible": true,
+            "why_not": null
+          }
+        ]
+      }
+    },
+    {
+      "step": "blueprint",
+      "at": "2026-10-24T23:33:49.702Z",
+      "input_summary": "floodwatch-chs",
+      "result": {
+        "partner_id": "firstrun",
+        "combined_concept": "FloodWatch CHS with a built-in first run powered by FirstRun. The crowdsourced flooding map and NOAA king tide alerts stay the same, but a new user now gets a short guided tour and in-context tooltips that explain the colored pins, how to report standing water, and what a route alert means before they need to rely on the map.",
+        "contribution_a": "FloodWatch CHS brings the working product and the demand. It already combines crowdsourced flood reports with NOAA CO-OPS tide forecasts and sends route alerts through Twilio SMS. Across 12 verified swipes it scores 0.865 on would_use and 0.835 on feels_distinctive. It also passes its automated checks with performance 81, accessibility 74, mobile support, security headers, and zero console errors. Its one weakness is onboarding, since only 22.5 percent of reviewers understood it on first look.",
+        "contribution_b": "FirstRun fills the onboarding gap directly. It is a drop-in engine that reads a page through one script tag, generates a three-step guided tour, and shows contextual tooltips the first time a user meets each feature. This lets it target the exact confusion reviewers reported about what the colored pins mean. FirstRun proves the skill with its own understood_immediately score of 0.86. It also tracks where new users drop off, and it integrates with PostHog, so the FloodWatch team can see which step of the first run loses people.",
+        "target_user": "Charleston peninsula and West Ashley drivers who commute through streets that flood at high tide, specifically first-time visitors who open the map and need to read it at a glance before they leave.",
+        "integration_plan": "The interface is a script tag. The FloodWatch team adds the FirstRun script to the index.html of its React app, and FirstRun's Cloudflare Workers backend generates the tour from the rendered page. The tour should be pointed at three FloodWatch elements, which are the Leaflet map pins and their colors, the control for reporting standing water, and the place where users learn about tide-based route alerts. Because Leaflet renders markers dynamically, FloodWatch should expose stable selectors or data attributes on these elements so the tooltips attach reliably after the map loads. Drop-off events can flow from FirstRun to PostHog so both teams can review where new users stop in the first run. FloodWatch's Supabase data, NOAA tide integration, and Twilio alerts do not need to change for this integration.",
+        "first_build": "Add the FirstRun script tag to a preview deploy of FloodWatch CHS and configure a three-step tour covering the pin color legend, reporting standing water, and tide route alerts. Then confirm that the tour renders correctly on mobile and desktop after the Leaflet map has finished loading, that it appears only on a user's first visit, and that FirstRun records drop-off for each step. This proves that the two products connect without any change to FloodWatch's data layer.",
+        "requirements": [
+          "Add the FirstRun script tag to the FloodWatch CHS React app entry point.",
+          "Update FloodWatch's security headers and content security policy so the FirstRun script and its Cloudflare Workers endpoint are allowed, while keeping the existing headers in place.",
+          "Add stable selectors or data attributes to the Leaflet pins, the pin legend, the report control, and the alert entry point so the FirstRun tooltips can target them.",
+          "Write the authoritative meaning of each pin color, because neither profile documents it and the tooltips must not rely on generated guesses.",
+          "Confirm that the FirstRun tooltips survive React re-renders and Leaflet map redraws without detaching or duplicating.",
+          "Audit the FirstRun tooltips for keyboard focus, screen reader labels, and color contrast, because FirstRun scores 47 on accessibility, and do not ship them if they lower FloodWatch's accessibility score below 74.",
+          "Ensure that the tour can be dismissed quickly on a phone, because users may open the map shortly before they drive.",
+          "Define how first-visit state is stored, such as browser storage or a Supabase user record, because neither profile specifies it.",
+          "Confirm what page content FirstRun sends to its backend and the Claude API, and exclude user geolocation and individual flood reports from that payload.",
+          "Decide whether drop-off data goes to an existing or a new PostHog project, because FloodWatch does not currently list PostHog as an integration.",
+          "Re-run the automated checks for performance, accessibility, console errors, and mobile support after integration to confirm there is no regression."
+        ]
+      }
+    }
+  ],
+  "product_a_after": {
+    "id": "floodwatch-chs",
+    "name": "FloodWatch CHS",
+    "url": "https://floodwatch-chs.pages.dev",
+    "builder": "Team Pluff Mud",
+    "what_it_does": "Crowdsourced street flooding map for Charleston. Drivers report standing water from their phone, and the app combines those reports with NOAA king tide forecasts to send route alerts before you drive into a flooded street.",
+    "target_user": "Charleston peninsula and West Ashley drivers who commute through streets that flood at high tide.",
+    "capabilities": [
+      "maps",
+      "geolocation",
+      "alerts",
+      "crowdsourcing",
+      "tide-data"
+    ],
+    "stack": [
+      "React",
+      "Leaflet",
+      "Supabase",
+      "NOAA Tides API"
+    ],
+    "integrations": [
+      "NOAA CO-OPS API",
+      "Twilio SMS"
+    ],
+    "human_review": {
+      "swipe_count": 12,
+      "would_use": 0.8649999999999999,
+      "understood_immediately": 0.22499999999999998,
+      "feels_distinctive": 0.835,
+      "easy_to_use": 0.67,
+      "looks_like_slop": 0.0825,
+      "verified": true
+    },
+    "automated_checks": {
+      "loads": true,
+      "performance": 81,
+      "accessibility": 74,
+      "mobile_ok": true,
+      "security_headers": true,
+      "console_errors": 0,
+      "checked_at": "2026-10-24T13:40:00Z"
+    },
+    "strengths": [
+      "would_use",
+      "feels_distinctive",
+      "easy_to_use",
+      "performance",
+      "tide-data",
+      "crowdsourcing"
+    ],
+    "weaknesses": [
+      "onboarding"
+    ],
+    "agent_observations": [
+      {
+        "at": "2026-10-24T13:42:00Z",
+        "note": "Nine reviewers want to use FloodWatch CHS (would_use 0.82), but only 30 percent understood it on first look. Three swipe comments asked what the colored pins mean. The core works. New users do not know where to start.",
+        "source": "human_review"
+      },
+      {
+        "at": "2026-10-24T23:35:00Z",
+        "note": "The human review is verified at 12 swipes. would_use rose from 0.82 to 0.865 and feels_distinctive is 0.835, but understood_immediately fell from about 0.30 to 0.225, so onboarding is still the only weakness and it has gotten slightly worse. Automated checks are clean (performance 81, accessibility 74, 0 console errors), and looks_like_slop is low at 0.0825, so the remaining gap is helping new users understand the map on first look.",
+        "source": "human_review"
+      }
+    ],
+    "potential_matches": [
+      {
+        "product_id": "firstrun",
+        "fills_gap": "onboarding",
+        "reason": "FloodWatch CHS has strong demand (would_use 0.865 across 12 verified swipes), but only 22.5 percent of reviewers understood it on first look, and several asked what the colored pins mean. FirstRun exists to fix exactly this. Onboarding is its first listed capability, it proves the skill with its own understood_immediately of 0.86, and its contextual tooltips could explain the pin colors and tide alerts the first time a commuter meets them. Charleston drivers need to read the map at a glance before they leave, so a short guided first run turns existing interest into real use without the FloodWatch team designing a tour from scratch. One caution is that FirstRun scores 47 on accessibility, so its tooltips should be checked against FloodWatch's 74 before launch.",
+        "confidence": 0.84
+      }
+    ],
+    "match_status": "blueprint_ready",
+    "consent": {
+      "testing": true,
+      "roast_me": true,
+      "matching": true,
+      "aro_cohort_6mo": true
+    },
+    "status": "submitted",
+    "is_seed": true,
+    "created_at": "2026-10-24T13:30:00Z",
+    "updated_at": "2026-10-24T23:33:27.151Z",
+    "blueprint": {
+      "partner_id": "firstrun",
+      "combined_concept": "FloodWatch CHS with a built-in first run powered by FirstRun. The crowdsourced flooding map and NOAA king tide alerts stay the same, but a new user now gets a short guided tour and in-context tooltips that explain the colored pins, how to report standing water, and what a route alert means before they need to rely on the map.",
+      "contribution_a": "FloodWatch CHS brings the working product and the demand. It already combines crowdsourced flood reports with NOAA CO-OPS tide forecasts and sends route alerts through Twilio SMS. Across 12 verified swipes it scores 0.865 on would_use and 0.835 on feels_distinctive. It also passes its automated checks with performance 81, accessibility 74, mobile support, security headers, and zero console errors. Its one weakness is onboarding, since only 22.5 percent of reviewers understood it on first look.",
+      "contribution_b": "FirstRun fills the onboarding gap directly. It is a drop-in engine that reads a page through one script tag, generates a three-step guided tour, and shows contextual tooltips the first time a user meets each feature. This lets it target the exact confusion reviewers reported about what the colored pins mean. FirstRun proves the skill with its own understood_immediately score of 0.86. It also tracks where new users drop off, and it integrates with PostHog, so the FloodWatch team can see which step of the first run loses people.",
+      "target_user": "Charleston peninsula and West Ashley drivers who commute through streets that flood at high tide, specifically first-time visitors who open the map and need to read it at a glance before they leave.",
+      "integration_plan": "The interface is a script tag. The FloodWatch team adds the FirstRun script to the index.html of its React app, and FirstRun's Cloudflare Workers backend generates the tour from the rendered page. The tour should be pointed at three FloodWatch elements, which are the Leaflet map pins and their colors, the control for reporting standing water, and the place where users learn about tide-based route alerts. Because Leaflet renders markers dynamically, FloodWatch should expose stable selectors or data attributes on these elements so the tooltips attach reliably after the map loads. Drop-off events can flow from FirstRun to PostHog so both teams can review where new users stop in the first run. FloodWatch's Supabase data, NOAA tide integration, and Twilio alerts do not need to change for this integration.",
+      "first_build": "Add the FirstRun script tag to a preview deploy of FloodWatch CHS and configure a three-step tour covering the pin color legend, reporting standing water, and tide route alerts. Then confirm that the tour renders correctly on mobile and desktop after the Leaflet map has finished loading, that it appears only on a user's first visit, and that FirstRun records drop-off for each step. This proves that the two products connect without any change to FloodWatch's data layer.",
+      "requirements": [
+        "Add the FirstRun script tag to the FloodWatch CHS React app entry point.",
+        "Update FloodWatch's security headers and content security policy so the FirstRun script and its Cloudflare Workers endpoint are allowed, while keeping the existing headers in place.",
+        "Add stable selectors or data attributes to the Leaflet pins, the pin legend, the report control, and the alert entry point so the FirstRun tooltips can target them.",
+        "Write the authoritative meaning of each pin color, because neither profile documents it and the tooltips must not rely on generated guesses.",
+        "Confirm that the FirstRun tooltips survive React re-renders and Leaflet map redraws without detaching or duplicating.",
+        "Audit the FirstRun tooltips for keyboard focus, screen reader labels, and color contrast, because FirstRun scores 47 on accessibility, and do not ship them if they lower FloodWatch's accessibility score below 74.",
+        "Ensure that the tour can be dismissed quickly on a phone, because users may open the map shortly before they drive.",
+        "Define how first-visit state is stored, such as browser storage or a Supabase user record, because neither profile specifies it.",
+        "Confirm what page content FirstRun sends to its backend and the Claude API, and exclude user geolocation and individual flood reports from that payload.",
+        "Decide whether drop-off data goes to an existing or a new PostHog project, because FloodWatch does not currently list PostHog as an integration.",
+        "Re-run the automated checks for performance, accessibility, console errors, and mobile support after integration to confirm there is no regression."
+      ]
+    }
+  }
+}
