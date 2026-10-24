@@ -1,0 +1,24 @@
+{
+  "name": "no-match",
+  "description": "Porchlight fails security and reliability checks. No product in the pool lists either tag as a capability. The agent must return no proposal and say why, instead of forcing a match.",
+  "prompt": "agent/prompts/propose-match.md",
+  "input": {
+    "product_a": "seed/porchlight.json",
+    "gap": {
+      "product_id": "porchlight",
+      "gap": "security",
+      "metric": "automated_checks.security_headers",
+      "value": false
+    },
+    "candidates": [
+      "seed/floodwatch-chs.json",
+      "seed/firstrun.json",
+      "seed/helpdock.json",
+      "seed/shiftswap-chs.json"
+    ],
+    "rejections": []
+  },
+  "expected": {
+    "proposal": null
+  }
+}
