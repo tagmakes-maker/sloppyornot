@@ -1,0 +1,21 @@
+{
+  "name": "demo-pair",
+  "prompt": "agent/prompts/propose-match.md",
+  "input": {
+    "product_a": "seed/tidecheck.json",
+    "gap": "onboarding",
+    "pool": ["seed/firststep.json"],
+    "prior_rejections": []
+  },
+  "expected": {
+    "match_status": "proposed",
+    "accept_product_ids": ["firststep"],
+    "allow_no_proposal": false,
+    "fills_gap": "onboarding",
+    "confidence_min": 0.7,
+    "confidence_max": null,
+    "reason_must_mention_any": ["2026-10-24T14:00:00Z"],
+    "reason_must_mention_all": ["prior rejections"]
+  },
+  "why": "tidecheck reports understood_immediately at 0.30, so its first weakness tag is onboarding. firststep carries the exact tag onboarding in capabilities, is verified, has understood_immediately at 0.82, and passes every automated check. By the confidence rules in propose-match.md that scores 0.6 plus 0.15 plus 0.1 plus 0.05, which is 0.9. The reason must reference the 2026-10-24T14:00:00Z observation on tidecheck so judges see memory in use, and must state that prior rejections were checked and none were found."
+}

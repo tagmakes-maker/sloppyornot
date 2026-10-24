@@ -1,0 +1,22 @@
+{
+  "name": "decoy",
+  "prompt": "agent/prompts/propose-match.md",
+  "input": {
+    "product_a": "seed/tidecheck.json",
+    "gap": "onboarding",
+    "pool": ["seed/helpharbor.json"],
+    "prior_rejections": []
+  },
+  "expected": {
+    "match_status": "unmatched",
+    "accept_product_ids": ["helpharbor"],
+    "allow_no_proposal": true,
+    "fills_gap": "onboarding",
+    "confidence_min": null,
+    "confidence_max": 0.4,
+    "pool_missing": "onboarding",
+    "reason_must_mention_any": [],
+    "reason_must_mention_all": ["prior rejections"]
+  },
+  "why": "helpharbor looks like firststep. Both are embeddable widgets installed with a script tag and both carry the tags tooltips and embeddable-widget. Its core is help-center, which answers questions after a user is already inside the app and stuck. It does not carry the tag onboarding, so the exact-tag rule in propose-match.md does not fire. The correct answer is no proposal with pool_missing set to onboarding. If the agent still surfaces helpharbor as a resemblance, confidence must be below 0.4 and the reason must say it is a resemblance, not a match. Either outcome passes. A confident proposal of helpharbor fails, because the agent matched on surface similarity instead of the tag that names the gap."
+}

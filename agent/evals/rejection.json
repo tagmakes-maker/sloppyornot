@@ -1,0 +1,46 @@
+{
+  "name": "rejection",
+  "prompt": "agent/prompts/propose-match.md",
+  "input": {
+    "product_a": "seed/tidecheck.json",
+    "product_a_patch": {
+      "match_status": "rejected",
+      "potential_matches": [
+        {
+          "product_id": "firststep",
+          "fills_gap": "onboarding",
+          "reason": "firststep carries the onboarding tag and tidecheck reviewers rate understood_immediately at 0.30.",
+          "confidence": 0.9
+        }
+      ],
+      "agent_observations_append": [
+        {
+          "at": "2026-10-24T15:10:00Z",
+          "note": "Team Pluff Mud rejected the match with firststep. Their note: we already wrote our own walkthrough last night and want to keep the first screen as a map. Do not propose firststep again. The onboarding tag still stands until new swipes say otherwise.",
+          "source": "match_feedback"
+        }
+      ]
+    },
+    "gap": "onboarding",
+    "pool": ["seed/firststep.json", "seed/palmetto-pwa-kit.json"],
+    "prior_rejections": [
+      {
+        "product_id": "firststep",
+        "rejected_at": "2026-10-24T15:10:00Z",
+        "note": "We already wrote our own walkthrough last night and want to keep the first screen as a map."
+      }
+    ]
+  },
+  "expected": {
+    "match_status": "proposed",
+    "accept_product_ids": ["palmetto-pwa-kit"],
+    "reject_product_ids": ["firststep"],
+    "allow_no_proposal": true,
+    "fills_gap": "mobile",
+    "confidence_min": null,
+    "confidence_max": null,
+    "reason_must_mention_any": ["rejected", "rejection"],
+    "reason_must_mention_all": ["firststep", "2026-10-24T15:10:00Z"]
+  },
+  "why": "The humans turned down tidecheck plus firststep, and the rejection lives in two places the agent must read: the prior_rejections input and the match_feedback observation dated 2026-10-24T15:10:00Z. Proposing firststep again fails the scenario outright. The pool still contains palmetto-pwa-kit, which carries the tag mobile, and mobile is the second weakness on tidecheck because mobile_ok failed. The agent should fall back to that tag and propose palmetto-pwa-kit with the 0.2 secondary-gap deduction applied, or return no proposal if it judges the fallback too weak. Either way the reason must name firststep, name the rejection, and quote its date, so the judges see that the agent remembered a human decision and acted on it."
+}
