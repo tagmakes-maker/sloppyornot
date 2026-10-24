@@ -11,6 +11,52 @@ const CORS = {
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json", ...CORS } });
 
+// ---- Issue #7: products ----
+
+async function handleSubmitProduct(request, env) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return json({ error: "invalid JSON" }, 400);
+  }
+
+  if (!body.id || !body.name || !body.what_it_does || !body.target_user || !body.capabilities) {
+    return json({ error: "missing required fields: id, name, what_it_does, target_user, capabilities" }, 400);
+  }
+
+  const existing = await env.STORE.get("product:" + body.id);
+  if (existing) return json({ error: "product id already exists" }, 409);
+
+  const now = new Date().toISOString();
+  const profile = {
+    ...body,
+    status: "submitted",
+    match_status: "unmatched",
+    created_at: body.created_at || now,
+    updated_at: now,
+  };
+
+  await env.STORE.put("product:" + profile.id, JSON.stringify(profile));
+  return json(profile, 201);
+}
+
+async function handleGetProducts(env) {
+  const list = await env.STORE.list({ prefix: "product:" });
+  const products = await Promise.all(
+    list.keys.map((k) => env.STORE.get(k.name, "json"))
+  );
+  return json(products.filter(Boolean));
+}
+
+async function handleGetProduct(id, env) {
+  const profile = await env.STORE.get("product:" + id, "json");
+  if (!profile) return json({ error: "not found" }, 404);
+  return json(profile);
+}
+
+// ---- Worker entry ----
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -21,7 +67,11 @@ export default {
     if (path === "/" || path === "/health") return json({ ok: true, service: "sloppyornot-api" });
 
     // Issue #7: products
-    // POST /products, GET /products, GET /products/:id
+    if (path === "/products" && method === "POST") return handleSubmitProduct(request, env);
+    if (path === "/products" && method === "GET")  return handleGetProducts(env);
+
+    const productMatch = path.match(/^\/products\/([^\/]+)$/);
+    if (productMatch && method === "GET") return handleGetProduct(productMatch[1], env);
 
     // Issue #8: reviews and automated checks
     // POST /products/:id/review

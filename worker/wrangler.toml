@@ -13,7 +13,6 @@ compatibility_date = "2026-10-01"
 binding = "STORE"
 id = "ccf3f3081542491c96020fe1e679c8ac"
 preview_id = "ccf3f3081542491c96020fe1e679c8ac"
-
 [vars]
 PROMPTS_BASE = "https://raw.githubusercontent.com/tagmakes-maker/sloppyornot/main/agent/prompts/"
 ANTHROPIC_MODEL = "claude-sonnet-4-5"
