@@ -1,0 +1,45 @@
+{
+  "id": "helpdock",
+  "name": "HelpDock",
+  "url": "https://helpdock.pages.dev",
+  "builder": "Folly Road Devs",
+  "what_it_does": "Embeddable support chat widget with an FAQ bot. Answers common questions from a help center you paste in, and hands off to a human by email when the bot is stuck.",
+  "target_user": "Small business websites that get the same ten customer questions every day.",
+  "capabilities": ["support-chat", "faq-bot", "help-center", "ticketing"],
+  "stack": ["Svelte", "Node", "OpenAI API"],
+  "integrations": ["Gmail", "Zendesk export"],
+  "human_review": {
+    "swipe_count": 6,
+    "would_use": 0.58,
+    "understood_immediately": 0.79,
+    "feels_distinctive": 0.33,
+    "easy_to_use": 0.72,
+    "looks_like_slop": 0.41,
+    "verified": true
+  },
+  "automated_checks": {
+    "loads": true,
+    "performance": 44,
+    "accessibility": 81,
+    "mobile_ok": true,
+    "security_headers": false,
+    "console_errors": 2,
+    "checked_at": "2026-10-24T13:40:00Z"
+  },
+  "strengths": ["understood_immediately", "easy_to_use", "accessibility"],
+  "weaknesses": ["differentiation", "performance", "security", "reliability"],
+  "agent_observations": [
+    {
+      "at": "2026-10-24T13:47:00Z",
+      "note": "HelpDock answers questions after a user is already stuck. It does not teach a new user the product before they get stuck. Reviewers called it familiar (feels_distinctive 0.33).",
+      "source": "human_review"
+    }
+  ],
+  "potential_matches": [],
+  "match_status": "unmatched",
+  "consent": { "testing": true, "roast_me": true, "matching": true, "aro_cohort_6mo": false },
+  "status": "seed",
+  "is_seed": true,
+  "created_at": "2026-10-24T13:32:00Z",
+  "updated_at": "2026-10-24T13:47:00Z"
+}

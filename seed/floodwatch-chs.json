@@ -1,0 +1,45 @@
+{
+  "id": "floodwatch-chs",
+  "name": "FloodWatch CHS",
+  "url": "https://floodwatch-chs.pages.dev",
+  "builder": "Team Pluff Mud",
+  "what_it_does": "Crowdsourced street flooding map for Charleston. Drivers report standing water from their phone, and the app combines those reports with NOAA king tide forecasts to send route alerts before you drive into a flooded street.",
+  "target_user": "Charleston peninsula and West Ashley drivers who commute through streets that flood at high tide.",
+  "capabilities": ["maps", "geolocation", "alerts", "crowdsourcing", "tide-data"],
+  "stack": ["React", "Leaflet", "Supabase", "NOAA Tides API"],
+  "integrations": ["NOAA CO-OPS API", "Twilio SMS"],
+  "human_review": {
+    "swipe_count": 9,
+    "would_use": 0.82,
+    "understood_immediately": 0.3,
+    "feels_distinctive": 0.78,
+    "easy_to_use": 0.56,
+    "looks_like_slop": 0.11,
+    "verified": true
+  },
+  "automated_checks": {
+    "loads": true,
+    "performance": 81,
+    "accessibility": 74,
+    "mobile_ok": true,
+    "security_headers": true,
+    "console_errors": 0,
+    "checked_at": "2026-10-24T13:40:00Z"
+  },
+  "strengths": ["would_use", "feels_distinctive", "tide-data", "crowdsourcing"],
+  "weaknesses": ["onboarding"],
+  "agent_observations": [
+    {
+      "at": "2026-10-24T13:42:00Z",
+      "note": "Nine reviewers want to use FloodWatch CHS (would_use 0.82), but only 30 percent understood it on first look. Three swipe comments asked what the colored pins mean. The core works. New users do not know where to start.",
+      "source": "human_review"
+    }
+  ],
+  "potential_matches": [],
+  "match_status": "unmatched",
+  "consent": { "testing": true, "roast_me": true, "matching": true, "aro_cohort_6mo": true },
+  "status": "seed",
+  "is_seed": true,
+  "created_at": "2026-10-24T13:30:00Z",
+  "updated_at": "2026-10-24T13:42:00Z"
+}

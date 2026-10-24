@@ -1,0 +1,31 @@
+{
+  "name": "demo-pair",
+  "description": "The Sunday demo. FloodWatch CHS is weak at onboarding. FirstRun's core capability is onboarding. The agent must propose FirstRun with high confidence and cite its earlier observation.",
+  "prompt": "agent/prompts/propose-match.md",
+  "input": {
+    "product_a": "seed/floodwatch-chs.json",
+    "gap": {
+      "product_id": "floodwatch-chs",
+      "gap": "onboarding",
+      "metric": "human_review.understood_immediately",
+      "value": 0.3
+    },
+    "candidates": [
+      "seed/firstrun.json"
+    ],
+    "rejections": []
+  },
+  "expected": {
+    "proposal.product_id": "firstrun",
+    "proposal.fills_gap": "onboarding",
+    "proposal.confidence": {
+      "min": 0.7
+    },
+    "memory_reference": {
+      "contains_any": [
+        "2026-10-24T13:42:00Z",
+        "2026-10-24T13:45:00Z"
+      ]
+    }
+  }
+}
