@@ -117,8 +117,8 @@ async function runAgent(step, input, env) {
     },
     body: JSON.stringify({
       model: env.ANTHROPIC_MODEL,
-
-      max_tokens: 2048,
+      // thinking counts against this, so leave room for the JSON after it
+      max_tokens: 8192,
       system: systemPrompt,
       messages: [{ role: "user", content: JSON.stringify(input) }],
     }),
@@ -133,10 +133,11 @@ async function runAgent(step, input, env) {
   if (!data.content || data.content.length === 0) {
     throw new Error("Anthropic returned no content: " + JSON.stringify(data));
   }
-  if (!data.content[0].text) {
-    throw new Error("Anthropic content[0] has no text: " + JSON.stringify(data.content[0]));
+  // the reply can start with a thinking block, so read the text blocks wherever they are
+  const text = data.content.filter((b) => b.type === "text").map((b) => b.text).join("");
+  if (!text) {
+    throw new Error("Anthropic reply has no text block, stop_reason: " + data.stop_reason);
   }
-  const text = data.content[0].text;
 
   // parse the first JSON object out of the reply
   const match = text.match(/\{[\s\S]*\}/);
@@ -146,7 +147,7 @@ async function runAgent(step, input, env) {
 
   // append to agentlog
   const log = (await env.STORE.get("agentlog", "json")) || [];
-  log.push({ step, at: new Date().toISOString(), input_summary: input.product_id || input.product_a?.id || "unknown", result });
+  log.push({ step, at: new Date().toISOString(), input_summary: input.profile?.id || input.product_a?.id || "unknown", result });
   await env.STORE.put("agentlog", JSON.stringify(log));
 
   return result;
