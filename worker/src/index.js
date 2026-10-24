@@ -211,6 +211,66 @@ async function handleAgentLog(env) {
   return json(log);
 }
 
+// ---- Issue #10: approvals ----
+
+async function handleApprove(id, request, env) {
+  const profile = await env.STORE.get("product:" + id, "json");
+  if (!profile) return json({ error: "not found" }, 404);
+  if (profile.match_status !== "proposed") return json({ error: "no proposal to approve" }, 400);
+
+  const proposal = profile.potential_matches?.[profile.potential_matches.length - 1];
+  if (!proposal) return json({ error: "no proposal found" }, 400);
+
+  const partner = await env.STORE.get("product:" + proposal.product_id, "json");
+  if (!partner) return json({ error: "partner product not found" }, 404);
+
+  let body = {};
+  try { body = await request.json(); } catch {}
+
+  const now = new Date().toISOString();
+  const match = { ...proposal, approved_by: body.approved_by || "human", approved_at: now };
+
+  const blueprint = await runAgent("blueprint", { product_a: profile, product_b: partner, match }, env);
+
+  profile.blueprint = blueprint;
+  profile.match_status = "blueprint_ready";
+  profile.updated_at = now;
+
+  await env.STORE.put("product:" + id, JSON.stringify(profile));
+  return json(profile);
+}
+
+async function handleReject(id, request, env) {
+  const profile = await env.STORE.get("product:" + id, "json");
+  if (!profile) return json({ error: "not found" }, 404);
+  if (profile.match_status !== "proposed") return json({ error: "no proposal to reject" }, 400);
+
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return json({ error: "invalid JSON" }, 400);
+  }
+
+  if (!body.reason) return json({ error: "reason required" }, 400);
+
+  const proposal = profile.potential_matches?.[profile.potential_matches.length - 1];
+  if (!proposal) return json({ error: "no proposal found" }, 400);
+
+  const now = new Date().toISOString();
+
+  // save rejection so the agent remembers it next time
+  const rejections = (await env.STORE.get("rejections", "json")) || [];
+  rejections.push({ a_id: id, b_id: proposal.product_id, reason: body.reason, at: now });
+  await env.STORE.put("rejections", JSON.stringify(rejections));
+
+  profile.match_status = "unmatched";
+  profile.updated_at = now;
+
+  await env.STORE.put("product:" + id, JSON.stringify(profile));
+  return json(profile);
+}
+
 // ---- Worker entry ----
 
 export default {
@@ -246,7 +306,11 @@ export default {
     if (path === "/agent/log" && method === "GET") return handleAgentLog(env);
 
     // Issue #10: approvals
-    // POST /matches/:id/approve, POST /matches/:id/reject
+    const approveMatch = path.match(/^\/matches\/([^\/]+)\/approve$/);
+    if (approveMatch && method === "POST") return handleApprove(approveMatch[1], request, env);
+
+    const rejectMatch = path.match(/^\/matches\/([^\/]+)\/reject$/);
+    if (rejectMatch && method === "POST") return handleReject(rejectMatch[1], request, env);
 
     return json({ error: "not found", path }, 404);
   },
