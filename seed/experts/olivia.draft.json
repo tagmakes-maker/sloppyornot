@@ -1,0 +1,56 @@
+{
+  "expert_id": "olivia",
+  "name": "Olivia Dennehy",
+  "domains": ["frontend", "ux", "usability", "accessibility", "mobile"],
+  "decision_rules": [
+    {
+      "id": "first-look",
+      "rule": "PLACEHOLDER, replace after interview. A new user should understand what the product does from the first screen without help.",
+      "example": "PLACEHOLDER, replace after interview. If reviewers ask what the colored pins mean, the first screen did not explain itself.",
+      "severity": "high"
+    },
+    {
+      "id": "one-next-step",
+      "rule": "PLACEHOLDER, replace after interview. Every screen has one obvious next step, and it is the biggest thing on the screen.",
+      "example": "PLACEHOLDER, replace after interview. A sign-up page with three buttons of equal weight makes people stop and guess.",
+      "severity": "medium"
+    },
+    {
+      "id": "accessible-by-default",
+      "rule": "PLACEHOLDER, replace after interview. Color is never the only signal, text contrast meets WCAG AA, and every control works from a keyboard.",
+      "example": "PLACEHOLDER, replace after interview. A map that uses red and green pins alone fails for colorblind users.",
+      "severity": "high"
+    },
+    {
+      "id": "phone-first",
+      "rule": "PLACEHOLDER, replace after interview. If it breaks on a phone, it is broken.",
+      "example": "PLACEHOLDER, replace after interview. A shift swap app that people open in a restaurant kitchen has to work one-handed.",
+      "severity": "high"
+    },
+    {
+      "id": "fast-enough",
+      "rule": "PLACEHOLDER, replace after interview. The first screen loads fast enough that nobody wonders whether it is broken.",
+      "example": "PLACEHOLDER, replace after interview. A blank screen for three seconds reads as a crash.",
+      "severity": "medium"
+    },
+    {
+      "id": "simple-over-clever",
+      "rule": "PLACEHOLDER, replace after interview. Ship the simple version that works over the clever version that might.",
+      "example": "PLACEHOLDER, replace after interview. A plain list that loads beats an animated carousel that stutters.",
+      "severity": "low"
+    }
+  ],
+  "red_flags": [
+    "PLACEHOLDER, replace after interview. The product cannot say what it does in one sentence.",
+    "PLACEHOLDER, replace after interview. Errors in the console on the first screen."
+  ],
+  "limitations": [
+    "PLACEHOLDER, replace after interview. This draft was written by the agent from Olivia's role on the team, not from Olivia.",
+    "This profile is a model of Olivia's stated rules, not Olivia.",
+    "It is not active. Nothing reads it until Olivia completes the interview and approves her own profile."
+  ],
+  "approval_status": "draft",
+  "version": 0,
+  "is_seed": true,
+  "created_at": "2026-10-24T11:40:00Z"
+}

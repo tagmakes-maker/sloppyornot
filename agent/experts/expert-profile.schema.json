@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sloppyornot.com/agent/experts/expert-profile.schema.json",
+  "title": "Expert Reasoning Profile",
+  "$comment": "Proposed for shared/ once Jacky and Olivia agree. Until then it lives in agent/experts/ and only experts-worker/ reads it.",
+  "description": "One human expert's stated decision rules, captured by interview and approved by that expert. A model of her stated rules, not the expert. Nothing reads a profile until approval_status is approved.",
+  "type": "object",
+  "required": ["expert_id", "name", "domains", "decision_rules", "red_flags", "limitations", "approval_status", "version", "created_at"],
+  "additionalProperties": false,
+  "properties": {
+    "expert_id": { "type": "string", "description": "slug, lowercase, hyphens" },
+    "name": { "type": "string", "maxLength": 80 },
+    "domains": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "decision_rules": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "rule", "example", "severity"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string", "description": "Stable id. Suggestions cite it as principle_id." },
+          "rule": { "type": "string", "maxLength": 400 },
+          "example": { "type": "string", "maxLength": 600, "description": "A concrete case in the expert's own words" },
+          "severity": { "type": "string", "enum": ["low", "medium", "high"] }
+        }
+      }
+    },
+    "red_flags": { "type": "array", "items": { "type": "string" } },
+    "limitations": { "type": "array", "minItems": 1, "items": { "type": "string" }, "description": "Where this profile should not be trusted" },
+    "approval_status": { "type": "string", "enum": ["draft", "approved", "retired"] },
+    "version": { "type": "integer", "minimum": 0, "description": "Goes up by one on every approval" },
+    "is_seed": { "type": "boolean", "default": false },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "approved_at": { "type": "string", "format": "date-time" }
+  }
+}

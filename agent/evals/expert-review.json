@@ -1,0 +1,17 @@
+{
+  "name": "expert-review",
+  "description": "Think Like Olivia. The agent reviews FloodWatch CHS under Olivia's stated rules. It must cite only her rule ids, catch the first-look problem the crowd already found, and flag at least one suggestion as uncertain. The eval uses the seed draft so the prompt can be tested before the interview. The worker itself refuses to review with a draft profile.",
+  "prompt": "agent/prompts/expert-review.md",
+  "input": {
+    "expert_profile": "seed/experts/olivia.draft.json",
+    "product_a": "seed/floodwatch-chs.json",
+    "candidates": []
+  },
+  "expected": {
+    "suggestions[].principle_id": { "subset_of": "expert_profile.decision_rules[].id" },
+    "principle_ids": ["first-look", "accessible-by-default"],
+    "suggestions[].uncertainty_note": { "min_count": 1 },
+    "first-look.evidence": "human_review.understood_immediately",
+    "never": ["claims to be Olivia", "changes human_review or automated_checks numbers", "cites a metric that is not in the product profile"]
+  }
+}

@@ -12,7 +12,7 @@ for f in $files; do
     README.md|CONTRIBUTING.md|CLAUDE.md|AGENTS.md|.gitignore|.env.example|LICENSE|package.json|package-lock.json) continue ;;
   esac
   case "$top" in
-    site|worker|agent|shared|seed|docs|agent-log|tests|scripts|.github) ;;
+    site|worker|experts-worker|agent|shared|seed|docs|agent-log|tests|scripts|.github) ;;
     *)
       echo "BLOCKED: $f is outside every lane. Read CONTRIBUTING.md and pick a folder."
       fail=1

@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Think Like Olivia: Interview</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<main>
+  <div class="brand"><span>Think Like <span class="expert-name">Olivia</span></span><span id="mode" class="badge hidden">rule-based mode</span></div>
+
+  <section id="welcome" class="hidden">
+    <h1>Hey <span class="expert-name">Olivia</span>. Can we borrow your brain?</h1>
+    <p class="lede">Not literally. We want to understand how you think, what you notice, and what makes you say absolutely not when reviewing a product.</p>
+    <div class="card">
+      <p>This takes 10 to 15 minutes. There are eight main questions, and a few follow-ups when an answer has more in it.</p>
+      <p>Your progress saves after every answer. Close the tab and come back any time.</p>
+      <p>Nothing you say is used until you read the profile it produces and press Approve.</p>
+      <button id="start" class="big">Start</button>
+    </div>
+  </section>
+
+  <section id="ask" class="hidden">
+    <div class="progress" aria-hidden="true"><div id="bar"></div></div>
+    <p id="where" class="meta"></p>
+    <div class="card">
+      <h2 id="question"></h2>
+      <label for="answer">Your answer</label>
+      <textarea id="answer" placeholder="Say it the way you would say it to a teammate."></textarea>
+      <div class="row"><button id="next" class="big">Next</button></div>
+    </div>
+  </section>
+
+  <section id="finish" class="hidden">
+    <h1>That is everything. Thank you.</h1>
+    <p class="lede">Next, the agent drafts your Expert Reasoning Profile from your answers. You read every rule, fix anything that is wrong, and approve it yourself.</p>
+    <button id="draft" class="big">Draft my profile</button>
+  </section>
+
+  <section id="profile" class="hidden">
+    <h1>Your profile</h1>
+    <p id="profile-status" class="meta"></p>
+    <div class="card">
+      <p>Edit anything. Each decision rule needs an id, a rule, an example, and a severity of low, medium, or high. Saving any change sets the profile back to draft.</p>
+      <label for="profile-json">Profile JSON</label>
+      <textarea id="profile-json" class="code" spellcheck="false"></textarea>
+      <div class="row">
+        <button id="save" class="secondary">Save</button>
+        <button id="approve">Approve</button>
+      </div>
+    </div>
+    <p id="review-link" class="hidden"><a href="#">Go to the review page</a></p>
+  </section>
+
+  <div id="msg" class="msg hidden" role="status"></div>
+  <p class="fineprint">This builds a model of one expert's stated rules. It is not the expert, and humans decide.</p>
+</main>
+
+<script>
+  const fromPath = location.pathname.match(/^\/experts\/([a-z0-9-]+)\//);
+  const expert = fromPath ? fromPath[1] : new URLSearchParams(location.search).get("expert") || "olivia";
+  const displayName = expert.charAt(0).toUpperCase() + expert.slice(1);
+  document.querySelectorAll(".expert-name").forEach((el) => (el.textContent = displayName));
+  document.title = `Think Like ${displayName}: Interview`;
+
+  const $ = (id) => document.getElementById(id);
+  let pending = null;
+
+  function show(id) {
+    for (const s of ["welcome", "ask", "finish", "profile"]) $(s).classList.toggle("hidden", s !== id);
+  }
+
+  function say(text, isError) {
+    const m = $("msg");
+    m.textContent = text;
+    m.classList.toggle("error", Boolean(isError));
+    m.classList.toggle("hidden", !text);
+  }
+
+  function token() {
+    let t = null;
+    try { t = sessionStorage.getItem("admin_token"); } catch {}
+    if (!t) {
+      t = prompt("Admin token. Ask Therese if you do not have it.");
+      if (t) try { sessionStorage.setItem("admin_token", t); } catch {}
+    }
+    return t || "";
+  }
+
+  function forgetToken() {
+    try { sessionStorage.removeItem("admin_token"); } catch {}
+  }
+
+  async function api(method, path, body, admin) {
+    const headers = { "content-type": "application/json" };
+    if (admin) headers["x-admin-token"] = token();
+    const res = await fetch(path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 401) forgetToken();
+    if (!res.ok) throw new Error(data.error ? `${data.error}${data.errors ? " " + data.errors.join("; ") : ""}` : `Request failed with ${res.status}`);
+    return data;
+  }
+
+  function renderQuestion(data) {
+    pending = data.question;
+    const p = data.progress;
+    $("bar").style.width = `${Math.round((p.core_answered / p.core_total) * 100)}%`;
+    const main = Math.min(p.core_answered + (pending.kind === "core" ? 1 : 0), p.core_total);
+    $("where").textContent = pending.kind === "core" ? `Main question ${main} of ${p.core_total}` : `Follow-up on main question ${main} of ${p.core_total}`;
+    $("question").textContent = pending.question;
+    $("answer").value = "";
+    show("ask");
+    $("answer").focus();
+  }
+
+  async function loadNext() {
+    const data = await api("GET", `/api/interview/${expert}/next`);
+    if (data.note) say(data.note);
+    if (data.done) {
+      show("finish");
+      return;
+    }
+    renderQuestion(data);
+  }
+
+  function renderProfile(profile) {
+    const editable = {};
+    for (const k of ["name", "domains", "decision_rules", "red_flags", "limitations"]) editable[k] = profile[k];
+    $("profile-json").value = JSON.stringify(editable, null, 2);
+    const when = profile.approved_at ? ` Approved ${new Date(profile.approved_at).toLocaleString()}.` : "";
+    $("profile-status").textContent = `Status: ${profile.approval_status}. Version ${profile.version}.${when}`;
+    $("approve").disabled = profile.approval_status === "approved";
+    $("review-link").classList.toggle("hidden", profile.approval_status !== "approved");
+    show("profile");
+  }
+
+  $("review-link").querySelector("a").href = `/experts/${expert}/review`;
+
+  $("start").addEventListener("click", () => loadNext().catch((e) => say(e.message, true)));
+
+  $("next").addEventListener("click", async () => {
+    const answer = $("answer").value.trim();
+    if (!answer) return say("Write an answer first. A sentence is plenty.", true);
+    $("next").disabled = true;
+    say("");
+    try {
+      await api("POST", `/api/interview/${expert}/answer`, { question_id: pending.question_id, answer });
+      await loadNext();
+    } catch (e) {
+      say(e.message, true);
+    } finally {
+      $("next").disabled = false;
+    }
+  });
+
+  $("draft").addEventListener("click", async () => {
+    $("draft").disabled = true;
+    say("Drafting your profile. This can take a few seconds.");
+    try {
+      const data = await api("POST", `/api/interview/${expert}/finish`);
+      say(data.note || (data.mode === "rule-based" ? "Drafted in rule-based mode. Each rule is your answer as you said it. Edit it into a rule before approving." : ""));
+      renderProfile(data.profile);
+    } catch (e) {
+      say(e.message, true);
+    } finally {
+      $("draft").disabled = false;
+    }
+  });
+
+  $("save").addEventListener("click", async () => {
+    let edits;
+    try { edits = JSON.parse($("profile-json").value); } catch { return say("That is not valid JSON. Check for a missing comma or quote.", true); }
+    try {
+      const data = await api("PUT", `/api/profile/${expert}`, edits, true);
+      say("Saved. The profile is a draft until you approve it.");
+      renderProfile(data.profile);
+    } catch (e) {
+      say(e.message, true);
+    }
+  });
+
+  $("approve").addEventListener("click", async () => {
+    if (!confirm("Approve this profile? The agent can use it to review products after this.")) return;
+    try {
+      const data = await api("POST", `/api/profile/${expert}/approve`, undefined, true);
+      say("Approved. The agent can now review a product using your stated rules.");
+      renderProfile(data.profile);
+    } catch (e) {
+      say(`${e.message} If you edited the text, press Save before Approve.`, true);
+    }
+  });
+
+  (async () => {
+    try {
+      const config = await api("GET", "/api/config");
+      $("mode").classList.toggle("hidden", config.mode !== "rule-based");
+      try {
+        const { profile } = await api("GET", `/api/profile/${expert}`);
+        if (profile && !profile.is_seed) return renderProfile(profile);
+      } catch {}
+      const data = await api("GET", `/api/interview/${expert}/next`);
+      if (data.progress.answers === 0 && !data.done) return show("welcome");
+      if (data.done) return show("finish");
+      say("Welcome back. You are right where you left off.");
+      renderQuestion(data);
+    } catch (e) {
+      say(e.message, true);
+    }
+  })();
+</script>
+</body>
+</html>
