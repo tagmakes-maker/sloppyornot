@@ -7,7 +7,7 @@ Cloudflare Worker. Plain JS. One KV namespace. Spec is GitHub issues #7 to #10.
 ```
 cd worker
 npm install
-npm run kv:create        # once; paste the two ids into wrangler.toml
+# KV namespace STORE already exists and its id is in wrangler.toml. Do not run kv:create.
 cp ../.env.example .dev.vars   # fill in ANTHROPIC_API_KEY for local dev
 npm run dev              # http://localhost:8787/health
 ```

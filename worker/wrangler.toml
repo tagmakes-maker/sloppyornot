@@ -1,4 +1,4 @@
-name = "sloppyornot-api"
+name = "sloppyornot"
 main = "src/index.js"
 compatibility_date = "2026-10-01"
 
@@ -7,12 +7,12 @@ compatibility_date = "2026-10-01"
 #   reviews:<id>   list of swipe answers
 #   rejections     list of {a_id, b_id, reason, at}
 #   agentlog       list of agent entries, newest last
-# Create it once: npx wrangler kv namespace create STORE
-# Then paste the id it prints below.
+# Created Oct 24 in the dashboard (Workers KV > STORE).
+# Local dev and production share this one namespace for the weekend.
 [[kv_namespaces]]
 binding = "STORE"
-id = "REPLACE_WITH_ID_FROM_wrangler_kv_namespace_create"
-preview_id = "REPLACE_WITH_PREVIEW_ID"
+id = "ccf3f3081542491c96020fe1e679c8ac"
+preview_id = "ccf3f3081542491c96020fe1e679c8ac"
 
 [vars]
 PROMPTS_BASE = "https://raw.githubusercontent.com/tagmakes-maker/sloppyornot/main/agent/prompts/"
