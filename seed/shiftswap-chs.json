@@ -1,0 +1,45 @@
+{
+  "id": "shiftswap-chs",
+  "name": "ShiftSwap CHS",
+  "url": "https://shiftswap-chs.pages.dev",
+  "builder": "King Street Collective",
+  "what_it_does": "Shift swapping for Charleston restaurant and hotel workers. Post a shift you cannot work, coworkers claim it by text, and the manager approves with one tap. New staff join by texting a code, which walks them through setup over SMS.",
+  "target_user": "Hospitality workers and shift managers on King Street and the peninsula.",
+  "capabilities": ["scheduling", "sms", "notifications", "onboarding", "approvals"],
+  "stack": ["Next.js", "Postgres", "Twilio"],
+  "integrations": ["Twilio SMS", "Google Calendar"],
+  "human_review": {
+    "swipe_count": 8,
+    "would_use": 0.75,
+    "understood_immediately": 0.69,
+    "feels_distinctive": 0.52,
+    "easy_to_use": 0.63,
+    "looks_like_slop": 0.22,
+    "verified": true
+  },
+  "automated_checks": {
+    "loads": true,
+    "performance": 68,
+    "accessibility": 70,
+    "mobile_ok": false,
+    "security_headers": true,
+    "console_errors": 0,
+    "checked_at": "2026-10-24T13:40:00Z"
+  },
+  "strengths": ["would_use", "sms", "approvals"],
+  "weaknesses": ["mobile"],
+  "agent_observations": [
+    {
+      "at": "2026-10-24T13:49:00Z",
+      "note": "ShiftSwap CHS has an SMS signup flow that gets new staff set up in under a minute. Onboarding is a feature here, not the core product. The web dashboard fails the mobile check, which matters for workers who live on their phones.",
+      "source": "automated_checks"
+    }
+  ],
+  "potential_matches": [],
+  "match_status": "unmatched",
+  "consent": { "testing": true, "roast_me": false, "matching": true, "aro_cohort_6mo": true },
+  "status": "seed",
+  "is_seed": true,
+  "created_at": "2026-10-24T13:33:00Z",
+  "updated_at": "2026-10-24T13:49:00Z"
+}
