@@ -8,19 +8,25 @@ Answer the first question that applies. Stop there.
 2. **Does a browser load it directly (HTML, CSS, images, client-side JS)?**
    `site/`. Olivia's lane.
 
-3. **Does it run on Cloudflare, talk to the database, call an LLM, or store state?**
+3. **Is it a prompt, a tool definition, a matching rule, or an eval scenario?**
+   `agent/`. Therese's lane. The worker loads it, it does not live in the worker.
+
+4. **Does it run on Cloudflare, talk to the database, run the agent, or store state?**
    `worker/`. Jacky's lane.
 
-4. **Is it a fake product for the demo?**
+5. **Is it a fake product for the demo?**
    `seed/<slug>.json`. Must validate against the schema.
 
-5. **Is it a record of something the agent did (observation, decision, tool call, match proposal, approve/reject, outcome)?**
+6. **Is it a record of something the agent did (observation, decision, tool call, match proposal, approve/reject, outcome)?**
    `agent-log/YYYY-MM-DD-HHMM-<what>.md` or `.json`. Append only. Never edit a past entry. This is evidence for the judges, not the agent's memory.
 
-6. **Is it words for humans (demo script, pitch, Devpost copy, decision)?**
+7. **Is it words for humans (demo script, pitch, Devpost copy, decision)?**
    `docs/`.
 
-7. **None of the above?**
+8. **Is it a test of the core loop?**
+   `tests/`.
+
+9. **None of the above?**
    Ask in the group chat before committing. Do not create a new top-level folder.
 
 ## Rules that save us on Sunday

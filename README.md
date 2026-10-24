@@ -16,8 +16,10 @@ Submit > Review > Agent understands > Gap identified > Match found > Human appro
 | --- | --- | --- | --- |
 | `site/` | Olivia | Static HTML, CSS, client JS. The Cloudflare Pages root. | API logic, secrets, agent code |
 | `worker/` | Jacky | Cloudflare Worker: API routes, agent, persistent state (KV/Supabase), automated checks, match logic, Blueprint generation | UI, seed data |
+| `agent/` | Therese | Prompts, tool definitions, matching methodology, eval scenarios. The agent's brain; worker/ loads it. | Runtime code, storage |
 | `shared/` | Therese (owner), nobody edits alone | `profile.schema.json`, the Product Profile contract between site and worker | Anything that is not the contract |
 | `seed/` | Therese | Believable demo products as JSON matching the schema | Real user data |
+| `tests/` | Everyone | Acceptance and integration tests for the core loop | Unit test sprawl |
 | `docs/` | Therese | Demo script, pitch, Devpost copy, decisions | Code |
 | `agent-log/` | Jacky writes, everyone reads | Demo evidence: what the agent observed, decided, called, proposed, and what happened. Append only. | The agent's actual memory (that lives in the worker storage layer) |
 
@@ -38,6 +40,6 @@ Payments, Stripe, complex accounts, giant profiles, social network, production m
 
 ## Team
 
-- Therese Grittner: product, methodology, functional logic, QA, demo, pitch
-- Jacky Schuler: backend, database, APIs, agent context and memory, match logic, logs, Blueprint generation
+- Therese Grittner: agent intelligence (prompts, decisions, matching methodology, tools, memory requirements), Product Profile, QA, demo, pitch
+- Jacky Schuler: backend and infrastructure (database, persistent storage, APIs, agent runtime and tool integrations, saving and retrieving agent memory, approval state, deployment)
 - Olivia Dennehy: frontend, UX, submission and review flow, match screens, demo polish

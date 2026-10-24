@@ -9,10 +9,10 @@ files=$(git diff --cached --name-only --diff-filter=ACMR)
 for f in $files; do
   top="${f%%/*}"
   case "$f" in
-    README.md|CONTRIBUTING.md|CLAUDE.md|AGENTS.md|.gitignore|LICENSE|package.json|package-lock.json) continue ;;
+    README.md|CONTRIBUTING.md|CLAUDE.md|AGENTS.md|.gitignore|.env.example|LICENSE|package.json|package-lock.json) continue ;;
   esac
   case "$top" in
-    site|worker|shared|seed|docs|agent-log|scripts|.github) ;;
+    site|worker|agent|shared|seed|docs|agent-log|tests|scripts|.github) ;;
     *)
       echo "BLOCKED: $f is outside every lane. Read CONTRIBUTING.md and pick a folder."
       fail=1
@@ -31,6 +31,7 @@ for f in $files; do
     shared/*) echo "BLOCKED: $f. shared/ holds only profile.schema.json."; fail=1 ;;
   esac
   case "$f" in
+    .env.example) ;;
     *.env|*.env.*|*secret*|*credentials*) echo "BLOCKED: $f looks like a secret. Use wrangler secret put."; fail=1 ;;
   esac
 done

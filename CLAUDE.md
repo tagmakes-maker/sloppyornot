@@ -2,7 +2,7 @@
 
 Read README.md, then CONTRIBUTING.md, then shared/profile.schema.json before touching anything.
 
-- Three lanes: site/ (Olivia), worker/ (Jacky), docs+seed (Therese). Stay in the lane of the person you are working for.
+- Lanes: site/ (Olivia), worker/ (Jacky), agent/ + docs/ + seed/ (Therese). Stay in the lane of the person you are working for.
 - shared/profile.schema.json is the contract. Never change it without saying so in the PR and the group chat.
 - agent-log/ is evidence for judges, append only. The agent's real memory lives in worker/ storage.
 - Not building: payments, Stripe, accounts, social network, big test suites.
