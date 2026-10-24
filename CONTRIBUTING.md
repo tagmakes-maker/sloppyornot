@@ -13,6 +13,7 @@ Answer the first question that applies. Stop there.
 
 4. **Does it run on Cloudflare, talk to the database, run the agent, or store state?**
    `worker/`. Jacky's lane.
+   Exception: Think Like Olivia (expert interview, expert review, human verdicts) is its own worker in `experts-worker/`. Therese's lane.
 
 5. **Is it a fake product for the demo?**
    `seed/<slug>.json`. Must validate against the schema.
