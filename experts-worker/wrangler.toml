@@ -1,0 +1,36 @@
+name = "sloppyornot-experts"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+# Think Like Olivia. Standalone worker, Therese's lane. Does not depend on worker/.
+# Regenerates src/prompts.js from agent/ and seed/ before every dev and deploy.
+[build]
+command = "node scripts/build-prompts.mjs"
+watch_dir = ["../agent/experts", "../agent/prompts", "../seed"]
+
+# Static pages. /experts/:id/interview and /experts/:id/review are served by the worker from here.
+[assets]
+directory = "./public"
+binding = "ASSETS"
+html_handling = "none"
+
+# One KV namespace. Keys:
+#   interview:<expert_id>                         answers so far plus the pending question
+#   profile:<expert_id>                           Expert Reasoning Profile (agent/experts/expert-profile.schema.json)
+#   review:<expert_id>:<product_id>               the AI review. Immutable once written.
+#   verdict:<expert_id>:<product_id>:<suggestion> the human verdict (agent/experts/validation.schema.json)
+# Created with: npx wrangler kv namespace create EXPERTS_KV. This is the live namespace.
+[[kv_namespaces]]
+binding = "EXPERTS_KV"
+id = "446ca1fb41c34324a5a9c31c5ad1fc4b"
+
+[vars]
+# Optional. Base URL of Jacky's worker. When set, POST /api/review accepts product_id and fetches
+# GET {CORE_API_URL}/api/products/:id. When empty, the Product Profile must be in the POST body.
+CORE_API_URL = ""
+ANTHROPIC_MODEL = "claude-opus-5-5"
+
+# Secrets (never in this file):
+#   npx wrangler secret put ANTHROPIC_API_KEY   optional. Without it the worker runs in rule-based mode.
+#   npx wrangler secret put ADMIN_TOKEN         required to save, approve, review, and record verdicts.
+# Local dev: copy .dev.vars.example to .dev.vars and fill it in.
