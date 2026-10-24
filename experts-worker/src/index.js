@@ -67,7 +67,7 @@ const getJson = async (env, key) => {
 };
 const putJson = (env, key, value) => env.EXPERTS_KV.put(key, JSON.stringify(value));
 const mode = (env) => (env.ANTHROPIC_API_KEY ? "claude" : "rule-based");
-const noDashes = (s) => String(s).replace(/\s*[—–]\s*/g, ", ");
+const noDashes = (s) => String(s).replace(/\s*[\u2014\u2013]\s*/g, ", ");
 const shorten = (s, n) => {
   s = String(s).trim().replace(/\s+/g, " ");
   if (s.length <= n) return s;
