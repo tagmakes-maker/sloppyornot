@@ -25,6 +25,10 @@ Submit > Review > Agent understands > Gap identified > Match found > Human appro
 
 Not sure where something goes? Read `CONTRIBUTING.md`. The pre-commit hook will tell you if you got it wrong.
 
+## Run the tests
+
+From the repo root: `npm test`. No install needed. It checks every seed product against the schema and checks the demo pair.
+
 ## The contract
 
 `shared/profile.schema.json` is the one object both halves speak. Changing it requires all three of us in the same conversation and one PR that touches `shared/`, `site/`, and `worker/` together.
