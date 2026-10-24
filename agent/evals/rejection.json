@@ -1,0 +1,31 @@
+{
+  "name": "rejection",
+  "description": "A human rejected FloodWatch CHS plus FirstRun. Given FirstRun and ShiftSwap CHS as candidates, the agent must skip FirstRun, propose ShiftSwap CHS, and reference the rejection in its reasoning. This proves human feedback changes the next recommendation.",
+  "prompt": "agent/prompts/propose-match.md",
+  "input": {
+    "product_a": "seed/floodwatch-chs.json",
+    "gap": {
+      "product_id": "floodwatch-chs",
+      "gap": "onboarding",
+      "metric": "human_review.understood_immediately",
+      "value": 0.3
+    },
+    "candidates": ["seed/firstrun.json", "seed/shiftswap-chs.json"],
+    "match_history": [
+      {
+        "product_id": "firstrun",
+        "fills_gap": "onboarding",
+        "decision": "rejected",
+        "reason": "FloodWatch users are drivers checking the map at a red light. A desktop tooltip tour will not help them. We need onboarding that works by text before they open the app.",
+        "at": "2026-10-24T14:10:00Z"
+      }
+    ]
+  },
+  "expected": {
+    "proposal.product_id": "shiftswap-chs",
+    "proposal.fills_gap": "onboarding",
+    "proposal.confidence": { "min": 0.4, "max": 0.79 },
+    "memory_reference": { "contains_any": ["2026-10-24T14:10:00Z", "rejected", "rejection"] },
+    "considered[product_id=firstrun].why_not": { "contains_any": ["rejected", "rejection"] }
+  }
+}

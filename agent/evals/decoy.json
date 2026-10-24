@@ -1,0 +1,23 @@
+{
+  "name": "decoy",
+  "description": "HelpDock sounds like it helps confused users, but it has no onboarding capability. The agent must not propose it, or must propose it with confidence under 0.4.",
+  "prompt": "agent/prompts/propose-match.md",
+  "input": {
+    "product_a": "seed/floodwatch-chs.json",
+    "gap": {
+      "product_id": "floodwatch-chs",
+      "gap": "onboarding",
+      "metric": "human_review.understood_immediately",
+      "value": 0.3
+    },
+    "candidates": ["seed/helpdock.json"],
+    "match_history": []
+  },
+  "expected": {
+    "pass_if_any": [
+      { "proposal": null },
+      { "proposal.confidence": { "max": 0.4 } }
+    ],
+    "considered[product_id=helpdock].eligible": false
+  }
+}
