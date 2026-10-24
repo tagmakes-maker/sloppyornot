@@ -1,0 +1,9 @@
+node_modules/
+.env
+.env.*
+.wrangler/
+.dev.vars
+dist/
+.DS_Store
+*.log
+!agent-log/**

@@ -1,0 +1,1 @@
+Demo products. Each file validates against shared/profile.schema.json with "is_seed": true and "status": "seed". At least two must pair cleanly: one with an obvious weakness, one with the capability that fills it.

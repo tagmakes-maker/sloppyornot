@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sloppyornot.com/shared/profile.schema.json",
+  "title": "Product Profile",
+  "description": "The one object SloppyOrNot and Gituationship both speak. Contract between site/ and worker/. Change only with all three of us present.",
+  "type": "object",
+  "required": ["id", "name", "what_it_does", "target_user", "capabilities", "status", "created_at"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string", "description": "slug, lowercase, hyphens" },
+    "name": { "type": "string", "maxLength": 80 },
+    "url": { "type": "string", "format": "uri" },
+    "builder": { "type": "string", "description": "Team or person name" },
+    "what_it_does": { "type": "string", "maxLength": 400 },
+    "target_user": { "type": "string", "maxLength": 200 },
+    "capabilities": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" },
+      "description": "Short capability tags, e.g. onboarding, payments, search, auth, analytics"
+    },
+    "stack": { "type": "array", "items": { "type": "string" } },
+    "integrations": { "type": "array", "items": { "type": "string" } },
+
+    "human_review": {
+      "type": "object",
+      "description": "Aggregated swipe results from SloppyOrNot",
+      "properties": {
+        "swipe_count": { "type": "integer", "minimum": 0 },
+        "would_use": { "type": "number", "minimum": 0, "maximum": 1 },
+        "understood_immediately": { "type": "number", "minimum": 0, "maximum": 1 },
+        "feels_distinctive": { "type": "number", "minimum": 0, "maximum": 1 },
+        "easy_to_use": { "type": "number", "minimum": 0, "maximum": 1 },
+        "looks_like_slop": { "type": "number", "minimum": 0, "maximum": 1 },
+        "verified": { "type": "boolean", "description": "true once swipe_count meets the threshold in docs/scoring.md" }
+      }
+    },
+
+    "automated_checks": {
+      "type": "object",
+      "description": "Objective signals. Kept separate from human_review.",
+      "properties": {
+        "loads": { "type": "boolean" },
+        "performance": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "accessibility": { "type": "integer", "minimum": 0, "maximum": 100 },
+        "mobile_ok": { "type": "boolean" },
+        "security_headers": { "type": "boolean" },
+        "console_errors": { "type": "integer", "minimum": 0 },
+        "checked_at": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "strengths": { "type": "array", "items": { "type": "string" } },
+    "weaknesses": { "type": "array", "items": { "type": "string" }, "description": "Gaps the agent reasons from" },
+
+    "agent_observations": {
+      "type": "array",
+      "description": "The agent's current understanding. Written by worker/ only.",
+      "items": {
+        "type": "object",
+        "required": ["at", "note"],
+        "properties": {
+          "at": { "type": "string", "format": "date-time" },
+          "note": { "type": "string" },
+          "source": { "type": "string", "enum": ["human_review", "automated_checks", "submission", "match_feedback"] }
+        }
+      }
+    },
+
+    "potential_matches": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["product_id", "fills_gap", "reason"],
+        "properties": {
+          "product_id": { "type": "string" },
+          "fills_gap": { "type": "string" },
+          "reason": { "type": "string" },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+        }
+      }
+    },
+
+    "match_status": {
+      "type": "string",
+      "enum": ["unmatched", "proposed", "approved", "rejected", "blueprint_ready"],
+      "default": "unmatched"
+    },
+
+    "blueprint": {
+      "type": "object",
+      "description": "The Super Product Blueprint. Only present when match_status is blueprint_ready.",
+      "properties": {
+        "partner_id": { "type": "string" },
+        "combined_concept": { "type": "string" },
+        "contribution_a": { "type": "string" },
+        "contribution_b": { "type": "string" },
+        "target_user": { "type": "string" },
+        "integration_plan": { "type": "string" },
+        "first_build": { "type": "string" },
+        "requirements": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+
+    "consent": {
+      "type": "object",
+      "properties": {
+        "testing": { "type": "boolean" },
+        "roast_me": { "type": "boolean", "default": false },
+        "matching": { "type": "boolean" },
+        "aro_cohort_6mo": { "type": "boolean", "default": false }
+      }
+    },
+
+    "status": { "type": "string", "enum": ["submitted", "reviewing", "verified", "seed"] },
+    "is_seed": { "type": "boolean", "default": false },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" }
+  }
+}
