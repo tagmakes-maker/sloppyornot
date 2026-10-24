@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sloppyornot.com/agent/experts/validation.schema.json",
+  "title": "Expert Verdict",
+  "$comment": "Proposed for shared/ once Jacky and Olivia agree.",
+  "description": "The human expert's verdict on one AI suggestion. The original suggestion is immutable. The correction sits beside it and never replaces it.",
+  "type": "object",
+  "required": ["expert_id", "product_id", "suggestion_id", "verdict", "rationale", "decided_by"],
+  "additionalProperties": false,
+  "properties": {
+    "expert_id": { "type": "string" },
+    "product_id": { "type": "string" },
+    "suggestion_id": { "type": "string" },
+    "verdict": { "type": "string", "enum": ["accept", "reject", "modify"] },
+    "correction": { "type": "string", "maxLength": 600, "description": "Required when verdict is modify. What the expert would say instead." },
+    "rationale": { "type": "string", "minLength": 1, "maxLength": 600, "description": "Why. Required for every verdict." },
+    "decided_by": { "type": "string" },
+    "decided_at": { "type": "string", "format": "date-time" }
+  }
+}
