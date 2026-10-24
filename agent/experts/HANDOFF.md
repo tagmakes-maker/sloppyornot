@@ -8,7 +8,7 @@ A second, standalone Cloudflare Worker in experts-worker/ (Therese's lane). It h
 
 ## Base URL
 
-https://sloppyornot-experts.<account>.workers.dev. Therese fills in the real URL after `npx wrangler deploy` and posts it in the group chat.
+https://sloppyornot-experts.tagmakes.workers.dev. It deploys automatically from main through Workers Builds, root directory experts-worker.
 
 - Interview: /experts/olivia/interview
 - Review and verdicts: /experts/olivia/review
@@ -16,9 +16,9 @@ https://sloppyornot-experts.<account>.workers.dev. Therese fills in the real URL
 
 ## For Olivia
 
-1. Open /experts/olivia/interview on your phone. It takes 10 to 15 minutes and saves after every answer.
+1. Open the link Therese texts you. It looks like /experts/olivia/interview?key=... and unlocks the page, so you never type the admin token. The interview takes 10 to 15 minutes and saves after every answer. Done on Oct 24.
 2. Press "Draft my profile". Read every rule. Fix the wording until it sounds like you, then press Save.
-3. Press Approve and type the admin token. Nothing uses your profile before this step. A profile that still says PLACEHOLDER cannot be approved.
+3. Press Approve. Nothing uses your profile before this step. A profile that still says PLACEHOLDER cannot be approved.
 4. Open /experts/olivia/review, load the demo product, and run the review. Accept, reject, or modify every suggestion and say why. Your verdict sits beside the AI suggestion and never replaces it.
 5. If you want the comparison inside the judging view, either link to the judging URL above or call the endpoint below. The cards in review.html are plain HTML and CSS you can copy.
 
