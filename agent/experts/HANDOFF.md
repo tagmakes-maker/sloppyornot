@@ -14,6 +14,12 @@ https://sloppyornot-experts.tagmakes.workers.dev. It deploys automatically from 
 - Review and verdicts: /experts/olivia/review
 - Judging view, comparison only: /experts/olivia/review?product=floodwatch-chs
 
+## Status
+
+- Interview: done Oct 24.
+- Profile: approved by Olivia Oct 24, 4:39 PM, version 1. Stored in the experts KV under profile:olivia.
+- Next: one review and her verdicts on every suggestion.
+
 ## For Olivia
 
 1. Open the link Therese texts you. It looks like /experts/olivia/interview?key=... and unlocks the page, so you never type the admin token. The interview takes 10 to 15 minutes and saves after every answer. Done on Oct 24.
