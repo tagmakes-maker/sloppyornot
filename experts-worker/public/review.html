@@ -1,0 +1,278 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Think Like Olivia: Review</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<main>
+  <div class="brand"><span>Think Like <span class="expert-name">Olivia</span></span><span id="mode" class="badge hidden">rule-based mode</span></div>
+
+  <h1>Human expertise vs. AI</h1>
+  <p class="lede">The agent reviews one product using <span class="expert-name">Olivia</span>'s approved rules. <span class="expert-name">Olivia</span> accepts, rejects, or modifies every suggestion. The AI suggestion never changes.</p>
+
+  <section id="pick" class="card">
+    <h2>1. Pick the product</h2>
+    <label for="expert">Expert id</label>
+    <input id="expert" type="text" autocomplete="off">
+    <div id="by-id" class="hidden">
+      <label for="product-id">Product id from the core API</label>
+      <input id="product-id" type="text" autocomplete="off" placeholder="floodwatch-chs">
+      <p class="meta">Or paste a Product Profile below instead.</p>
+    </div>
+    <label for="product">Product Profile JSON</label>
+    <textarea id="product" class="code" spellcheck="false" placeholder="Paste a Product Profile that matches shared/profile.schema.json"></textarea>
+    <p id="seed-label" class="hidden"><span class="badge seed">Seed data</span> FloodWatch CHS is a demo product, not a real HarborHack team.</p>
+    <div class="row">
+      <button id="demo" class="secondary">Load demo product</button>
+      <button id="run">Run review</button>
+    </div>
+  </section>
+
+  <section id="suggestions-wrap" class="hidden">
+    <h2>2. <span class="expert-name">Olivia</span> reviews each suggestion</h2>
+    <p id="review-meta" class="meta"></p>
+    <div id="suggestions"></div>
+  </section>
+
+  <section id="comparison-wrap" class="hidden">
+    <h2 id="comparison-title">3. Think Like Olivia: Human Expertise vs. AI</h2>
+    <p id="counts" class="meta"></p>
+    <div id="comparison"></div>
+    <p id="disclaimer" class="fineprint"></p>
+  </section>
+
+  <div id="msg" class="msg hidden" role="status"></div>
+</main>
+
+<template id="suggestion-tpl">
+  <article class="card">
+    <p class="meta"><span data-f="id"></span>. Rule <strong data-f="principle_id"></strong>. Evidence: <span data-f="evidence"></span>. Confidence <span data-f="confidence"></span>.</p>
+    <p data-f="principle" class="meta"></p>
+    <p data-f="suggestion"></p>
+    <p data-f="uncertainty_note" class="meta"></p>
+    <fieldset style="border:0;padding:0;margin:0">
+      <legend class="meta">Verdict</legend>
+      <div class="choices">
+        <label><input type="radio" value="accept"><span>Accept</span></label>
+        <label><input type="radio" value="reject"><span>Reject</span></label>
+        <label><input type="radio" value="modify"><span>Modify</span></label>
+      </div>
+    </fieldset>
+    <div data-f="correction-wrap" class="hidden">
+      <label>What you would say instead</label>
+      <textarea data-f="correction"></textarea>
+    </div>
+    <label>Why</label>
+    <textarea data-f="rationale" placeholder="One or two sentences. This is the part the agent learns from."></textarea>
+    <label>Decided by</label>
+    <input type="text" data-f="decided_by">
+    <div class="row"><button data-f="save">Save verdict</button></div>
+    <p data-f="saved" class="meta"></p>
+  </article>
+</template>
+
+<script>
+  const fromPath = location.pathname.match(/^\/experts\/([a-z0-9-]+)\//);
+  const params = new URLSearchParams(location.search);
+  const startExpert = fromPath ? fromPath[1] : params.get("expert") || "olivia";
+  const displayName = (id) => id.charAt(0).toUpperCase() + id.slice(1);
+  const $ = (id) => document.getElementById(id);
+  $("expert").value = startExpert;
+
+  function setName(id) {
+    document.querySelectorAll(".expert-name").forEach((el) => (el.textContent = displayName(id)));
+    document.title = `Think Like ${displayName(id)}: Review`;
+  }
+  setName(startExpert);
+  $("expert").addEventListener("input", () => setName($("expert").value.trim() || "olivia"));
+
+  function say(text, isError) {
+    const m = $("msg");
+    m.textContent = text;
+    m.classList.toggle("error", Boolean(isError));
+    m.classList.toggle("hidden", !text);
+  }
+
+  function token() {
+    let t = null;
+    try { t = sessionStorage.getItem("admin_token"); } catch {}
+    if (!t) {
+      t = prompt("Admin token. Ask Therese if you do not have it.");
+      if (t) try { sessionStorage.setItem("admin_token", t); } catch {}
+    }
+    return t || "";
+  }
+
+  async function api(method, path, body, admin) {
+    const headers = { "content-type": "application/json" };
+    if (admin) headers["x-admin-token"] = token();
+    const res = await fetch(path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 401) try { sessionStorage.removeItem("admin_token"); } catch {}
+    if (!res.ok) throw new Error(data.error ? `${data.error}${data.errors ? " " + data.errors.join("; ") : ""}` : `Request failed with ${res.status}`);
+    return data;
+  }
+
+  function el(tag, cls, text) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined && text !== null) e.textContent = text;
+    return e;
+  }
+
+  let current = null; // { expert_id, product_id }
+
+  function renderSuggestions(review, comparison) {
+    const byId = Object.fromEntries((comparison?.items ?? []).map((i) => [i.suggestion.id, i]));
+    $("review-meta").textContent = `${review.product_name}. ${review.mode === "claude" ? "Reviewed by Claude" : "Reviewed in rule-based mode"} using profile version ${review.profile_version}.${review.note ? " " + review.note : ""}`;
+    const list = $("suggestions");
+    list.replaceChildren();
+    const tpl = $("suggestion-tpl");
+    for (const s of review.suggestions) {
+      const node = tpl.content.firstElementChild.cloneNode(true);
+      const f = (name) => node.querySelector(`[data-f="${name}"]`);
+      f("id").textContent = s.id;
+      f("principle_id").textContent = s.principle_id;
+      f("evidence").textContent = s.evidence;
+      f("confidence").textContent = s.confidence.toFixed(2);
+      f("principle").textContent = `Rule: ${s.principle}`;
+      f("suggestion").textContent = s.suggestion;
+      f("uncertainty_note").textContent = s.uncertainty_note ? `Unsure: ${s.uncertainty_note}` : "";
+      const group = `v-${s.id}`;
+      node.querySelectorAll('input[type="radio"]').forEach((r) => {
+        r.name = group;
+        r.addEventListener("change", () => f("correction-wrap").classList.toggle("hidden", r.value !== "modify"));
+      });
+      f("decided_by").value = displayName(review.expert_id);
+      const prior = byId[s.id];
+      if (prior?.verdict) {
+        node.querySelector(`input[value="${prior.verdict}"]`).checked = true;
+        f("correction-wrap").classList.toggle("hidden", prior.verdict !== "modify");
+        f("correction").value = prior.correction ?? "";
+        f("rationale").value = prior.rationale ?? "";
+        f("decided_by").value = prior.decided_by ?? f("decided_by").value;
+        f("saved").textContent = `Saved as ${prior.status}.`;
+      }
+      f("save").addEventListener("click", async () => {
+        const picked = node.querySelector(`input[name="${group}"]:checked`);
+        if (!picked) return say("Pick accept, reject, or modify first.", true);
+        const body = {
+          expert_id: review.expert_id,
+          product_id: review.product_id,
+          suggestion_id: s.id,
+          verdict: picked.value,
+          rationale: f("rationale").value.trim(),
+          decided_by: f("decided_by").value.trim() || displayName(review.expert_id),
+        };
+        if (picked.value === "modify") body.correction = f("correction").value.trim();
+        try {
+          await api("POST", "/api/verdict", body, true);
+          f("saved").textContent = "Saved.";
+          say("");
+          await loadComparison();
+        } catch (e) {
+          say(e.message, true);
+        }
+      });
+      list.append(node);
+    }
+    $("suggestions-wrap").classList.toggle("hidden", review.suggestions.length === 0);
+    if (review.suggestions.length === 0) say("The agent found no rule with evidence in this product profile. Nothing to review.");
+  }
+
+  function renderComparison(c) {
+    $("comparison-title").textContent = `3. ${c.title}`;
+    $("counts").textContent = `${c.counts.total} suggestions. ${c.counts.accepted} accepted, ${c.counts.modified} modified, ${c.counts.rejected} rejected, ${c.counts.pending} waiting.`;
+    $("disclaimer").textContent = c.disclaimer;
+    const box = $("comparison");
+    box.replaceChildren();
+    for (const item of c.items) {
+      const card = el("article", "card");
+      card.append(el("p", `status ${item.status}`, item.status));
+      const ai = el("div", "pair");
+      ai.append(el("h3", null, `AI suggestion, rule ${item.suggestion.principle_id}`), el("p", null, item.suggestion.suggestion));
+      if (item.suggestion.uncertainty_note) ai.append(el("p", "meta", `Unsure: ${item.suggestion.uncertainty_note}`));
+      card.append(ai);
+      const human = el("div", "pair human");
+      human.append(el("h3", null, `${c.expert_name ?? displayName(c.expert_id)}'s verdict`));
+      if (!item.verdict) human.append(el("p", "meta", "Not reviewed yet."));
+      else {
+        if (item.correction) human.append(el("p", null, `Correction: ${item.correction}`));
+        human.append(el("p", null, `Why: ${item.rationale}`));
+        human.append(el("p", "meta", `${item.decided_by}, ${new Date(item.decided_at).toLocaleString()}`));
+      }
+      card.append(human);
+      if (item.reasoning_gap) {
+        const gap = el("div", "pair");
+        gap.append(el("h3", null, "Reasoning gap"), el("p", null, item.reasoning_gap));
+        card.append(gap);
+      }
+      box.append(card);
+    }
+    $("comparison-wrap").classList.remove("hidden");
+  }
+
+  async function loadComparison() {
+    const c = await api("GET", `/api/comparison/${current.expert_id}/${current.product_id}`);
+    renderComparison(c);
+    return c;
+  }
+
+  $("demo").addEventListener("click", async () => {
+    try {
+      const { product } = await api("GET", "/api/demo/product");
+      $("product").value = JSON.stringify(product, null, 2);
+      $("seed-label").classList.remove("hidden");
+    } catch (e) {
+      say(e.message, true);
+    }
+  });
+
+  $("run").addEventListener("click", async () => {
+    const expert_id = $("expert").value.trim();
+    const body = { expert_id };
+    const raw = $("product").value.trim();
+    if (raw) {
+      try { body.product = JSON.parse(raw); } catch { return say("The Product Profile is not valid JSON.", true); }
+    } else if ($("product-id").value.trim()) {
+      body.product_id = $("product-id").value.trim();
+    } else {
+      return say("Paste a Product Profile or load the demo product first.", true);
+    }
+    $("run").disabled = true;
+    say("Running the review. This can take a few seconds.");
+    try {
+      const review = await api("POST", "/api/review", body, true);
+      current = { expert_id, product_id: review.product_id };
+      say(review.existing ? "This product was already reviewed. Showing the original review, which never changes." : "");
+      const c = await loadComparison();
+      renderSuggestions(review, c);
+    } catch (e) {
+      say(e.message, true);
+    } finally {
+      $("run").disabled = false;
+    }
+  });
+
+  (async () => {
+    try {
+      const config = await api("GET", "/api/config");
+      $("mode").classList.toggle("hidden", config.mode !== "rule-based");
+      $("by-id").classList.toggle("hidden", !config.core_api);
+      // Judging view: /experts/olivia/review?product=floodwatch-chs shows the comparison only.
+      const product = params.get("product");
+      if (product) {
+        current = { expert_id: startExpert, product_id: product };
+        $("pick").classList.add("hidden");
+        await loadComparison();
+      }
+    } catch (e) {
+      say(e.message, true);
+    }
+  })();
+</script>
+</body>
+</html>
