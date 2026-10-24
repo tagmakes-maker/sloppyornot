@@ -1,0 +1,5 @@
+# Copy to experts-worker/.dev.vars for local dev. Never put a real key in this file.
+# Leave ANTHROPIC_API_KEY empty to run in rule-based mode.
+ANTHROPIC_API_KEY=
+# Any long random string. Olivia types it to save, approve, review, and record verdicts.
+ADMIN_TOKEN=
