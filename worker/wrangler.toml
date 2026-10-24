@@ -14,8 +14,8 @@ binding = "STORE"
 id = "ccf3f3081542491c96020fe1e679c8ac"
 preview_id = "ccf3f3081542491c96020fe1e679c8ac"
 [vars]
-PROMPTS_BASE = "http://localhost:8090/"
-ANTHROPIC_MODEL = "claude-sonnet-4-5"
+PROMPTS_BASE = "https://raw.githubusercontent.com/tagmakes-maker/sloppyornot/main/agent/prompts/"
+ANTHROPIC_MODEL = "claude-opus-5-5"
 
 # Secrets (never in this file): npx wrangler secret put ANTHROPIC_API_KEY
 # Local dev: copy ../.env.example to worker/.dev.vars and fill it in
