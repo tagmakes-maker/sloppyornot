@@ -91,7 +91,7 @@ for (const [file, p] of Object.entries(seeds)) {
   });
 
   test(`${file} has no em dashes`, () => {
-    assert.ok(!JSON.stringify(p).includes("—"));
+    assert.ok(!JSON.stringify(p).includes("\u2014"));
   });
 }
 
