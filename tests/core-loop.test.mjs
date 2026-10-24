@@ -104,8 +104,19 @@ test("demo pair: firstrun fills floodwatch-chs's weakest tag", () => {
   assert.equal(b.capabilities[0], weakest, "the gap is B's core capability");
 });
 
-test("decoy: helpdock does not fill the gap", () => {
-  assert.ok(!byId["helpdock"].capabilities.includes(weaknesses(byId["floodwatch-chs"])[0].tag));
+test("decoy: helpdock looks like firstrun but does not fill the gap", () => {
+  const decoy = byId["helpdock"].capabilities;
+  assert.ok(decoy.some((c) => byId["firstrun"].capabilities.includes(c)), "decoy should share a tag with B");
+  assert.ok(!decoy.includes(weaknesses(byId["floodwatch-chs"])[0].tag));
+});
+
+test("no match: nothing in the pool fills porchlight's gaps", () => {
+  const gaps = weaknesses(byId["porchlight"]).map((w) => w.tag);
+  assert.ok(gaps.length > 0);
+  for (const p of Object.values(byId)) {
+    if (p.id === "porchlight") continue;
+    for (const g of gaps) assert.ok(!p.capabilities.includes(g), `${p.id} fills ${g}`);
+  }
 });
 
 test("fallback: shiftswap-chs fills the gap as a secondary capability", () => {

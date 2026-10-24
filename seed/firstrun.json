@@ -5,9 +5,22 @@
   "builder": "Two Bridges Labs",
   "what_it_does": "Drop-in onboarding engine for web apps. Add one script tag and FirstRun reads the page, generates a three-step guided tour, and shows contextual tooltips the first time a user meets each feature. Tracks where new users drop off.",
   "target_user": "Small product teams and hackathon builders who ship a working app but have no time to design a first-run experience.",
-  "capabilities": ["onboarding", "guided-tours", "contextual-help", "activation-analytics"],
-  "stack": ["Vanilla JS", "Cloudflare Workers", "Claude API"],
-  "integrations": ["Any web app via script tag", "PostHog"],
+  "capabilities": [
+    "onboarding",
+    "guided-tours",
+    "contextual-help",
+    "embeddable-widget",
+    "activation-analytics"
+  ],
+  "stack": [
+    "Vanilla JS",
+    "Cloudflare Workers",
+    "Claude API"
+  ],
+  "integrations": [
+    "Any web app via script tag",
+    "PostHog"
+  ],
   "human_review": {
     "swipe_count": 7,
     "would_use": 0.71,
@@ -26,8 +39,15 @@
     "console_errors": 0,
     "checked_at": "2026-10-24T13:40:00Z"
   },
-  "strengths": ["onboarding", "understood_immediately", "easy_to_use", "performance"],
-  "weaknesses": ["accessibility"],
+  "strengths": [
+    "onboarding",
+    "understood_immediately",
+    "easy_to_use",
+    "performance"
+  ],
+  "weaknesses": [
+    "accessibility"
+  ],
   "agent_observations": [
     {
       "at": "2026-10-24T13:45:00Z",
@@ -37,7 +57,12 @@
   ],
   "potential_matches": [],
   "match_status": "unmatched",
-  "consent": { "testing": true, "roast_me": false, "matching": true, "aro_cohort_6mo": true },
+  "consent": {
+    "testing": true,
+    "roast_me": false,
+    "matching": true,
+    "aro_cohort_6mo": true
+  },
   "status": "seed",
   "is_seed": true,
   "created_at": "2026-10-24T13:31:00Z",

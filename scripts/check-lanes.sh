@@ -23,7 +23,7 @@ for f in $files; do
     site/*) echo "BLOCKED: $f. site/ holds static assets only (html, css, js, images, fonts)."; fail=1 ;;
   esac
   case "$f" in
-    seed/*.json) ;;
+    seed/*.json|seed/README.md) ;;
     seed/*) echo "BLOCKED: $f. seed/ holds JSON products only."; fail=1 ;;
   esac
   case "$f" in
