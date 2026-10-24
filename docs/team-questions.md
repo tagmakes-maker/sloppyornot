@@ -19,3 +19,7 @@ Each question has a recommendation. Answer yes, or say what you want instead.
 7. **Scoring rules.** docs/scoring.md now lists every weakness rule and threshold. The new ones: performance or accessibility under 50 fails, any console error fails, and looks_like_slop is a weakness at 0.5 or above. Recommendation: approve as written.
 8. **Tighten the schema.** The objects inside a profile (human_review, automated_checks, blueprint, and the rest) accept any extra field, so a typo like "would_us" passes. Recommendation: add `"additionalProperties": false` to each one. This touches shared/, so all three of us agree first.
 9. **Merge to main.** The seed products, prompts, evals, and tests are on branch claude/great-pascal-k4j547. Recommendation: merge to main today so Jacky and Olivia build against them.
+
+## Decided
+
+Oct 24: Therese said yes to all nine recommendations. Items 7, 8, and 9 are done. Items 1 to 6 are posted on the matching GitHub issues for Jacky and Olivia.
