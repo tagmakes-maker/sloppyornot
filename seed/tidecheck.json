@@ -1,0 +1,59 @@
+{
+  "id": "tidecheck",
+  "name": "TideCheck",
+  "url": "https://tidecheck.pages.dev",
+  "builder": "Team Pluff Mud",
+  "what_it_does": "Street-level flood and king tide alerts for the Charleston peninsula. TideCheck pulls NOAA tide predictions and Charleston Water System rain gauge readings, scores every street segment downtown, and texts you before your usual route goes under.",
+  "target_user": "Downtown Charleston commuters and service workers who park on the peninsula and lose cars and shifts to flooding.",
+  "capabilities": ["flood-alerts", "tide-data", "street-map", "sms-notifications", "route-scoring"],
+  "stack": ["Cloudflare Pages", "Cloudflare Workers", "Supabase", "Leaflet", "Twilio"],
+  "integrations": ["NOAA Tides and Currents API", "Charleston Water System rain gauges", "Twilio SMS"],
+  "human_review": {
+    "swipe_count": 23,
+    "would_use": 0.78,
+    "understood_immediately": 0.3,
+    "feels_distinctive": 0.87,
+    "easy_to_use": 0.57,
+    "looks_like_slop": 0.13,
+    "verified": true
+  },
+  "automated_checks": {
+    "loads": true,
+    "performance": 88,
+    "accessibility": 81,
+    "mobile_ok": false,
+    "security_headers": true,
+    "console_errors": 0,
+    "checked_at": "2026-10-24T13:40:00Z"
+  },
+  "strengths": [
+    "Street-level flood scoring built on live NOAA and rain gauge data, not a mockup.",
+    "Reviewers wanted the alerts once they understood them. would_use sits at 0.78.",
+    "Nobody in the room had seen a flood tool at this resolution. feels_distinctive sits at 0.87."
+  ],
+  "weaknesses": ["onboarding", "mobile"],
+  "agent_observations": [
+    {
+      "at": "2026-10-24T14:00:00Z",
+      "note": "Reviewers rate would_use at 0.78 but understood_immediately at 0.30. The product is wanted but not understood on first contact. The landing page opens on a raw map with no explanation of what the colors mean or how to set an alert. The gap is onboarding, not the core.",
+      "source": "human_review"
+    },
+    {
+      "at": "2026-10-24T14:02:00Z",
+      "note": "mobile_ok failed. The map controls overflow a 390px viewport and the alert form sits below the fold. Secondary gap: mobile. Every other automated check passed.",
+      "source": "automated_checks"
+    }
+  ],
+  "potential_matches": [],
+  "match_status": "unmatched",
+  "consent": {
+    "testing": true,
+    "roast_me": false,
+    "matching": true,
+    "aro_cohort_6mo": true
+  },
+  "status": "seed",
+  "is_seed": true,
+  "created_at": "2026-10-23T20:30:00Z",
+  "updated_at": "2026-10-24T14:05:00Z"
+}

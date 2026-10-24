@@ -1,0 +1,54 @@
+{
+  "id": "firststep",
+  "name": "FirstStep",
+  "url": "https://firststep.pages.dev",
+  "builder": "Two Devs and a Dog",
+  "what_it_does": "Drop-in onboarding for hackathon web apps. Paste one script tag, describe your product in three sentences, and FirstStep generates a first-run walkthrough, empty-state copy, and a two-step setup checklist that adapts to what the user has already done.",
+  "target_user": "Builders whose demo works but whose first-time users stall on the first screen.",
+  "capabilities": ["onboarding", "product-tours", "empty-states", "setup-checklist", "embeddable-widget"],
+  "stack": ["Vanilla JS", "Cloudflare Workers", "Workers KV", "Claude API"],
+  "integrations": ["Any site via script tag", "PostHog events (optional)"],
+  "human_review": {
+    "swipe_count": 17,
+    "would_use": 0.65,
+    "understood_immediately": 0.82,
+    "feels_distinctive": 0.47,
+    "easy_to_use": 0.76,
+    "looks_like_slop": 0.24,
+    "verified": true
+  },
+  "automated_checks": {
+    "loads": true,
+    "performance": 94,
+    "accessibility": 90,
+    "mobile_ok": true,
+    "security_headers": true,
+    "console_errors": 0,
+    "checked_at": "2026-10-24T13:42:00Z"
+  },
+  "strengths": [
+    "Understood immediately by 82 percent of reviewers, which is the metric the product exists to improve for others.",
+    "Works on any site with one script tag. Reviewers installed it on their own builds during the swipe session.",
+    "Generated walkthroughs adapt to what the user has already done instead of replaying the same tour."
+  ],
+  "weaknesses": ["design"],
+  "agent_observations": [
+    {
+      "at": "2026-10-24T14:00:00Z",
+      "note": "Reviewers understood it immediately (0.82) and found it easy to use (0.76), but feels_distinctive sits at 0.47. The core capability, onboarding, is strong. The product itself looks like a generic tour library. This is a product whose strength is exactly the kind of gap other products in the pool report.",
+      "source": "human_review"
+    }
+  ],
+  "potential_matches": [],
+  "match_status": "unmatched",
+  "consent": {
+    "testing": true,
+    "roast_me": true,
+    "matching": true,
+    "aro_cohort_6mo": false
+  },
+  "status": "seed",
+  "is_seed": true,
+  "created_at": "2026-10-23T21:10:00Z",
+  "updated_at": "2026-10-24T14:05:00Z"
+}

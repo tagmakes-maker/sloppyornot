@@ -1,0 +1,54 @@
+{
+  "id": "palmetto-pwa-kit",
+  "name": "Palmetto PWA Kit",
+  "url": "https://palmetto-pwa-kit.pages.dev",
+  "builder": "Night Shift at Harbor Walk",
+  "what_it_does": "A mobile-first shell for hackathon web apps. Wrap your existing site and get a responsive layout grid, an install prompt, an offline cache for the last loaded screen, and bottom navigation tuned for one-handed use on a phone.",
+  "target_user": "Teams that built for a laptop screen and have to demo on phones in a crowded room.",
+  "capabilities": ["mobile", "pwa", "responsive-layout", "offline-cache", "install-prompt"],
+  "stack": ["Vite", "Workbox", "Cloudflare Pages"],
+  "integrations": ["Any static site via wrapper config", "Web App Manifest"],
+  "human_review": {
+    "swipe_count": 9,
+    "would_use": 0.56,
+    "understood_immediately": 0.67,
+    "feels_distinctive": 0.56,
+    "easy_to_use": 0.44,
+    "looks_like_slop": 0.33,
+    "verified": true
+  },
+  "automated_checks": {
+    "loads": true,
+    "performance": 91,
+    "accessibility": 68,
+    "mobile_ok": true,
+    "security_headers": true,
+    "console_errors": 0,
+    "checked_at": "2026-10-24T13:46:00Z"
+  },
+  "strengths": [
+    "Every one of the 9 swipes came from a phone and the wrapped demo held up.",
+    "Offline cache means the demo survives bad hackathon wifi.",
+    "performance scored 91 after wrapping a heavy site."
+  ],
+  "weaknesses": ["ux"],
+  "agent_observations": [
+    {
+      "at": "2026-10-24T14:02:00Z",
+      "note": "Reviewers confirm the mobile claim: every swipe came from a phone and mobile_ok passed. easy_to_use sits at 0.44. The wrap step asks for a config file most builders do not have yet. Strength is mobile. Weakness is ux. This product can fill a mobile gap for a desktop-first build.",
+      "source": "human_review"
+    }
+  ],
+  "potential_matches": [],
+  "match_status": "unmatched",
+  "consent": {
+    "testing": true,
+    "roast_me": true,
+    "matching": true,
+    "aro_cohort_6mo": false
+  },
+  "status": "seed",
+  "is_seed": true,
+  "created_at": "2026-10-24T01:20:00Z",
+  "updated_at": "2026-10-24T14:05:00Z"
+}
