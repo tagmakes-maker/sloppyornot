@@ -25,6 +25,7 @@
     "human_review": {
       "type": "object",
       "description": "Aggregated swipe results from SloppyOrNot",
+      "additionalProperties": false,
       "properties": {
         "swipe_count": { "type": "integer", "minimum": 0 },
         "would_use": { "type": "number", "minimum": 0, "maximum": 1 },
@@ -39,6 +40,7 @@
     "automated_checks": {
       "type": "object",
       "description": "Objective signals. Kept separate from human_review.",
+      "additionalProperties": false,
       "properties": {
         "loads": { "type": "boolean" },
         "performance": { "type": "integer", "minimum": 0, "maximum": 100 },
@@ -59,6 +61,7 @@
       "items": {
         "type": "object",
         "required": ["at", "note"],
+        "additionalProperties": false,
         "properties": {
           "at": { "type": "string", "format": "date-time" },
           "note": { "type": "string" },
@@ -72,6 +75,7 @@
       "items": {
         "type": "object",
         "required": ["product_id", "fills_gap", "reason"],
+        "additionalProperties": false,
         "properties": {
           "product_id": { "type": "string" },
           "fills_gap": { "type": "string" },
@@ -90,6 +94,7 @@
     "blueprint": {
       "type": "object",
       "description": "The Super Product Blueprint. Only present when match_status is blueprint_ready.",
+      "additionalProperties": false,
       "properties": {
         "partner_id": { "type": "string" },
         "combined_concept": { "type": "string" },
@@ -104,6 +109,7 @@
 
     "consent": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "testing": { "type": "boolean" },
         "roast_me": { "type": "boolean", "default": false },
