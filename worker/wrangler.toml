@@ -1,0 +1,22 @@
+name = "sloppyornot-api"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+# One KV namespace for everything. Keys:
+#   product:<id>   Product Profile JSON (shared/profile.schema.json)
+#   reviews:<id>   list of swipe answers
+#   rejections     list of {a_id, b_id, reason, at}
+#   agentlog       list of agent entries, newest last
+# Create it once: npx wrangler kv namespace create STORE
+# Then paste the id it prints below.
+[[kv_namespaces]]
+binding = "STORE"
+id = "REPLACE_WITH_ID_FROM_wrangler_kv_namespace_create"
+preview_id = "REPLACE_WITH_PREVIEW_ID"
+
+[vars]
+PROMPTS_BASE = "https://raw.githubusercontent.com/tagmakes-maker/sloppyornot/main/agent/prompts/"
+ANTHROPIC_MODEL = "claude-sonnet-4-5"
+
+# Secrets (never in this file): npx wrangler secret put ANTHROPIC_API_KEY
+# Local dev: copy ../.env.example to worker/.dev.vars and fill it in
