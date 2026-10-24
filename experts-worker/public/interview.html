@@ -78,19 +78,32 @@
     m.classList.toggle("hidden", !text);
   }
 
+  // A texted link with ?key=... stores the token and removes it from the address bar, so nobody types it.
+  let linkKey = "";
+  (function takeKeyFromLink() {
+    const url = new URL(location.href);
+    linkKey = (url.searchParams.get("key") || "").trim();
+    if (!linkKey) return;
+    try { localStorage.setItem("admin_token", linkKey); } catch {}
+    url.searchParams.delete("key");
+    history.replaceState(null, "", url.pathname + url.search + url.hash);
+  })();
+
   function token() {
-    let t = null;
-    try { t = sessionStorage.getItem("admin_token"); } catch {}
+    let t = linkKey;
+    if (!t) try { t = localStorage.getItem("admin_token") || ""; } catch {}
     if (!t) {
-      t = prompt("Admin token. Ask Therese if you do not have it.");
-      if (t) try { sessionStorage.setItem("admin_token", t); } catch {}
+      t = (prompt("Admin token. Ask Therese if you do not have it.") || "").trim();
+      if (t) try { localStorage.setItem("admin_token", t); } catch {}
     }
-    return t || "";
+    return t;
   }
 
   function forgetToken() {
-    try { sessionStorage.removeItem("admin_token"); } catch {}
+    linkKey = "";
+    try { localStorage.removeItem("admin_token"); } catch {}
   }
+
 
   async function api(method, path, body, admin) {
     const headers = { "content-type": "application/json" };

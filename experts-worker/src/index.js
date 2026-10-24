@@ -99,7 +99,7 @@ function safeEqual(a, b) {
 // Returns a Response when the request is not allowed, null when it is.
 function requireAdmin(request, env) {
   if (!env.ADMIN_TOKEN) return json({ error: "ADMIN_TOKEN is not set on this worker, so writes are locked." }, 503);
-  if (!safeEqual(request.headers.get("x-admin-token") ?? "", env.ADMIN_TOKEN)) return json({ error: "X-Admin-Token is missing or wrong." }, 401);
+  if (!safeEqual((request.headers.get("x-admin-token") ?? "").trim(), env.ADMIN_TOKEN)) return json({ error: "X-Admin-Token is missing or wrong." }, 401);
   return null;
 }
 
