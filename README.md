@@ -25,6 +25,11 @@ Submit > Review > Agent understands > Gap identified > Match found > Human appro
 
 Not sure where something goes? Read `CONTRIBUTING.md`. The pre-commit hook will tell you if you got it wrong.
 
+## Live
+
+- API (worker): https://api.sloppyornot.com. Try `/health`. Every merge to main deploys it automatically.
+- Site: sloppyornot.com, once Olivia's first page lands in `site/`.
+
 ## Run the tests
 
 From the repo root: `npm test`. No install needed. It checks every seed product against the schema and checks the demo pair.
