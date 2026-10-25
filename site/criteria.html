@@ -3,8 +3,92 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>How We Judge</title>
-<meta name="description" content="The criteria behind every Sloppy or Not verdict: six questions the agent answers from your site, eight questions you can answer yourself, and the checks we measure.">
+<title>How We Judge | Sloppy or Not</title>
+<meta name="description" content="The criteria behind every Sloppy or Not verdict: six questions the agent answers from your site, nine questions you can answer yourself, and the checks we measure.">
+<link rel="canonical" href="https://sloppyornot.com/criteria">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sloppy or Not">
+<meta property="og:title" content="How We Judge | Sloppy or Not">
+<meta property="og:description" content="The criteria behind every Sloppy or Not verdict: six questions the agent answers from your site, nine questions you can answer yourself, and the checks we measure.">
+<meta property="og:url" content="https://sloppyornot.com/criteria">
+<meta property="og:image" content="https://sloppyornot.com/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/assets/logo-slop.svg" type="image/svg+xml">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "FAQPage",
+   "@id": "https://sloppyornot.com/criteria#faq",
+   "url": "https://sloppyornot.com/criteria",
+   "isPartOf": {
+    "@id": "https://sloppyornot.com/#site"
+   },
+   "mainEntity": [
+    {
+     "@type": "Question",
+     "name": "What is Sloppy or Not?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Sloppy or Not is a free, educational tool that tells you whether a website, app, or software project built with AI is sloppy or not. You paste a live link and get one word back: Sloppy or Not."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "How does Sloppy or Not judge a project?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "First it measures: whether the page loads, how fast it is, whether people using screen readers can get through it, whether it works on a phone, whether it sends basic security headers, and whether it throws errors. Then Dot, the agent, answers six questions from your site. If you choose to answer them, nine questions about your own thinking count toward the verdict too."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Does Sloppy or Not show a score?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "No. Every project gets one word, Sloppy or Not. No number is ever shown to anyone."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "What questions does the builder answer?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Nine questions written by designer Olivia Dennehy, covering who the project is for, what changes if it works, who it could hurt or leave out, whether the look and tone fit its audience, what already exists, what is new, who it was tested with, where AI was used and overruled, and what the builder learned."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Do swipes from other people change my verdict?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "No. Swipes on the Judge screen feed the weekly State of Slop email. They never change a verdict."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Can my verdict change if I resubmit?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "No. Your first verdict for a link is saved, so submitting the same link again does not change it."
+     }
+    },
+    {
+     "@type": "Question",
+     "name": "Is Sloppy or Not free?",
+     "acceptedAnswer": {
+      "@type": "Answer",
+      "text": "Yes. It is free to use, open to everyone, and made for learning. The goal is better work, not shaming anyone."
+     }
+    }
+   ]
+  }
+ ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap">
@@ -43,19 +127,20 @@
   </section>
 
   <section class="card steps" style="flex-direction:column;gap:24px">
-    <p class="eyebrow">Eight questions only you can answer</p>
-    <div class="prose" style="font-size:18px"><p>Choose "Manually answer questions" and these count toward your verdict. The agent never writes these answers for you. Good answers can rescue a borderline site. They cannot rescue a broken one.</p></div>
+    <p class="eyebrow">Nine questions only you can answer</p>
+    <div class="prose" style="font-size:18px"><p>Choose "Manually answer questions" and these count toward your verdict. Dot, our agent, never writes these answers for you. Good answers can rescue a borderline site. They cannot rescue a broken one.</p></div>
     <table class="qtable">
       <thead><tr><th>#</th><th>Question</th><th>What we listen for</th></tr></thead>
       <tbody>
-        <tr><td>1</td><td>Who did you talk to or learn from about this problem, and what surprised you?</td><td>Named people, partners, or data. A surprise that changed the plan.</td></tr>
-        <tr><td>2</td><td>If this works, what changes for one specific person?</td><td>A concrete person and outcome, not "an app for X".</td></tr>
-        <tr><td>3</td><td>What could go wrong, and who would be hurt first?</td><td>Named risks and some plan for them.</td></tr>
-        <tr><td>4</td><td>What already exists, and why wasn't it enough? Why this approach over a simpler one?</td><td>Knowing the landscape. A specific gap. Tech that earns its place.</td></tr>
-        <tr><td>5</td><td>What's the first thing that would break if 1,000 people used this?</td><td>Honest limits.</td></tr>
-        <tr><td>6</td><td>What did you cut or simplify, and why?</td><td>Deliberate tradeoffs rather than accidents.</td></tr>
-        <tr><td>7</td><td>What did you learn and take away from building this?</td><td>Something specific that changed, not "we learned a lot about APIs."</td></tr>
-        <tr><td>8</td><td>What would you tell the next team attempting this?</td><td>A lesson that was actually absorbed.</td></tr>
+        <tr><td>1</td><td>Who is this for, and what problem are they facing?</td><td>A specific person and a real problem, not "everyone".</td></tr>
+        <tr><td>2</td><td>If this works perfectly, what changes for them?</td><td>A concrete outcome for that person, not "an app for X".</td></tr>
+        <tr><td>3</td><td>Who could this hurt or leave out, and what did you do about it?</td><td>Named risks and people left out, and what was done about them.</td></tr>
+        <tr><td>4</td><td>Does the way it looks and sounds fit the people it's for?</td><td>Design and tone chosen for the audience, not a default template.</td></tr>
+        <tr><td>5</td><td>What already exists in this space, and why isn't it enough?</td><td>Knowing the landscape. A specific gap.</td></tr>
+        <tr><td>6</td><td>What's the one thing here you haven't seen done before?</td><td>A fresh angle, even a small one, named plainly.</td></tr>
+        <tr><td>7</td><td>Who did you test it with, what did they say, and what did you change?</td><td>Real people, real feedback, and a change it caused.</td></tr>
+        <tr><td>8</td><td>Where did you use AI, and where did you step in and overrule it?</td><td>AI used with judgment, and a moment the builder overruled it.</td></tr>
+        <tr><td>9</td><td>What did you learn and take away from building this?</td><td>Something specific that changed, not "we learned a lot about APIs."</td></tr>
       </tbody>
     </table>
   </section>
@@ -65,13 +150,13 @@
     <div class="prose" style="font-size:18px">
       <p>Swipes from other people on the Judge screen. They feed the weekly State of Slop email, not your verdict.</p>
       <p>Roast me. It only decides whether your verdict may appear on the public board.</p>
-      <p>Resubmitting. Your first verdict for a link is saved. The same link never flips on a second try.</p>
+      <p>Resubmitting. Your first verdict for a link is saved, so submitting the same link again does not change it.</p>
     </div>
   </section>
 
   <div class="actions">
     <a href="/submit" class="pill pill-cyan"><img src="/assets/icon-plus.svg" alt="">Test my project</a>
-    <a href="/judge" class="pill pill-pink"><img src="/assets/icon-eye.svg" alt="">Judge other's projects</a>
+    <a href="/judge" class="pill pill-pink"><img src="/assets/icon-eye.svg" alt="">Judge others' projects</a>
   </div>
 
   <footer data-footer></footer>

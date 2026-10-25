@@ -46,7 +46,7 @@ If we run long, cut in this order: the Porchlight sentence in Jacky's block, the
 
 **Olivia, the turn (0:55):** "...wait. Nobody say anything. This one's actually good."
 
-**Olivia, human review (1:05):** "The agent does not decide what is good. People do. You paste a link. The agent answers six questions about the page, and you answer eight about the work. Then the room swipes: left for slop, right for not. You get one word, never a number, because we grade the product, not the person. People said they would use FloodWatch. Most of them did not get it at first look. That is its hole."
+**Olivia, human review (1:05):** "The agent does not decide what is good. People do. You paste a link. The agent answers six questions about the page, and you answer nine about the work. Then the room swipes: left for slop, right for not. You get one word, never a number, because we grade the product, not the person. People said they would use FloodWatch. Most of them did not get it at first look. That is its hole."
 
 **Jacky, checks and memory (1:45):** "Human taste is one signal. The machines are the other: does it load, is it fast, is it accessible, does it work on a phone. That data stays in the backend. You only ever see one word. And the agent remembers everything we tell it, including when we tell it no. In a minute I am going to tell it no, live."
 

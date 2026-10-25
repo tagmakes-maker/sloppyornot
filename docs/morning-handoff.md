@@ -13,7 +13,7 @@ Two prompts. Paste the first one into a fresh Claude Code session on this repo. 
 ## Prompt 1: rock out Sunday
 
 ```
-It's Sunday Oct 25, HarborHack demo day. Devpost is due at 4:00 PM and the live pitch is at 6:00 PM (5 min plus 3 min Q&A). I'm Therese. My lanes are agent/, docs/, seed/, and experts-worker/. Read CLAUDE.md, README.md, CONTRIBUTING.md, docs/morning-handoff.md, docs/pitch-demo-plan.md, and docs/community-impact.md first.
+It's Sunday Oct 25, HarborHack demo day. Devpost is due at 4:00 PM and the live pitch is at 5:00 PM (5 min plus 3 min Q&A). I'm Therese. My lanes are agent/, docs/, seed/, and experts-worker/. Read CLAUDE.md, README.md, CONTRIBUTING.md, docs/morning-handoff.md, docs/pitch-demo-plan.md, and docs/community-impact.md first.
 
 State as of 1 AM:
 - The site is live at https://sloppyornot-site.pages.dev (site/, PR #48). I'm moving sloppyornot.com from the API worker to the Pages project myself in the dashboard. Check that https://sloppyornot.com serves the site and https://api.sloppyornot.com/health still answers.

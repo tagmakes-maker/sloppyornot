@@ -1,0 +1,28 @@
+# Sloppy or Not
+
+> Sloppy or Not is a free, educational tool that tells you whether a website, app, or software project built with AI is sloppy or not. You paste a live link and get one word back: Sloppy or Not. No number is ever shown to anyone.
+
+Sloppy or Not was built in Charleston, SC, at HarborHacks, the Agent in the Loop hackathon hosted by Charleston Hacks, by AI Tech Girlfriends: Therese Grittner (agent intelligence, pitch, and demo; TaG Makes, https://tagmakessc.com), Olivia Dennehy (design, frontend, and UX), and Jacky Schuler (backend, storage, and agent runtime).
+
+How a project is judged:
+
+- Measured checks come first: whether the page loads, page speed, accessibility, whether it works on a phone, basic security headers, and errors. A site that does not load is Sloppy.
+- Dot, the Sloppy or Not agent, answers six questions from the live site, such as whether a stranger can tell what it does from the first screen and whether its claims match the page.
+- The builder can answer nine questions about their thinking, written by designer Olivia Dennehy. Good answers can rescue a borderline site. They cannot rescue a broken one. Dot never writes these answers.
+- Swipes from other people feed the weekly State of Slop email and never change a verdict.
+- A project's first verdict is saved. Resubmitting the same link does not change it.
+- Verdicts are not published unless the builder opts in with "Roast me."
+
+Sloppy or Not also feeds Gituationship, where a persistent agent finds what a good product is missing, proposes a partner product that fills the gap, and waits for a human to approve every match.
+
+## Pages
+
+- [Home](https://sloppyornot.com/): what Sloppy or Not is and how to start.
+- [How we judge](https://sloppyornot.com/criteria): the measured checks, Dot's six questions, and the nine builder questions.
+- [About](https://sloppyornot.com/about): the project, who it is for, credits, and the privacy policy.
+- [Enter your project](https://sloppyornot.com/submit): submit a live link and get a verdict.
+- [Judge projects](https://sloppyornot.com/judge): swipe on other people's projects, left for slop and right for not.
+
+## Optional
+
+- [Source code](https://github.com/tagmakes-maker/sloppyornot): the site, the worker API, the agent prompts, and the scoring rules.

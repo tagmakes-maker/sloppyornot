@@ -383,14 +383,15 @@ const AI_QUESTIONS = [
 ].map((question, i) => ({ id: "A" + (i + 1), question }));
 
 const HUMAN_QUESTIONS = [
-  "Who did you talk to or learn from about this problem, and what surprised you?",
-  "If this works, what changes for one specific person?",
-  "What could go wrong, and who would be hurt first?",
-  "What already exists, and why wasn't it enough? Why this approach over a simpler one?",
-  "What's the first thing that would break if 1,000 people used this?",
-  "What did you cut or simplify, and why?",
+  "Who is this for, and what problem are they facing?",
+  "If this works perfectly, what changes for them?",
+  "Who could this hurt or leave out, and what did you do about it?",
+  "Does the way it looks and sounds fit the people it's for?",
+  "What already exists in this space, and why isn't it enough?",
+  "What's the one thing here you haven't seen done before?",
+  "Who did you test it with, what did they say, and what did you change?",
+  "Where did you use AI, and where did you step in and overrule it?",
   "What did you learn and take away from building this?",
-  "What would you tell the next team attempting this?",
 ].map((question, i) => ({ id: i + 1, question }));
 
 // every new judgment is a paid Claude call, so cap them.
@@ -939,7 +940,8 @@ async function handleJudgeAnswers(id, request, env) {
   const now = new Date().toISOString();
   judge.lane = 2;
   judge.human_answers = humanAnswers;
-  judge.human_score = round1(humanAnswers.reduce((sum, a) => sum + a.score, 0) * 1.25);
+  // nine answers, 0 to 5 each, scaled to 50 (docs/scoring.md)
+  judge.human_score = round1(humanAnswers.reduce((sum, a) => sum + a.score, 0) * 50 / (HUMAN_QUESTIONS.length * 5));
   judge.total = round1(judge.ai_score / 2 + judge.human_score);
   judge.verdict = verdictFor(judge);
   judge.answered_at = now;
@@ -1049,11 +1051,16 @@ async function handleVote(id, request, env) {
   const body = await readObject(request);
   if (!body || (body.vote !== "slop" && body.vote !== "not")) return json({ error: 'vote must be "slop" or "not"' }, 400);
 
+  // one key per swipe, so a room swiping the same card at once never loses a vote
+  const at = new Date().toISOString();
+  await env.STORE.put("vote:" + id + ":" + at + ":" + crypto.randomUUID().slice(0, 8), JSON.stringify({ vote: body.vote, at }));
+
+  // running tally, best effort: KV is last write wins, so count from the vote: keys when it matters
   const key = "votes:" + id;
   const votes = (await env.STORE.get(key, "json")) || { slop: 0, not: 0, list: [] };
   votes[body.vote] += 1;
-  votes.list.push({ vote: body.vote, at: new Date().toISOString() });
-  await env.STORE.put(key, JSON.stringify(votes));
+  votes.list.push({ vote: body.vote, at });
+  try { await env.STORE.put(key, JSON.stringify(votes)); } catch {}
   return json({ ok: true });
 }
 

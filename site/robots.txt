@@ -1,0 +1,22 @@
+# Sloppy or Not. Search engines and AI assistants are welcome.
+User-agent: *
+Allow: /
+Disallow: /pitch/
+Disallow: /gituationship/
+
+User-agent: GPTBot
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: ClaudeBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: Bingbot
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /pitch/
+Disallow: /gituationship/
+
+Sitemap: https://sloppyornot.com/sitemap.xml

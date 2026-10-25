@@ -14,7 +14,7 @@ npm run dev              # http://localhost:8787/health, with a local copy of th
 
 ## Deploy
 
-Every merge to main deploys the live worker at https://api.sloppyornot.com automatically, about a minute later. Work on a branch and merge only code that runs. After a merge, `bash scripts/run-loop-11.sh` checks that the core loop still works.
+Every merge to main deploys the live worker at https://api.sloppyornot.com automatically, about a minute later. Work on a branch and merge only code that runs.
 
 ```
 npm run secret           # once; sets ANTHROPIC_API_KEY on the deployed worker
@@ -113,13 +113,13 @@ The full spec is docs/build-judge-routes.md. No route ever returns a score. The 
 
 **`POST /judge`** with `{ url, by?, roast_me?, description? }`. Judging takes about 20 to 60 seconds, so show the loading animation. Returns `{ id, verdict, card, ai_answers, human_questions }`, where `verdict` is `"Sloppy"` or `"Not"` and `ai_answers` are `[{ id, question, evidence }]` with no scores. Returns `{ needs_description: true }` when the page has too little text. Send the same request again with a one-line `description`. The same URL always returns its first verdict. A 429 means the cap on new judgments was hit, and its `error` says so.
 
-**`POST /judge/:id/answers`** with `{ answers: [{ id, answer }] }` for the eight human questions. Returns `{ id, verdict }`. Answers count once.
+**`POST /judge/:id/answers`** with `{ answers: [{ id, answer }] }` for the nine human questions. Returns `{ id, verdict }`. Answers count once.
 
 **`POST /judge/:id/email`** with `{ email, share_with_match? }` signs the owner up for the weekly State of Slop email. Nothing is sent yet. When `share_with_match` is true, the email is also saved for an approved match partner (`GET /matches/:id/contact`). The newsletter signup alone is not consent to share it. Returns only `{ ok: true }`, never any stored email. `POST /judge` accepts the same two fields.
 
 **`GET /projects`** returns every card: `[{ id, name, url, by, thumb_url, likes_and_goals, brings }]`. **`GET /projects/next?seen=a,b`** returns one card not in `seen`, or `{ done: true }`.
 
-**`POST /projects/:id/vote`** with `{ vote: "slop" }` or `{ vote: "not" }`. Returns `{ ok: true }`. Counts are never returned.
+**`POST /projects/:id/vote`** with `{ vote: "slop" }` or `{ vote: "not" }`. Returns `{ ok: true }`. Counts are never returned. Each swipe is saved as its own `vote:<id>:<time>:<rand>` key, so simultaneous swipes are never lost. `votes:<id>` keeps a running tally, but KV is last write wins, so count the `vote:` keys for the real number.
 
 **`GET /projects/:id/thumb`** returns the thumbnail image, or 404. Use `thumb_url` from the card, prefixed with the base URL.
 

@@ -96,14 +96,15 @@ const SAMPLE_PROJECTS = [
 ];
 
 const HUMAN_QUESTIONS = [
-  "Who did you talk to or learn from about this problem, and what surprised you?",
-  "If this works, what changes for one specific person?",
-  "What could go wrong, and who would be hurt first?",
-  "What already exists, and why wasn't it enough? Why this approach over a simpler one?",
-  "What's the first thing that would break if 1,000 people used this?",
-  "What did you cut or simplify, and why?",
+  "Who is this for, and what problem are they facing?",
+  "If this works perfectly, what changes for them?",
+  "Who could this hurt or leave out, and what did you do about it?",
+  "Does the way it looks and sounds fit the people it's for?",
+  "What already exists in this space, and why isn't it enough?",
+  "What's the one thing here you haven't seen done before?",
+  "Who did you test it with, what did they say, and what did you change?",
+  "Where did you use AI, and where did you step in and overrule it?",
   "What did you learn and take away from building this?",
-  "What would you tell the next team attempting this?",
 ].map((question, i) => ({ id: i + 1, question }));
 
 const AI_QUESTIONS = [
