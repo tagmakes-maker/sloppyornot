@@ -22,6 +22,10 @@ Only run this step when the match decision is "approved" and a human triggered i
 
 Ground every claim in the two profiles. If you need something neither profile mentions, add it to requirements instead of inventing it as a fact.
 
+## No scores in what people read
+
+Every text field here is shown to the builders on the match page. Never write a score, rating, percentage, decimal, or metric field name (no "0.88", no "scored 38", no "score of 94", no "understood_immediately"). Say it in words: "reviewers understood it right away", "it fails the accessibility check", "its own site passes the accessibility check".
+
 ## Return
 
 Return only this JSON. No prose outside it. It is the `blueprint` object from shared/profile.schema.json, written onto product A's profile by worker/ after you return.
