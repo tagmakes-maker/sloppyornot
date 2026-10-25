@@ -283,9 +283,20 @@ async function handlePropose(id, env) {
   return json(result);
 }
 
+// Sloppy or Not scores never go public (docs/build-judge-routes.md), so the public log drops them.
+// The stored log keeps them for the agent's memory.
+const PRIVATE_SCORES = { judge: "ai_answers", "score-answers": "human_answers" };
+
+function hideScores(entry) {
+  const field = PRIVATE_SCORES[entry.step];
+  const list = field && entry.result?.[field];
+  if (!Array.isArray(list)) return entry;
+  return { ...entry, result: { ...entry.result, [field]: list.map(({ score, ...rest }) => rest) } };
+}
+
 async function handleAgentLog(env) {
   const log = (await env.STORE.get("agentlog", "json")) || [];
-  return json(log);
+  return json(log.map(hideScores));
 }
 
 // ---- Issue #10: approvals ----
