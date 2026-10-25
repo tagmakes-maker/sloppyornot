@@ -35,7 +35,8 @@ if [ "$(cat "$TMP/names.json")" != "[]" ]; then
   BACKUP="$HOME/sloppyornot-backups/$(date +%Y-%m-%d-%H%M%S)"
   mkdir -p "$BACKUP"
   python3 -I -c "import json,sys; print('\n'.join(json.load(open(sys.argv[1]))))" "$TMP/names.json" | while read -r KEY; do
-    npx wrangler kv key get "$KEY" --namespace-id "$NS" --remote --text < /dev/null > "$BACKUP/$KEY.json"
+    # url:<link> keys hold slashes, which a file name cannot
+    npx wrangler kv key get "$KEY" --namespace-id "$NS" --remote --text < /dev/null > "$BACKUP/$(printf '%s' "$KEY" | tr '/' '_').json"
   done
   echo "Backed up $(ls "$BACKUP" | wc -l) keys to $BACKUP"
 

@@ -357,6 +357,490 @@ async function handleContact(id, env) {
   return json({ product_id: proposal.product_id, email: contact.email });
 }
 
+// ---- Issue #40: Sloppy or Not judge ----
+// Spec: docs/build-judge-routes.md. Math: docs/scoring.md, "Sloppy or Not verdict".
+// Scores live in judge:<id> and never leave the worker. The only verdicts made public are on /ridicule.
+
+// from agent/judging-questions.md
+const AI_QUESTIONS = [
+  "Can a stranger tell what this does and who it is for from the first screen?",
+  "Does it actually do the thing, or only promise it?",
+  "Would you recognize it a week later, or does it look like a template?",
+  "Was the copy written by someone who cares?",
+  "Can you reach the core action without hitting a dead end?",
+  "Do the claims match what is on the page?",
+].map((question, i) => ({ id: "A" + (i + 1), question }));
+
+const HUMAN_QUESTIONS = [
+  "Who did you talk to or learn from about this problem, and what surprised you?",
+  "If this works, what changes for one specific person?",
+  "What could go wrong, and who would be hurt first?",
+  "What already exists, and why wasn't it enough? Why this approach over a simpler one?",
+  "What's the first thing that would break if 1,000 people used this?",
+  "What did you cut or simplify, and why?",
+  "What did you learn and take away from building this?",
+  "What would you tell the next team attempting this?",
+].map((question, i) => ({ id: i + 1, question }));
+
+// every new judgment is a paid Claude call, so cap them.
+// The demo room shares one wifi address, so the per-network cap is generous.
+const JUDGE_LIMIT_PER_IP_HOUR = 30;
+const JUDGE_LIMIT_PER_DAY = 200;
+
+async function overJudgeLimit(request, env) {
+  const ip = request.headers.get("cf-connecting-ip") || "unknown";
+  const now = new Date().toISOString();
+  const hourKey = "limit:ip:" + ip + ":" + now.slice(0, 13);
+  const dayKey = "limit:day:" + now.slice(0, 10);
+  const [ipCount, dayCount] = await Promise.all([hourKey, dayKey].map(async (k) => Number(await env.STORE.get(k)) || 0));
+  if (ipCount >= JUDGE_LIMIT_PER_IP_HOUR || dayCount >= JUDGE_LIMIT_PER_DAY) return true;
+  // a failed count never blocks a judgment
+  try {
+    await Promise.all([
+      env.STORE.put(hourKey, String(ipCount + 1), { expirationTtl: 7200 }),
+      env.STORE.put(dayKey, String(dayCount + 1), { expirationTtl: 172800 }),
+    ]);
+  } catch {}
+  return false;
+}
+
+// lowercase host, no trailing slash, query, or hash. null if it is not an http or https link.
+function normalizeJudgeUrl(raw) {
+  let u;
+  try { u = new URL(String(raw || "").trim()); } catch { return null; }
+  if (u.protocol !== "https:" && u.protocol !== "http:") return null;
+  if (!u.hostname.includes(".")) return null;
+  return u.protocol + "//" + u.host.toLowerCase() + u.pathname.replace(/\/+$/, "");
+}
+
+// follow at most 3 redirects by hand so every hop is checked to be http or https.
+// TODO: same known limit as handleCheck. Where the url points is not checked.
+async function fetchPage(url) {
+  let target = url;
+  for (let hop = 0; hop <= 3; hop++) {
+    const u = new URL(target);
+    if (u.protocol !== "https:" && u.protocol !== "http:") return null;
+    const r = await fetch(u, { redirect: "manual", signal: AbortSignal.timeout(10000) });
+    const next = r.headers.get("location");
+    if (r.status >= 300 && r.status < 400 && next) {
+      target = new URL(next, u).href;
+      continue;
+    }
+    return { res: r, finalUrl: u.href };
+  }
+  return null;
+}
+
+function tagAttrs(tag) {
+  const out = {};
+  for (const m of tag.matchAll(/([a-zA-Z:-]+)\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/g)) {
+    out[m[1].toLowerCase()] = m[2] ?? m[3] ?? m[4];
+  }
+  return out;
+}
+
+function decodeEntities(s) {
+  return s.replace(/&(#\d+|#x[0-9a-f]+|[a-z]+);/gi, (m, e) => {
+    if (e[0] === "#") {
+      const n = /^#x/i.test(e) ? parseInt(e.slice(2), 16) : Number(e.slice(1));
+      return n > 0 && n <= 0x10ffff ? String.fromCodePoint(n) : " ";
+    }
+    return { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: " " }[e.toLowerCase()] ?? m;
+  });
+}
+
+const stripTags = (s) => decodeEntities(s.replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ").trim();
+
+// the page in the shape agent/prompts/judge.md expects, plus the viewport tag and og:image
+function parsePage(html, baseUrl) {
+  const metas = [...html.matchAll(/<meta\b[^>]*>/gi)].map((m) => tagAttrs(m[0]));
+  const meta = (key) => metas.find((a) => (a.name || a.property || "").toLowerCase() === key)?.content;
+
+  const links = [];
+  for (const m of html.matchAll(/<a\b([^>]*)>([\s\S]*?)<\/a>/gi)) {
+    if (links.length >= 40) break;
+    const href = tagAttrs(m[1]).href;
+    if (!href || /^(javascript|mailto|tel):/i.test(href)) continue;
+    try { links.push({ text: stripTags(m[2]).slice(0, 80), href: new URL(decodeEntities(href), baseUrl).href }); } catch {}
+  }
+
+  const body = html
+    .replace(/<head\b[\s\S]*?<\/head>/i, " ")
+    .replace(/<(script|style|noscript|svg|template)\b[\s\S]*?<\/\1>/gi, " ");
+  const words = stripTags(body).split(" ").filter(Boolean);
+
+  let image = meta("og:image") || meta("twitter:image") || null;
+  try { image = image ? new URL(decodeEntities(image), baseUrl).href : null; } catch { image = null; }
+
+  return {
+    page: {
+      title: stripTags(html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] || ""),
+      meta_description: decodeEntities(meta("description") || meta("og:description") || "").trim(),
+      text: words.slice(0, 6000).join(" "),
+      links,
+      rendered: false,
+    },
+    viewport: !!meta("viewport"),
+    image,
+  };
+}
+
+// performance and accessibility from PageSpeed Insights, 50 for both if it fails
+async function pageSpeed(url, env) {
+  const api = new URL("https://www.googleapis.com/pagespeedonline/v5/runPagespeed");
+  api.searchParams.set("url", url);
+  api.searchParams.append("category", "performance");
+  api.searchParams.append("category", "accessibility");
+  api.searchParams.set("strategy", "mobile");
+  if (env.PAGESPEED_API_KEY) api.searchParams.set("key", env.PAGESPEED_API_KEY);
+  try {
+    const r = await fetch(api, { signal: AbortSignal.timeout(30000) });
+    if (!r.ok) throw new Error("status " + r.status);
+    const c = (await r.json()).lighthouseResult?.categories || {};
+    const perf = c.performance?.score;
+    const acc = c.accessibility?.score;
+    if (typeof perf !== "number" || typeof acc !== "number") throw new Error("no scores in the reply");
+    return { performance: Math.round(perf * 100), accessibility: Math.round(acc * 100), note: null };
+  } catch (e) {
+    return { performance: 50, accessibility: 50, note: "PageSpeed failed, used 50 for both: " + e.message };
+  }
+}
+
+// the og:image as thumbnail bytes, PNG or JPEG only
+// TODO: same known limit as fetchPage. Where the image url points is not checked.
+const THUMB_TYPES = ["image/jpeg", "image/png"];
+
+async function fetchThumb(imageUrl) {
+  if (!imageUrl) return null;
+  try {
+    const u = new URL(imageUrl);
+    if (u.protocol !== "https:" && u.protocol !== "http:") return null;
+    const r = await fetch(u, { signal: AbortSignal.timeout(10000) });
+    const type = (r.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
+    if (!r.ok || !THUMB_TYPES.includes(type)) return null;
+    const bytes = await r.arrayBuffer();
+    if (bytes.byteLength === 0 || bytes.byteLength > 5000000) return null;
+    return { bytes, contentType: type };
+  } catch {
+    return null;
+  }
+}
+
+const round1 = (n) => Math.round(n * 10) / 10;
+const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
+
+// the measured 40 points of the AI score
+function measuredPoints(c) {
+  return (c.loads ? 10 : 0)
+    + Math.min(8, (c.performance || 0) * 0.08)
+    + Math.min(8, (c.accessibility || 0) * 0.08)
+    + (c.mobile_ok ? 6 : 0)
+    + (c.security_headers ? 4 : 0)
+    + (c.console_errors === 0 ? 4 : 0);
+}
+
+function verdictFor(j) {
+  if (j.automated_checks?.loads === false) return "Sloppy";
+  if (j.lane === 2) {
+    if (j.ai_score / 2 < 30) return "Sloppy";
+    return j.total >= 70 ? "Not" : "Sloppy";
+  }
+  return j.ai_score >= 70 ? "Not" : "Sloppy";
+}
+
+// the five review metrics from the AI answers, on the swipe scale, so these projects can be matched
+function agentReview(aiAnswers) {
+  const s = (id) => aiAnswers.find((a) => a.id === id).score;
+  return {
+    understood_immediately: s("A1") / 10,
+    would_use: s("A2") / 10,
+    feels_distinctive: s("A3") / 10,
+    easy_to_use: s("A5") / 10,
+    looks_like_slop: 1 - (s("A3") + s("A4")) / 20,
+  };
+}
+
+// the weakness rules at the top of docs/scoring.md
+function weaknessTags(r, c) {
+  const tags = [];
+  if (r.understood_immediately < 0.5) tags.push("onboarding");
+  if (r.easy_to_use < 0.5) tags.push("ux");
+  if (r.would_use < 0.5) tags.push("value-prop");
+  if (r.feels_distinctive < 0.5) tags.push("differentiation");
+  if (r.looks_like_slop >= 0.5) tags.push("polish");
+  if (c.loads === false || c.console_errors > 0) tags.push("reliability");
+  if (c.performance < 50) tags.push("performance");
+  if (c.accessibility < 50) tags.push("accessibility");
+  if (c.mobile_ok === false) tags.push("mobile");
+  if (c.security_headers === false) tags.push("security");
+  return tags;
+}
+
+// a slug from the host, for example floodwatch-chs-pages-dev, with a short suffix if taken
+async function newJudgeId(url, env) {
+  const host = new URL(url).hostname.replace(/^www\./, "");
+  const base = host.replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60) || "project";
+  if (!(await env.STORE.get("product:" + base)) && !(await env.STORE.get("judge:" + base))) return base;
+  for (let i = 0; i < 5; i++) {
+    const id = base + "-" + Math.random().toString(36).slice(2, 6);
+    if (!(await env.STORE.get("product:" + id)) && !(await env.STORE.get("judge:" + id))) return id;
+  }
+  throw new Error("could not make a unique id for " + host);
+}
+
+// what POST /judge returns. ai_answers keep their evidence and lose their scores.
+function judgeResult(id, judge, card) {
+  return {
+    id,
+    verdict: judge.verdict,
+    card: card || null,
+    ai_answers: (judge.ai_answers || []).map(({ id, question, evidence }) => ({ id, question, evidence })),
+    human_questions: HUMAN_QUESTIONS,
+  };
+}
+
+async function handleJudge(request, env) {
+  const body = await readObject(request);
+  if (!body) return json({ error: "body must be a JSON object" }, 400);
+
+  const url = normalizeJudgeUrl(body.url);
+  if (!url) return json({ error: "url must be a full link that starts with http:// or https://" }, 400);
+
+  // the first verdict for a url is final, so a second submission never rejudges it
+  const known = await env.STORE.get("url:" + url);
+  if (known) {
+    const [judge, card] = await Promise.all([env.STORE.get("judge:" + known, "json"), env.STORE.get("card:" + known, "json")]);
+    if (judge) return json(judgeResult(known, judge, card));
+  }
+
+  if (await overJudgeLimit(request, env)) {
+    return json({ error: "Too many new projects were judged from your network. Try again in an hour." }, 429);
+  }
+
+  // the card shows "@" + by, and GET /projects must never contain "@"
+  const by = String(body.by || "").replace(/@/g, "").trim().slice(0, 40) || "anonymous";
+  const now = new Date().toISOString();
+
+  let fetched = null;
+  try { fetched = await fetchPage(url); } catch {}
+  const res = fetched?.res;
+  const loads = !!res && res.ok;
+  const isHtml = /html/i.test(res?.headers.get("content-type") || "");
+  const html = loads && isHtml ? (await res.text()).slice(0, 2000000) : "";
+  const { page, viewport, image } = parsePage(html, fetched?.finalUrl || url);
+  if (typeof body.description === "string" && body.description.trim()) {
+    page.text = (page.text + " " + body.description.trim().slice(0, 500)).trim();
+  }
+
+  const ps = await pageSpeed(url, env);
+  const checks = {
+    loads,
+    performance: ps.performance,
+    accessibility: ps.accessibility,
+    mobile_ok: viewport,
+    security_headers: !!res && (res.headers.has("content-security-policy") || res.headers.has("strict-transport-security")),
+    console_errors: 0,
+    checked_at: now,
+  };
+
+  // a page that does not load is Sloppy with no agent call. The schema needs fields only the agent writes,
+  // so it gets no profile or card and never shows on the Judge screen.
+  if (!loads) {
+    const id = await newJudgeId(url, env);
+    const judge = {
+      url, lane: 1, ai_answers: [], agent_review: null, automated_checks: checks, ai_score: round1(measuredPoints(checks)),
+      human_answers: null, human_score: null, total: null, verdict: "Sloppy", judged_at: now,
+      pagespeed_note: ps.note, fetch_status: res ? res.status : null,
+    };
+    judge.total = judge.ai_score;
+    await env.STORE.put("judge:" + id, JSON.stringify(judge));
+    await env.STORE.put("url:" + url, id);
+    return json(judgeResult(id, judge, null));
+  }
+
+  const reply = await runAgent("judge", { url, page, automated_checks: checks }, env);
+  // TODO: retry once with Browser Rendering before asking, once CF_BROWSER_TOKEN is set
+  if (reply.enough_content === false) return json({ needs_description: true });
+
+  // a reply without all six scores is an error, not a zero, so a site is never Sloppy by accident
+  const aiAnswers = AI_QUESTIONS.map(({ id, question }) => {
+    const a = (Array.isArray(reply.ai_answers) ? reply.ai_answers : []).find((x) => x && x.id === id);
+    const score = Number(a?.score);
+    if (!a || !Number.isFinite(score)) throw new Error("the judge reply has no score for " + id + ". Try again.");
+    return { id, question, score: clamp(score, 0, 10), evidence: String(a.evidence || "") };
+  });
+
+  const id = await newJudgeId(url, env);
+  const review = agentReview(aiAnswers);
+  const aiScore = round1(measuredPoints(checks) + aiAnswers.reduce((sum, a) => sum + a.score, 0));
+  const judge = {
+    url, lane: 1, ai_answers: aiAnswers, agent_review: review, automated_checks: checks, ai_score: aiScore,
+    human_answers: null, human_score: null, total: aiScore, verdict: null, judged_at: now,
+    pagespeed_note: ps.note,
+  };
+  judge.verdict = verdictFor(judge);
+
+  // the Product Profile, with only schema fields, fallbacks, and length caps so it always validates
+  const p = reply.profile || {};
+  const capabilities = (Array.isArray(p.capabilities) ? p.capabilities : [])
+    .map((c) => String(c).trim().toLowerCase()).filter(Boolean).slice(0, 12);
+  const profile = {
+    id,
+    name: String(p.name || page.title || new URL(url).hostname).trim().slice(0, 80),
+    url,
+    builder: by,
+    what_it_does: String(p.what_it_does || page.meta_description || "Not stated on the page.").trim().slice(0, 400),
+    target_user: String(p.target_user || "Not stated on the page.").trim().slice(0, 200),
+    capabilities: capabilities.length ? capabilities : ["website"],
+    automated_checks: checks,
+    weaknesses: weaknessTags(review, checks),
+    agent_observations: [{ at: now, note: String(reply.observation || "Judged from the submitted page."), source: "submission" }],
+    match_status: "unmatched",
+    consent: { roast_me: body.roast_me === true },
+    status: "submitted",
+    created_at: now,
+    updated_at: now,
+  };
+
+  // the card shows exactly three features
+  const card = {
+    likes_and_goals: String(reply.card?.likes_and_goals || "").trim(),
+    brings: (Array.isArray(reply.card?.brings) ? reply.card.brings : []).map((b) => String(b).trim()).filter(Boolean).slice(0, 3),
+  };
+
+  await Promise.all([
+    env.STORE.put("product:" + id, JSON.stringify(profile)),
+    env.STORE.put("judge:" + id, JSON.stringify(judge)),
+    env.STORE.put("card:" + id, JSON.stringify(card)),
+  ]);
+
+  const thumb = await fetchThumb(image);
+  if (thumb) await env.STORE.put("thumb:" + id, thumb.bytes, { metadata: { contentType: thumb.contentType } });
+  // the url key goes last, so a half-saved judgment is never reused
+  await env.STORE.put("url:" + url, id);
+
+  return json(judgeResult(id, judge, card));
+}
+
+async function handleJudgeAnswers(id, request, env) {
+  const judge = await env.STORE.get("judge:" + id, "json");
+  if (!judge) return json({ error: "not found" }, 404);
+
+  // answers count once
+  if (judge.lane === 2) return json({ id, verdict: judge.verdict });
+  if (judge.automated_checks?.loads === false) return json({ id, verdict: "Sloppy" });
+
+  const body = await readObject(request);
+  if (!body || !Array.isArray(body.answers)) return json({ error: "answers must be a list" }, 400);
+
+  const profile = await env.STORE.get("product:" + id, "json");
+  if (!profile) return json({ error: "not found" }, 404);
+
+  const answers = HUMAN_QUESTIONS.map(({ id: qid, question }) => {
+    const a = body.answers.find((x) => x && Number(x.id) === qid);
+    return { id: qid, question, answer: String(a?.answer || "").trim().slice(0, 2000) };
+  });
+
+  const reply = await runAgent("score-answers", { profile, answers }, env);
+
+  // a blank answer scores 0 whatever the agent says
+  const humanAnswers = answers.map(({ id: qid, answer }) => {
+    const h = (Array.isArray(reply.human_answers) ? reply.human_answers : []).find((x) => x && Number(x.id) === qid);
+    const score = Number(h?.score);
+    return { id: qid, answer, score: answer && Number.isFinite(score) ? clamp(score, 0, 5) : 0, why: String(h?.why || "") };
+  });
+
+  const now = new Date().toISOString();
+  judge.lane = 2;
+  judge.human_answers = humanAnswers;
+  judge.human_score = round1(humanAnswers.reduce((sum, a) => sum + a.score, 0) * 1.25);
+  judge.total = round1(judge.ai_score / 2 + judge.human_score);
+  judge.verdict = verdictFor(judge);
+  judge.answered_at = now;
+
+  if (reply.observation) {
+    profile.agent_observations = profile.agent_observations || [];
+    profile.agent_observations.push({ at: now, note: String(reply.observation), source: "submission" });
+  }
+  profile.updated_at = now;
+
+  await Promise.all([
+    env.STORE.put("judge:" + id, JSON.stringify(judge)),
+    env.STORE.put("product:" + id, JSON.stringify(profile)),
+  ]);
+  return json({ id, verdict: judge.verdict });
+}
+
+// one public card. No verdict, no scores, no email.
+function projectCard(id, profile, card, hasThumb) {
+  return {
+    id,
+    name: profile.name,
+    url: profile.url || null,
+    by: profile.builder || "anonymous",
+    thumb_url: hasThumb ? "/projects/" + encodeURIComponent(id) + "/thumb" : null,
+    likes_and_goals: card.likes_and_goals,
+    brings: card.brings,
+  };
+}
+
+async function loadCard(id, hasThumb, env) {
+  const [profile, card] = await Promise.all([env.STORE.get("product:" + id, "json"), env.STORE.get("card:" + id, "json")]);
+  return profile && card ? projectCard(id, profile, card, hasThumb) : null;
+}
+
+async function cardIdsAndThumbs(env) {
+  const [cards, thumbs] = await Promise.all([env.STORE.list({ prefix: "card:" }), env.STORE.list({ prefix: "thumb:" })]);
+  return {
+    ids: cards.keys.map((k) => k.name.slice("card:".length)),
+    thumbs: new Set(thumbs.keys.map((k) => k.name.slice("thumb:".length))),
+  };
+}
+
+async function handleGetProjects(env) {
+  const { ids, thumbs } = await cardIdsAndThumbs(env);
+  const cards = await Promise.all(ids.map((id) => loadCard(id, thumbs.has(id), env)));
+  return json(cards.filter(Boolean));
+}
+
+// the first card the judge has not seen. Never a 404, because the site reads 404 as "not live yet".
+async function handleNextProject(url, env) {
+  const seen = new Set((url.searchParams.get("seen") || "").split(",").map((s) => s.trim()).filter(Boolean));
+  const { ids, thumbs } = await cardIdsAndThumbs(env);
+  for (const id of ids.filter((id) => !seen.has(id))) {
+    const card = await loadCard(id, thumbs.has(id), env);
+    if (card) return json(card);
+  }
+  return json({ done: true });
+}
+
+async function handleThumb(id, env) {
+  const { value, metadata } = await env.STORE.getWithMetadata("thumb:" + id, "arrayBuffer");
+  if (!value) return json({ error: "not found" }, 404);
+  return new Response(value, {
+    headers: {
+      "content-type": metadata?.contentType || "image/jpeg",
+      "cache-control": "public, max-age=86400",
+      ...CORS,
+    },
+  });
+}
+
+// binary Judge screen votes. Counts are never returned; they feed the State of Slop email, not the verdict.
+async function handleVote(id, request, env) {
+  if (!(await env.STORE.get("card:" + id))) return json({ error: "not found" }, 404);
+
+  const body = await readObject(request);
+  if (!body || (body.vote !== "slop" && body.vote !== "not")) return json({ error: 'vote must be "slop" or "not"' }, 400);
+
+  const key = "votes:" + id;
+  const votes = (await env.STORE.get(key, "json")) || { slop: 0, not: 0, list: [] };
+  votes[body.vote] += 1;
+  votes.list.push({ vote: body.vote, at: new Date().toISOString() });
+  await env.STORE.put(key, JSON.stringify(votes));
+  return json({ ok: true });
+}
+
 // ---- Worker entry ----
 
 export default {
@@ -418,6 +902,27 @@ export default {
       try { return await handleReject(rejectMatch[1], request, env); }
       catch (e) { return json({ error: e.message }, 500); }
     }
+
+    // Issue #40: Sloppy or Not judge
+    if (path === "/judge" && method === "POST") {
+      try { return await handleJudge(request, env); }
+      catch (e) { return json({ error: e.message }, 500); }
+    }
+
+    const answersMatch = path.match(/^\/judge\/([^\/]+)\/answers$/);
+    if (answersMatch && method === "POST") {
+      try { return await handleJudgeAnswers(answersMatch[1], request, env); }
+      catch (e) { return json({ error: e.message }, 500); }
+    }
+
+    if (path === "/projects" && method === "GET") return handleGetProjects(env);
+    if (path === "/projects/next" && method === "GET") return handleNextProject(url, env);
+
+    const thumbMatch = path.match(/^\/projects\/([^\/]+)\/thumb$/);
+    if (thumbMatch && method === "GET") return handleThumb(thumbMatch[1], env);
+
+    const voteMatch = path.match(/^\/projects\/([^\/]+)\/vote$/);
+    if (voteMatch && method === "POST") return handleVote(voteMatch[1], request, env);
 
     return json({ error: "not found", path }, 404);
   },

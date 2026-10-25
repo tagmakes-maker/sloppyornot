@@ -1,6 +1,6 @@
 # worker/ (Jacky)
 
-Cloudflare Worker. Plain JS. One KV namespace. Spec is GitHub issues #7 to #10.
+Cloudflare Worker. Plain JS. One KV namespace. Spec is GitHub issues #7 to #10, plus #40 (docs/build-judge-routes.md) for the Sloppy or Not judge.
 
 ## Start here
 
@@ -9,22 +9,24 @@ cd worker
 npm install
 # KV namespace STORE already exists and its id is in wrangler.toml. Do not run kv:create.
 cp ../.env.example .dev.vars   # fill in ANTHROPIC_API_KEY for local dev
-npm run dev              # http://localhost:8787/health
+npm run dev              # http://localhost:8787/health, with a local copy of the data
 ```
 
 ## Deploy
 
+Every merge to main deploys the live worker at https://api.sloppyornot.com automatically, about a minute later. Work on a branch and merge only code that runs. After a merge, `bash scripts/run-loop-11.sh` checks that the core loop still works.
+
 ```
 npm run secret           # once; sets ANTHROPIC_API_KEY on the deployed worker
-npm run deploy           # prints the workers.dev URL
 ```
 
-## Routes (build in this order)
+## Routes
 
 - #7  POST /products, GET /products, GET /products/:id
-- #8  POST /products/:id/review
+- #8  POST /products/:id/review, POST /products/:id/check
 - #9  POST /agent/observe/:id, POST /agent/find-gap/:id, POST /agent/propose/:id, GET /agent/log
-- #10 POST /matches/:id/approve, POST /matches/:id/reject
+- #10 POST /matches/:id/approve, POST /matches/:id/reject, GET /matches/:id/contact
+- #40 POST /judge, POST /judge/:id/answers, GET /projects, GET /projects/next, POST /projects/:id/vote, GET /projects/:id/thumb. Still to build: POST /judge/:id/email, GET /ridicule.
 
 ## The agent
 
@@ -102,6 +104,29 @@ Both routes take **product A's id** (the product that has the proposal), not a m
 ```
 
 **`POST /matches/:id/reject`** rejects the latest proposal. Body `{"reason": "why not"}` is required. The agent remembers the rejection and will not propose that pair again. Returns the profile with `match_status: "unmatched"`. Call propose again to get the next suggestion.
+
+**`GET /matches/:id/contact`** returns `{ product_id, email }` for the partner, only after the match is approved (`match_status: "blueprint_ready"`) and only if the partner shared an email. Otherwise 403 or 404.
+
+### Sloppy or Not judge (issue #40)
+
+The full spec is docs/build-judge-routes.md. No route ever returns a score. The only verdict anyone sees is the one returned to the submitter.
+
+**`POST /judge`** with `{ url, by?, roast_me?, description? }`. Judging takes about 20 to 60 seconds, so show the loading animation. Returns `{ id, verdict, card, ai_answers, human_questions }`, where `verdict` is `"Sloppy"` or `"Not"` and `ai_answers` are `[{ id, question, evidence }]` with no scores. Returns `{ needs_description: true }` when the page has too little text. Send the same request again with a one-line `description`. The same URL always returns its first verdict. A 429 means the cap on new judgments was hit, and its `error` says so.
+
+**`POST /judge/:id/answers`** with `{ answers: [{ id, answer }] }` for the eight human questions. Returns `{ id, verdict }`. Answers count once.
+
+**`GET /projects`** returns every card: `[{ id, name, url, by, thumb_url, likes_and_goals, brings }]`. **`GET /projects/next?seen=a,b`** returns one card not in `seen`, or `{ done: true }`.
+
+**`POST /projects/:id/vote`** with `{ vote: "slop" }` or `{ vote: "not" }`. Returns `{ ok: true }`. Counts are never returned.
+
+**`GET /projects/:id/thumb`** returns the thumbnail image, or 404. Use `thumb_url` from the card, prefixed with the base URL.
+
+### Where the judge differs from the spec, and why
+
+- **A cap on new judgments.** 30 per network per hour and 200 per day. Each judgment is a paid Claude call on the team key, and the API is public. The demo room shares one wifi address, so the per-network number is high. A URL that was already judged does not count.
+- **A site that does not load gets no profile or card.** Its Sloppy verdict is saved. The Product Profile schema needs fields only the agent writes, and the agent is skipped for a site that does not load.
+- **Guards that keep profiles valid.** If the agent leaves out a field, the worker fills in a plain fallback. Fields are cut to the schema's lengths. A reply missing any of the six scores is an error, so the submitter can try again, and is never counted as zero. `by` loses any "@" because the card adds its own.
+- **Not built yet:** the email route, `/ridicule`, and Browser Rendering. Until Browser Rendering is set up, pages are read with a plain fetch, and thumbnails come from the page's og:image.
 
 ### The demo path
 
