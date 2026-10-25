@@ -27,7 +27,7 @@ function renderLayout() {
     const size = header.dataset.header === "small" ? 0.5 : 1;
     header.innerHTML = `
       <a href="/" class="logo" style="--s:${size}" aria-label="Sloppy or Not home">${logoHTML()}</a>
-      <a href="/about.html" class="pill pill-white"><img src="/assets/icon-info.svg" alt="">About the project</a>`;
+      <a href="/about" class="pill pill-white"><img src="/assets/icon-info.svg" alt="">About the project</a>`;
   }
 
   const footer = document.querySelector("[data-footer]");
