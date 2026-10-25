@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enter Your Project</title>
+<meta name="description" content="Share the link to your latest build and find out if it's sloppy or not.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="glow glow-tl"><img src="/assets/glow-pink.svg" alt=""></div>
+<div class="glow glow-br"><img src="/assets/glow-cyan.svg" alt=""></div>
+<main class="page">
+  <header data-header></header>
+
+  <!-- Step 1: enter the project -->
+  <section id="step-enter" class="thinking">
+    <div>
+      <h1 class="hero-title">Enter your project</h1>
+      <p class="hero-sub" style="margin-top:16px">Share the link to your latest build. We'll help you figure out if it's sloppy or not.</p>
+    </div>
+    <form id="enter-form" class="card form-card" novalidate>
+      <div class="field">
+        <label class="eyebrow" for="url">Project URL</label>
+        <input class="input" id="url" name="url" type="url" inputmode="url" autocomplete="url" placeholder="https://your-project.com" required>
+      </div>
+      <div class="extras">
+        <input class="input small" id="by" name="by" type="text" maxlength="40" placeholder="Your name or @username (optional)" aria-label="Your name or username, optional">
+        <label class="check"><input type="checkbox" id="roast_me"> Roast me. My verdict may appear on the public board.</label>
+      </div>
+      <div class="field" id="desc-field" hidden>
+        <label class="eyebrow" for="description">One line about your project</label>
+        <input class="input small" id="description" type="text" maxlength="200" placeholder="What it does and who it's for">
+        <p class="note">We couldn't read enough from your page. One sentence helps the agent judge it fairly.</p>
+      </div>
+      <p class="error" id="enter-error" role="alert" hidden></p>
+      <div class="choices">
+        <button type="submit" class="choice choice-pink" data-lane="manual">
+          <strong>Manually answer questions</strong>
+          <span>Take control and show your thinking.</span>
+        </button>
+        <button type="submit" class="choice choice-cyan" data-lane="agent">
+          <strong>Have agent do it for me</strong>
+          <span>Let AI generate answers based on your site.</span>
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Step 2: the agent animation -->
+  <section id="step-thinking" class="thinking" hidden aria-live="polite">
+    <img class="robot" src="/assets/robot.svg" alt="">
+    <h1 class="section-title">The agent is reading your project</h1>
+    <p class="hero-sub">This takes 30 to 60 seconds. It checks the six questions every project gets.</p>
+    <ol class="qlist" id="ai-qs"></ol>
+  </section>
+
+  <!-- Step 3: human questions (manual lane only) -->
+  <section id="step-questions" hidden>
+    <div class="thinking">
+      <h1 class="section-title">Show your thinking</h1>
+      <p class="hero-sub">Answer what you can. Specific beats polished. Blank answers count as blank.</p>
+    </div>
+    <form id="answers-form" class="questions" style="margin-top:32px">
+      <div id="human-qs" class="questions"></div>
+      <p class="error" id="answers-error" role="alert" hidden></p>
+      <div class="actions">
+        <button type="submit" class="pill pill-pink">Get my verdict</button>
+        <button type="button" class="pill pill-ghost" id="skip">Skip the questions</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Step 4: the verdict. One word, never a number. -->
+  <section id="step-verdict" class="thinking" hidden>
+    <p class="hero-sub">Your project is</p>
+    <p class="verdict-word" id="verdict-word"></p>
+    <form id="email-form" class="card form-card" style="gap:20px">
+      <h2 class="section-title" style="font-size:28px">Want to know why? Get the weekly State of Slop.</h2>
+      <input class="input small" id="email" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Email">
+      <label class="check"><input type="checkbox" id="share_with_match"> Share my email with an approved match</label>
+      <p class="error" id="email-error" role="alert" hidden></p>
+      <div class="actions" style="justify-content:flex-start">
+        <button type="submit" class="pill pill-cyan">Sign me up</button>
+      </div>
+      <p class="note" id="email-done" hidden>You're on the list. Nothing is sent yet, and you can unsubscribe from every email.</p>
+    </form>
+    <div class="actions">
+      <a href="/criteria" class="pill pill-ghost">How we judge</a>
+      <a href="/judge" class="pill pill-pink"><img src="/assets/icon-eye.svg" alt="">Go judge</a>
+      <a href="/" class="pill pill-white">Go home</a>
+    </div>
+  </section>
+
+  <footer data-footer></footer>
+</main>
+<script src="/app.js"></script>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const steps = ["step-enter", "step-thinking", "step-questions", "step-verdict"];
+  const show = (id) => { steps.forEach((s) => ($(s).hidden = s !== id)); window.scrollTo(0, 0); };
+  const showError = (id, msg) => { $(id).textContent = msg; $(id).hidden = !msg; };
+
+  let lane = "agent";
+  let result = null;
+
+  document.querySelectorAll(".choice").forEach((b) => b.addEventListener("click", () => (lane = b.dataset.lane)));
+
+  // Agent animation: light up the six questions while the judge runs.
+  function startThinking() {
+    $("ai-qs").innerHTML = AI_QUESTIONS.map((q) => `<li><span class="mark"></span><span>${escapeHTML(q)}</span></li>`).join("");
+    const items = [...$("ai-qs").children];
+    let i = 0;
+    items[0].classList.add("on");
+    const timer = setInterval(() => {
+      if (i < items.length - 1) { items[i].classList.add("done"); i += 1; items[i].classList.add("on"); }
+    }, 1800);
+    return () => { clearInterval(timer); items.forEach((li) => li.classList.add("on", "done")); };
+  }
+
+  function normalizeUrl(raw) {
+    let v = raw.trim();
+    if (v && !/^https?:\/\//i.test(v)) v = "https://" + v;
+    try { const u = new URL(v); return u.hostname.includes(".") ? u.href : null; } catch { return null; }
+  }
+
+  $("enter-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const url = normalizeUrl($("url").value);
+    if (!url) return showError("enter-error", "Enter a full link to a live page, like https://your-project.com.");
+    showError("enter-error", "");
+
+    const body = { url, roast_me: $("roast_me").checked };
+    const by = $("by").value.trim();
+    if (by) body.by = by;
+    const description = $("description").value.trim();
+    if (description) body.description = description;
+
+    show("step-thinking");
+    const stop = startThinking();
+    const started = Date.now();
+    try {
+      let data = await api("/judge", { method: "POST", body });
+      if (!data) {
+        markPreview();
+        await new Promise((r) => setTimeout(r, 6000));
+        // Same link, same preview verdict, like the real judge.
+        const h = [...new URL(url).hostname].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+        data = { id: "preview", verdict: h % 2 ? "Not" : "Sloppy", human_questions: HUMAN_QUESTIONS };
+      }
+      if (data.needs_description) {
+        stop();
+        show("step-enter");
+        $("desc-field").hidden = false;
+        $("description").focus();
+        return;
+      }
+      // Let the animation finish its pass so the questions feel answered.
+      const wait = Math.max(0, 4000 - (Date.now() - started));
+      await new Promise((r) => setTimeout(r, wait));
+      stop();
+      result = data;
+      if (lane === "manual") showQuestions(data.human_questions || HUMAN_QUESTIONS);
+      else showVerdict(data.verdict);
+    } catch (err) {
+      stop();
+      show("step-enter");
+      showError("enter-error", err.message);
+    }
+  });
+
+  function showQuestions(qs) {
+    $("human-qs").innerHTML = qs.map((q, n) => `
+      <label>
+        <span class="eyebrow">Question ${n + 1} of ${qs.length}</span>
+        ${escapeHTML(q.question)}
+        <textarea class="input" name="q${q.id}" data-id="${q.id}" maxlength="2000"></textarea>
+      </label>`).join("");
+    show("step-questions");
+  }
+
+  $("answers-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const answers = [...document.querySelectorAll("#human-qs textarea")].map((t) => ({ id: Number(t.dataset.id), answer: t.value.trim() }));
+    const btn = e.submitter;
+    btn.disabled = true;
+    try {
+      const data = previewMode ? null : await api(`/judge/${encodeURIComponent(result.id)}/answers`, { method: "POST", body: { answers } });
+      showVerdict(data ? data.verdict : result.verdict);
+    } catch (err) {
+      showError("answers-error", err.message);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  $("skip").addEventListener("click", () => showVerdict(result.verdict));
+
+  function showVerdict(verdict) {
+    const word = verdict === "Not" ? "Not" : "Sloppy";
+    $("verdict-word").textContent = word;
+    $("verdict-word").className = "verdict-word " + word.toLowerCase();
+    show("step-verdict");
+  }
+
+  $("email-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = $("email").value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showError("email-error", "That email doesn't look right.");
+    showError("email-error", "");
+    try {
+      const saved = previewMode ? null : await api(`/judge/${encodeURIComponent(result.id)}/email`, { method: "POST", body: { email, share_with_match: $("share_with_match").checked } });
+      if (!saved) $("email-done").textContent = "Preview only. Email signup is not connected yet, so nothing was saved.";
+      $("email-done").hidden = false;
+      e.target.querySelector("button").disabled = true;
+    } catch (err) {
+      showError("email-error", err.message);
+    }
+  });
+</script>
+</body>
+</html>

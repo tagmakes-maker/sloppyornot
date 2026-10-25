@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="180" viewBox="0 0 16 18" shape-rendering="crispEdges" aria-label="Pixel robot with a shovel">
+      <rect x="7" y="0" width="2" height="1" fill="#F5C33B"/>
+      <rect x="7.5" y="1" width="1" height="1" fill="#111"/>
+      <rect x="3" y="2" width="10" height="7" fill="#111"/>
+      <rect x="4" y="3" width="8" height="5" fill="#C9D1DB"/>
+      <rect x="5" y="4" width="6" height="3" fill="#111"/>
+      <rect x="6" y="4" width="1" height="1" fill="#3DE0F0"/>
+      <rect x="9" y="4" width="1" height="1" fill="#3DE0F0"/>
+      <rect x="7" y="6" width="2" height="1" fill="#3DE0F0"/>
+      <rect x="6" y="5.5" width="1" height="0.5" fill="#3DE0F0"/>
+      <rect x="9" y="5.5" width="1" height="0.5" fill="#3DE0F0"/>
+      <rect x="2" y="4" width="1" height="3" fill="#3DE0F0"/>
+      <rect x="13" y="4" width="1" height="3" fill="#3DE0F0"/>
+      <rect x="7" y="9" width="2" height="1" fill="#3A3A42"/>
+      <rect x="4" y="10" width="8" height="5" fill="#111"/>
+      <rect x="5" y="10" width="6" height="4" fill="#C9D1DB"/>
+      <rect x="6" y="11" width="1" height="2" fill="#3A3A42"/>
+      <rect x="8" y="11" width="1" height="1" fill="#E53935"/>
+      <rect x="9" y="11" width="1" height="1" fill="#F5C33B"/>
+      <rect x="8" y="12" width="1" height="1" fill="#22C55E"/>
+      <rect x="9" y="12" width="1" height="1" fill="#22C55E"/>
+      <rect x="3" y="10" width="1" height="3" fill="#C9D1DB"/>
+      <rect x="12" y="10" width="1" height="3" fill="#C9D1DB"/>
+      <rect x="6" y="15" width="1" height="1" fill="#8D96A3"/>
+      <rect x="9" y="15" width="1" height="1" fill="#8D96A3"/>
+      <rect x="5" y="16" width="2" height="1" fill="#3DE0F0"/>
+      <rect x="9" y="16" width="2" height="1" fill="#3DE0F0"/>
+      <rect x="13" y="8" width="1" height="7" fill="#8A5A3B"/>
+      <rect x="12" y="15" width="3" height="2" fill="#B9B9C2"/>
+    </svg>
