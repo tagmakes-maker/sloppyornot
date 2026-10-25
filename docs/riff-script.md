@@ -10,7 +10,7 @@ Pitch only. The product tone stays clean. Roasts use our seed products only, nev
 
 ## Needs from Olivia (site/, her lane)
 
-The script needs the deck in this order: HelpDock, Porchlight, ShiftSwap CHS, FloodWatch CHS, FirstRun. Today the preview deck in site/app.js is FirstRun, FloodWatch CHS, ShiftSwap CHS, Porchlight, and HelpDock is missing. Without the change, FirstRun shows up first and gets roasted before it becomes the hero match.
+The script needs the deck in this order: HelpDock, Porchlight, FloodWatch CHS, then the rest. Today the preview deck in site/app.js is FirstRun, FloodWatch CHS, ShiftSwap CHS, Porchlight, and HelpDock is missing. Without the change, FirstRun shows up first and gets roasted before it becomes the hero match.
 
 1. In site/app.js, add a HelpDock card to `SAMPLE_PROJECTS` and reorder it as above.
 2. In site/judge.html, inside `render(p)`, add `document.body.dataset.productId = p.id;`.
@@ -21,8 +21,8 @@ The script needs the deck in this order: HelpDock, Porchlight, ShiftSwap CHS, Fl
 If none of that lands, use two tabs on the current deck and skip HelpDock:
 
 1. Tab B (the turn): in the console run `localStorage.setItem("sloppy-seen", '["firstrun"]')`, then reload. FloodWatch CHS shows. Leave this tab alone.
-2. Tab A (the roasts): in a new tab on the same site, run `localStorage.setItem("sloppy-seen", '["firstrun","floodwatch-chs"]')`, then reload. ShiftSwap CHS shows, then Porchlight.
-3. On stage, roast ShiftSwap and Porchlight in Tab A, then switch to Tab B for the turn.
+2. Tab A (the roasts): in a new tab on the same site, run `localStorage.setItem("sloppy-seen", '["firstrun","floodwatch-chs","shiftswap-chs"]')`, then reload. Porchlight shows.
+3. On stage, roast Porchlight in Tab A, then switch to Tab B for the turn.
 
 ## The cached roasts (beat 1)
 
@@ -45,7 +45,7 @@ Seed facts: 4 console errors, no security headers. Reviewers love it (81 percent
 2. **Therese:** "People love it. The browser console does not."
 3. **Olivia (backup):** "No security headers. Volunteers, please also volunteer to guard the database."
 
-### ShiftSwap CHS (third roast, cut first if behind)
+### ShiftSwap CHS (out of the timed run, use only if the room is slow)
 
 Seed facts: fails the mobile check, performance 68. It comes back later as the agent's fallback match, so keep the roast light.
 
@@ -58,11 +58,11 @@ Seed facts: fails the mobile check, performance 68. It comes back later as the a
 - "This hero image loaded slower than my dial-up in 1998." ShiftSwap's performance is 68, which is middling, not slow. Not grounded.
 - "Is that Comic Sans or a cry for help?" and "Four fonts. Four." None of our seed products have that problem. Use them only as ad libs, never as a product's roast.
 
-## Full riff script, beats 1 to 3 (0:25 to 2:50 in the run of show)
+## Full riff script, beats 1 to 3 (0:25 to 2:40 in the run of show)
 
 Stage directions are in brackets. Therese drives the laptop unless noted.
 
-### Beat 1: the roasts (0:25 to 1:05)
+### Beat 1: the roasts (0:25 to 0:55)
 
 [Therese opens the judge page. A card comes up.]
 
@@ -84,17 +84,9 @@ Stage directions are in brackets. Therese drives the laptop unless noted.
 
 **Therese:** "People love it. The browser console does not."
 
-[Swipe left.]
+[Swipe left. FloodWatch CHS comes up. If the deck shows ShiftSwap first, swipe it left without a word.]
 
-**Therese:** "ShiftSwap. Trade restaurant shifts by text."
-
-**Olivia:** "A shift swap app that fails on mobile. Where do you think servers check their shifts? A desk?"
-
-**Jacky:** "Pinch, zoom, scroll sideways, cry."
-
-[Swipe left. FloodWatch CHS comes up.]
-
-### Beat 2: the turn (1:05 to 1:15)
+### Beat 2: the turn (0:55 to 1:05)
 
 [Long pause. Nobody talks for one full second.]
 
@@ -112,7 +104,7 @@ Stage directions are in brackets. Therese drives the laptop unless noted.
 
 Then Olivia's human review block and Jacky's checks and memory block run straight, as written in docs/pitch-demo-plan.md.
 
-### Beat 3: "You've been noticed." (2:40 to 2:50)
+### Beat 3: "You've been noticed." (2:30 to 2:40)
 
 [Therese switches to sloppyornot.com/pitch/gituationship.html.]
 
@@ -128,4 +120,4 @@ Then Olivia's human review block and Jacky's checks and memory block run straigh
 
 ## Timing check
 
-Beat 1 is 11 short lines, about 110 words, in 40 seconds. Read it out loud once with a timer. If it runs over, drop ShiftSwap and go straight from Porchlight to FloodWatch.
+Beat 1 is 9 short lines, about 75 words, in 30 seconds. Read it out loud once with a timer. If it runs over, drop Porchlight and go straight from HelpDock to FloodWatch.

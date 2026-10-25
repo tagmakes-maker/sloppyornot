@@ -1,6 +1,6 @@
 # Devpost submission: Sloppy or Not + Gituationship
 
-Draft for the HarborHack 2026 Devpost, due Sunday Oct 25 at 4:00 PM. Paste each section into the matching Devpost field. Every claim below is backed by a file in this repo or a live URL. If a fact changes before 4:00 PM, fix it here first.
+Draft for the HarborHack 2026 Devpost, due Sunday Oct 25 at 4:00 PM EDT. The rules (https://harborhack-2026.devpost.com) require four things: a project name, a 2 to 5 paragraph description, a public GitHub repo, and a Non-Human Collaboration Story. No video is required. Paste each section into the matching Devpost field. Every claim below is backed by a file in this repo or a live URL. If a fact changes before 4:00 PM, fix it here first.
 
 ## Tagline
 
@@ -14,17 +14,19 @@ Find out if your AI-built project is sloppy or not, then let a persistent agent 
 - Repo: https://github.com/tagmakes-maker/sloppyornot
 - Agent evidence: the agent-log/ folder in the repo
 
-## Inspiration
+## Project name
 
-Anyone can build with AI now, so a hackathon weekend produces a pile of products. Most of them are slop. The good ones still have holes, and the builder who could fill that hole is usually sitting two tables away. We wanted one agent that can tell the difference between slop and something worth building on, and then introduce the good products to each other.
+Sloppy or Not + Gituationship
 
-## What it does
+## Project description (required, 2 to 5 paragraphs)
 
-Sloppy or Not proves whether a product is good. A builder pastes a live link. Automated checks look at whether it loads, how fast it is, whether it is accessible, whether it works on mobile, and whether it sends security headers. Humans then swipe on it: left for slop, right for not. The result is one word, Sloppy or Not. We never show a number, because a single score invites gaming and hurts people for no reason.
+**The problem.** Anyone can build with AI now, so every hackathon weekend ships a pile of products. Most of them are slop. The good ones still have holes, and the builder who could fill that hole is usually sitting two tables away. Nobody has time to tell the difference, and good projects end on Sunday night.
 
-Gituationship finds what a good product is missing and which other product fills that gap. A persistent agent reads every product, its human reviews, and its automated checks. It names the weakest spot, searches the products whose owners opted in to sharing, and proposes a match with its reasoning and a confidence level. A human approves or rejects every match. When a human approves, the agent writes a Super Product Blueprint: what the combined product does, the first build step, and the requirements that keep both products safe.
+**Our solution.** Sloppy or Not proves whether a product is good. A builder pastes a live link, automated checks test whether it loads, how fast it is, whether it is accessible, and whether it works on a phone, and humans swipe on it: left for slop, right for not. The answer is one word, never a number. Gituationship then takes the good products and finds what each one is missing. A persistent agent names the weakest spot, searches only the products whose owners opted in to sharing, and proposes the partner that fills the gap. A human approves every match, and only then does the agent write a Super Product Blueprint for the combined product.
 
-The core loop is: submit, review, the agent understands, the gap is identified, a match is found, a human approves, and the agent writes the Blueprint.
+**The challenge we entered.** Agent In The Loop. One persistent agent runs through the whole product. It remembers what reviewers said, what the checks found, and every match a human approved or rejected, and it changes its reasoning because of them. Humans keep direction and the final decision.
+
+**What makes it unique.** Most matchers always find a match. Ours was built to be caught. We seeded a decoy that only looks like a fit and a product with no honest match, and the agent passed both on the live API. It also quoted a human's rejection word for word and changed its pick. Sloppy or Not grades the product, never the person.
 
 ## How we built it
 
@@ -36,9 +38,11 @@ The core loop is: submit, review, the agent understands, the gap is identified, 
 - Think Like Olivia: a separate worker in experts-worker/ that interviews one human expert, drafts her Expert Reasoning Profile, waits for her approval, and then reviews products against her stated rules, with her verdict beside every AI suggestion.
 - A pre-commit hook keeps each of us in our own folder, so three people and several AI sessions could work in one repo without overwriting each other.
 
-## The AI collaboration story
+## Non-Human Collaboration Story (required)
 
-We built this with Claude Code as a fourth teammate, and the agent inside the product is also Claude. The agent-log/ folder is the evidence. It is append only, so judges can see what happened in order.
+**Which AI systems we used.** Claude did two jobs. Inside the product, Claude (through the Claude API, called from our Cloudflare Worker) is the persistent agent that observes products, finds gaps, proposes matches, and writes Blueprints. Outside the product, Claude Code was our fourth teammate. It worked through separate sessions across our repo, opened pull requests we reviewed, and wrote the agent-log/ entries below. The agent-log/ folder is append only, so judges can see what happened in order.
+
+**How responsibilities evolved.** On Saturday morning Claude built pieces under our direction: the seed pool at 10:05 and the Think Like Olivia worker at 11:40. By Saturday night the agent inside the product was running the full loop on the live API and passing tests we designed to catch it. On Sunday Claude Code fact-checked our own pitch and cut a statistic we could not source. Humans never handed over the final decision. Every merge, approval, and rejection is a person.
 
 1. **The agent built a test it could fail.** On Oct 24 at 10:05 the agent built the seed pool with a decoy on purpose (agent-log/2026-10-24-1005-seed-pool-created.md). At 15:55 it made the decoy harder, so HelpDock now shares two tags with the right answer, and added Porchlight as a product with no honest match (agent-log/2026-10-24-1555-seed-pool-revised.md). A matcher that always finds a match is easy to fake. We wanted one that could be caught.
 
@@ -47,6 +51,14 @@ We built this with Claude Code as a fourth teammate, and the agent inside the pr
 3. **The loop ran end to end on the live API.** At 19:33 Jacky ran the full loop. The agent noticed FloodWatch CHS got better and worse at once: more people would use it, but fewer understood it at first glance. It proposed FirstRun to fix onboarding at 0.84 confidence. It also raised a risk nobody asked about: FirstRun scores 47 on accessibility against FloodWatch's 74. Jacky approved, and the agent wrote the Blueprint (agent-log/2026-10-24-1933-issue-11-loop-live.md).
 
 4. **The agent learned from a human no.** At 20:16 the agent passed three tests on the live API (agent-log/2026-10-24-2016-demo-beats-tested.md). It skipped the decoy and said why. Then Jacky rejected FirstRun with a reason: "FirstRun scores 47 on accessibility and FloodWatch drivers need tooltips that work with screen readers." The agent quoted her rejection word for word, marked FirstRun ineligible, proposed ShiftSwap CHS instead, and lowered its confidence to 0.55 because onboarding is only a side feature there. For Porchlight it proposed nothing. In its words: "I am not proposing a weak fit just to fill the slot."
+
+**Where Claude influenced the design.** The decoy and the no-match product changed how we wrote every prompt. Claude also raised a risk none of us asked about: FirstRun's accessibility score of 47 against FloodWatch's 74. That warning became a hard requirement in the Blueprint. Later, Jacky used the same warning as her reason to reject the match.
+
+**What surprised us.** The agent was willing to say no. With Porchlight it checked all four candidates and refused to force a fit.
+
+**What didn't work.** Olivia's admin token failed on her phone because of autocapitalize and stray spaces, so her first edits did not save. Our first live run labeled six log entries "unknown" because of a product id bug fixed mid-run. The new judge routes arrived late, so the site showed a labeled preview until they landed.
+
+**What we would change.** We would write the eval scenarios first, before any prompt, and connect the live judge routes before the first page went up. (Therese: confirm this is how you feel, or rewrite it in your words.)
 
 The agent reasons. Humans judge, correct, and approve. That is the whole point.
 
