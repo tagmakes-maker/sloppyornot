@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gituationship Demo</title>
+<meta name="robots" content="noindex">
+<style>
+  /* Pitch only. Not part of the product. Swap the logo halves in #logo-left and #logo-right. */
+  :root {
+    --pink: #E92A97;
+    --ink: #25252B;
+    --blush: #FFE5F2;
+    --white: #FFFFFF;
+    --dirt: #8A5A3B;
+    --dirt-dark: #5E3B25;
+    --muted: #6B6B75;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--blush);
+    color: var(--ink);
+    font: 18px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+    overflow: hidden;
+  }
+  .demo-flag {
+    position: fixed; top: 12px; left: 50%; transform: translateX(-50%);
+    background: var(--ink); color: var(--white);
+    font-size: 13px; padding: 4px 12px; border-radius: 999px; z-index: 10;
+  }
+  .slide {
+    position: absolute; inset: 0;
+    display: none; flex-direction: column; align-items: center; justify-content: center;
+    padding: 48px 16px; text-align: center;
+  }
+  .slide.on { display: flex; }
+  h1 { font-size: clamp(28px, 5vw, 48px); margin: 0 0 8px; }
+  .sub { color: var(--muted); margin: 0 0 28px; }
+  .card {
+    background: var(--white); border-radius: 16px; padding: 24px;
+    box-shadow: 0 8px 30px rgba(37, 37, 43, 0.12);
+    width: min(440px, 100%); text-align: left;
+  }
+  label { display: block; font-weight: 600; margin: 14px 0 6px; }
+  label small { font-weight: 400; color: var(--muted); }
+  input {
+    width: 100%; font: inherit; padding: 10px 12px;
+    border: 2px solid #E3D3DC; border-radius: 10px;
+  }
+  button, .btn {
+    font: inherit; font-weight: 700; cursor: pointer;
+    background: var(--pink); color: var(--white);
+    border: 0; border-radius: 999px; padding: 12px 24px; margin-top: 18px;
+  }
+  button.ghost { background: transparent; color: var(--ink); border: 2px solid var(--ink); }
+  .gh-link { display: inline-block; margin-top: 12px; color: var(--ink); font-size: 15px; }
+  .connected {
+    display: none; margin-top: 18px; padding: 12px; border-radius: 10px;
+    background: #E6F7EE; color: #145C36; font-weight: 700;
+  }
+  .connected.on { display: block; animation: pop 300ms ease-out; }
+
+  /* G2: the dig */
+  .dig { position: relative; width: min(720px, 100%); height: 340px; }
+  .pile {
+    position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 360px; height: 120px; background: var(--dirt);
+    border-radius: 180px 180px 0 0; box-shadow: inset 0 -20px 0 var(--dirt-dark);
+  }
+  .pile span {
+    position: absolute; bottom: 20px; left: 0; right: 0;
+    color: var(--white); font-weight: 700; font-size: 15px;
+  }
+  .robot {
+    position: absolute; bottom: 90px; left: calc(50% - 170px);
+    width: 96px; image-rendering: pixelated; transform-origin: 70% 90%;
+  }
+  .robot.digging { animation: dig 450ms steps(2) infinite; }
+  .repo {
+    position: absolute; bottom: 70px; left: 50%;
+    background: var(--white); border: 3px solid var(--ink); border-radius: 10px;
+    padding: 8px 14px; font-weight: 700; white-space: nowrap;
+    opacity: 0; transform: translate(-50%, 0) scale(0.6);
+  }
+  .repo.up { animation: rise 500ms ease-out forwards; }
+  .repo.tossed { animation: toss 700ms ease-in forwards; }
+  .caption { min-height: 2.8em; margin-top: 18px; font-size: 20px; font-weight: 600; }
+  .caption em { color: var(--muted); font-weight: 400; font-style: normal; display: block; font-size: 14px; }
+
+  /* G3: the match and the hug */
+  .match { display: flex; gap: 12px; align-items: stretch; justify-content: center; flex-wrap: wrap; }
+  .match .card { width: 240px; }
+  .match .card h3 { margin: 0 0 4px; }
+  .match .card p { margin: 0; font-size: 15px; color: var(--muted); }
+  .why { width: min(500px, 100%); margin: 16px auto 0; font-size: 16px; }
+  .why b { color: var(--pink); }
+  .hug { position: relative; width: 260px; height: 200px; margin: 10px auto 0; display: none; }
+  .hug.on { display: block; }
+  .hug svg { position: absolute; top: 80px; width: 110px; height: 110px; }
+  #logo-left { left: -60px; opacity: 0; }
+  #logo-right { right: -60px; opacity: 0; }
+  .hug.on #logo-left { animation: slide-left 700ms ease-out forwards, squeeze 400ms 700ms ease-in-out 2; }
+  .hug.on #logo-right { animation: slide-right 700ms ease-out forwards, squeeze 400ms 700ms ease-in-out 2; }
+  .heart {
+    position: absolute; left: 50%; top: 0 !important; width: 56px !important; height: 48px !important; margin-left: -28px;
+    image-rendering: pixelated; opacity: 0;
+  }
+  .hug.on .heart { animation: heart 1600ms 900ms ease-out forwards; }
+  .approved-note { display: none; margin-top: 8px; font-weight: 700; }
+  .approved-note.on { display: block; }
+
+  /* G4: connect */
+  .links { list-style: none; padding: 0; margin: 0 0 8px; font-size: 16px; }
+  .links li { margin: 6px 0; }
+  .links a { color: var(--ink); }
+  .chat { display: none; margin-top: 16px; }
+  .chat.on { display: block; animation: pop 300ms ease-out; }
+  .bubble {
+    background: var(--blush); border-radius: 14px 14px 14px 4px;
+    padding: 12px 14px; min-height: 5.6em; font-size: 16px;
+  }
+  .bubble::after { content: "|"; animation: blink 800ms steps(1) infinite; }
+  .bubble.done::after { content: ""; }
+  .send-row { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+  .send-row button { margin: 0; opacity: 0.4; cursor: not-allowed; }
+  .preview { font-size: 13px; color: var(--muted); margin-top: 10px; }
+
+  .nav {
+    position: fixed; bottom: 14px; right: 16px; font-size: 13px; color: var(--muted);
+  }
+
+  @keyframes pop { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  @keyframes dig { 0% { transform: rotate(0); } 100% { transform: rotate(-12deg); } }
+  @keyframes rise { to { opacity: 1; transform: translate(-50%, -130px) scale(1); } }
+  @keyframes toss { 0% { opacity: 1; transform: translate(-50%, -130px) rotate(0); } 100% { opacity: 0; transform: translate(-420px, 40px) rotate(-200deg); } }
+  @keyframes slide-left { to { left: 30px; opacity: 1; } }
+  @keyframes slide-right { to { right: 30px; opacity: 1; } }
+  @keyframes squeeze { 50% { transform: scale(1.08, 0.94); } }
+  @keyframes heart { 0% { opacity: 0; transform: translateY(20px) scale(0.4); } 25% { opacity: 1; transform: translateY(0) scale(1.1); } 40% { transform: scale(1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translateY(-16px); } }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
+  }
+</style>
+</head>
+<body>
+<div class="demo-flag">Pitch demo. Not part of the product.</div>
+
+<!-- G1: Add your product -->
+<section class="slide on" id="g1">
+  <h1>You've been noticed.</h1>
+  <p class="sub">People say your product is not sloppy. Let's find it a partner.</p>
+  <div class="card">
+    <label for="url">Paste your live link</label>
+    <input id="url" type="url" placeholder="https://your-product.com">
+    <label for="email">Email <small>(shared only after a match is approved)</small></label>
+    <input id="email" type="email" placeholder="you@example.com">
+    <a href="#" class="gh-link" id="gh">Have a repo? Connect GitHub (optional)</a>
+    <div><button id="add">Find my match</button></div>
+    <div class="connected" id="connected">Connected! FloodWatch CHS is in the pool.</div>
+  </div>
+</section>
+
+<!-- G2: The robot digs -->
+<section class="slide" id="g2">
+  <h1>The agent goes digging.</h1>
+  <p class="sub">FloodWatch is weak at one thing: onboarding.</p>
+  <div class="dig">
+    <svg class="robot" id="robot" viewBox="0 0 12 14" shape-rendering="crispEdges" aria-label="Pixel robot with a shovel">
+      <rect x="5" y="0" width="1" height="2" fill="#25252B"/>
+      <rect x="4" y="0" width="3" height="1" fill="#E92A97"/>
+      <rect x="2" y="2" width="7" height="5" fill="#25252B"/>
+      <rect x="3" y="3" width="2" height="2" fill="#FFFFFF"/>
+      <rect x="6" y="3" width="2" height="2" fill="#FFFFFF"/>
+      <rect x="4" y="4" width="1" height="1" fill="#E92A97"/>
+      <rect x="7" y="4" width="1" height="1" fill="#E92A97"/>
+      <rect x="3" y="7" width="5" height="4" fill="#6B6B75"/>
+      <rect x="3" y="11" width="2" height="2" fill="#25252B"/>
+      <rect x="6" y="11" width="2" height="2" fill="#25252B"/>
+      <rect x="8" y="8" width="1" height="1" fill="#6B6B75"/>
+      <rect x="9" y="6" width="1" height="6" fill="#8A5A3B"/>
+      <rect x="8" y="12" width="3" height="2" fill="#B9B9C2"/>
+    </svg>
+    <div class="repo" id="r-helpdock">HelpDock</div>
+    <div class="repo" id="r-shiftswap">ShiftSwap CHS</div>
+    <div class="repo" id="r-firstrun">FirstRun</div>
+    <div class="pile"><span>Shared products (owners opted in)</span></div>
+  </div>
+  <div class="caption" id="caption"></div>
+  <button id="dig">Start digging</button>
+</section>
+
+<!-- G3: The match and the hug -->
+<section class="slide" id="g3">
+  <h1>The agent proposes. A human decides.</h1>
+  <div class="match">
+    <div class="card"><h3>FloodWatch CHS</h3><p>Great reviews. New users get lost on the first screen.</p></div>
+    <div class="card"><h3>FirstRun</h3><p>Onboarding is its core. 0.86 understood immediately.</p></div>
+  </div>
+  <p class="why">Fills the gap: <b>onboarding</b>. Confidence 0.85. HelpDock ruled out: it helps users after they are stuck, not on first use.</p>
+  <div class="hug" id="hug">
+    <svg class="heart" viewBox="0 0 7 6" shape-rendering="crispEdges" aria-hidden="true">
+      <rect x="1" y="0" width="2" height="1" fill="#E92A97"/><rect x="4" y="0" width="2" height="1" fill="#E92A97"/>
+      <rect x="0" y="1" width="7" height="2" fill="#E92A97"/>
+      <rect x="1" y="3" width="5" height="1" fill="#E92A97"/>
+      <rect x="2" y="4" width="3" height="1" fill="#E92A97"/>
+      <rect x="3" y="5" width="1" height="1" fill="#E92A97"/>
+      <rect x="1" y="1" width="1" height="1" fill="#FFE5F2"/>
+    </svg>
+    <!-- Placeholder logo halves. Replace the contents of these two groups with Olivia's logo halves. -->
+    <svg id="logo-left" viewBox="0 0 10 10" shape-rendering="crispEdges" aria-label="Left half of the logo">
+      <g><rect x="2" y="1" width="8" height="8" rx="0" fill="#25252B"/><rect x="4" y="3" width="2" height="2" fill="#FFFFFF"/><rect x="9" y="4" width="1" height="3" fill="#E92A97"/></g>
+    </svg>
+    <svg id="logo-right" viewBox="0 0 10 10" shape-rendering="crispEdges" aria-label="Right half of the logo">
+      <g><rect x="0" y="1" width="8" height="8" fill="#E92A97"/><rect x="4" y="3" width="2" height="2" fill="#FFFFFF"/><rect x="0" y="4" width="1" height="3" fill="#25252B"/></g>
+    </svg>
+  </div>
+  <p class="approved-note" id="approved-note">Approved by a human. It's a Gituationship.</p>
+  <div>
+    <button id="approve">Approve</button>
+    <button class="ghost" id="reject">Reject</button>
+  </div>
+</section>
+
+<!-- G4: Connect to owner -->
+<section class="slide" id="g4">
+  <h1>Now the humans talk.</h1>
+  <p class="sub">We make the match. You reach out.</p>
+  <div class="card">
+    <ul class="links">
+      <li>FloodWatch CHS: <a href="https://floodwatch-chs.pages.dev" target="_blank" rel="noopener">floodwatch-chs.pages.dev</a></li>
+      <li>FirstRun: <a href="https://firstrun.pages.dev" target="_blank" rel="noopener">firstrun.pages.dev</a> and its GitHub repo</li>
+    </ul>
+    <button id="connect">Connect to owner</button>
+    <div class="chat" id="chat">
+      <div class="bubble" id="bubble"></div>
+      <div class="send-row"><button disabled>Send</button></div>
+      <p class="preview">Preview only. We share the owner's email once the match is approved.</p>
+    </div>
+  </div>
+</section>
+
+<div class="nav">Right arrow or space: next. Left arrow: back.</div>
+
+<script>
+  const slides = [...document.querySelectorAll(".slide")];
+  let at = 0;
+  const show = (i) => {
+    at = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, n) => s.classList.toggle("on", n === at));
+  };
+  document.addEventListener("keydown", (e) => {
+    if (e.target.tagName === "INPUT") return;
+    if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); show(at + 1); }
+    if (e.key === "ArrowLeft") show(at - 1);
+  });
+
+  // G1: staged, no real login or network call
+  document.getElementById("gh").addEventListener("click", (e) => { e.preventDefault(); e.target.textContent = "GitHub connected (demo repo)"; });
+  document.getElementById("add").addEventListener("click", () => {
+    const url = document.getElementById("url");
+    if (!url.value) url.value = "https://floodwatch-chs.pages.dev";
+    document.getElementById("connected").classList.add("on");
+    setTimeout(() => show(1), 1400);
+  });
+
+  // G2: captions follow the agent's real reasoning (agent-log 2026-10-24 20:16)
+  const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+  const caption = document.getElementById("caption");
+  // freeze a card where its rise ended, then glide it to a new spot
+  const settle = (el, to, opacity) => {
+    el.classList.remove("up");
+    el.style.opacity = 1;
+    el.style.transform = "translate(-50%, -130px)";
+    el.getBoundingClientRect();
+    el.style.transition = "transform 500ms ease, opacity 500ms ease";
+    el.style.transform = to;
+    el.style.opacity = opacity;
+  };
+  const say = (main, sub) => { caption.innerHTML = main + (sub ? "<em>" + sub + "</em>" : ""); };
+  document.getElementById("dig").addEventListener("click", async (e) => {
+    e.target.style.visibility = "hidden";
+    const robot = document.getElementById("robot");
+    const [help, shift, first] = ["r-helpdock", "r-shiftswap", "r-firstrun"].map((id) => document.getElementById(id));
+    robot.classList.add("digging");
+    say("Digging through shared products...");
+    await wait(1200);
+    help.classList.add("up"); say("HelpDock?"); await wait(1100);
+    help.classList.add("tossed"); say("Looks like onboarding. It is not.", "It helps users after they are stuck, not on first use."); await wait(1900);
+    shift.classList.add("up"); say("ShiftSwap CHS?"); await wait(1100);
+    settle(shift, "translate(150px, -150px) scale(0.85)", 0.55);
+    say("Close, but onboarding is a side feature."); await wait(1900);
+    first.classList.add("up"); say("FirstRun?"); await wait(1100);
+    robot.classList.remove("digging");
+    settle(first, "translate(-50%, -200px) scale(1.15)", 1);
+    first.style.borderColor = "var(--pink)";
+    say("Onboarding is its core.", "Understood immediately by 86 percent of reviewers.");
+    await wait(2200);
+    show(2);
+  });
+
+  // G3: the hug fires only after a human presses Approve
+  document.getElementById("approve").addEventListener("click", () => {
+    document.getElementById("hug").classList.add("on");
+    document.getElementById("approved-note").classList.add("on");
+    document.getElementById("approve").style.display = "none";
+    document.getElementById("reject").style.display = "none";
+    setTimeout(() => show(3), 3600);
+  });
+  document.getElementById("reject").addEventListener("click", () => {
+    alert("In the product, a rejection needs a reason, and the agent remembers it next time.");
+  });
+
+  // G4: simulated message, nothing is sent
+  const message = "Hi FirstRun team. Our flood alert app gets great reviews but new users get lost on the first screen. Your onboarding could fix that. Want to build something together?";
+  document.getElementById("connect").addEventListener("click", async (e) => {
+    e.target.style.display = "none";
+    document.getElementById("chat").classList.add("on");
+    const bubble = document.getElementById("bubble");
+    for (const ch of message) { bubble.textContent += ch; await wait(28); }
+    bubble.classList.add("done");
+  });
+</script>
+</body>
+</html>

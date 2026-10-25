@@ -43,7 +43,7 @@ A slideshow with links to the live site, done in the style of Mystery Science Th
 
 ## The git relationship slides (G1 to G4)
 
-Animations live in `site/` (Olivia's lane). This doc is the spec, not the build.
+Built: `site/pitch/gituationship.html`. Open it, press the buttons, use the arrow keys between slides. Olivia: swap your logo halves into the `#logo-left` and `#logo-right` SVGs, and restyle anything you want.
 
 ### G1: Add your product
 
@@ -86,7 +86,8 @@ Animations live in `site/` (Olivia's lane). This doc is the spec, not the build.
 ## "Roast me" button (demo build)
 
 - A demo-only overlay on top of the live site, not built into the product UI.
-- Turn it on with a URL flag (`?demo=1`). Real users never see it.
+- Built: `site/pitch/roast-overlay.js`. Add one script tag to any page. It does nothing without `?demo=1` in the URL.
+- Pick the roasts with `?product=helpdock` (or porchlight, shiftswap-chs, floodwatch-chs). The roasts use each seed product's real check results.
 - **Pre-load or cache the roasts.** No live API calls on stage.
 - Button label in sentence case: "Roast me".
 - Disclaimer banner pinned above the button: "Pitch demo. The roasts are ours, not the product's."
@@ -115,9 +116,9 @@ Animations live in `site/` (Olivia's lane). This doc is the spec, not the build.
 
 ## Next 3 actions
 
-1. Send this to Olivia and Jacky. Each of them edits their own lines.
-2. Olivia builds G1 to G4 and the `?demo=1` overlay in `site/`.
-3. Therese writes the cached roasts for beat 1 and times a full run-through.
+1. Olivia: swap your logo into `site/pitch/gituationship.html`, add the roast overlay script tag to the product page, and push the email field.
+2. Jacky: review and merge PR #46 (the email stays out of the public profile).
+3. All three: one timed run-through before 4:00 PM, each person reading their own lines.
 
 ## Starter riffs (placeholders)
 
