@@ -1,0 +1,81 @@
+# Build prompt: Sloppy or Not judge routes
+
+Paste everything below the line into a fresh Claude Code session on this repo, or Jacky runs it by hand. It touches worker/ only, which is Jacky's lane, so Jacky reviews and merges.
+
+---
+
+Read CLAUDE.md, README.md, CONTRIBUTING.md, shared/profile.schema.json, docs/scoring.md (the "Sloppy or Not verdict" section), agent/judging-questions.md, agent/prompts/judge.md, and agent/prompts/score-answers.md. Then add the routes below to worker/src/index.js. Plain JS, no framework, same style as the file. Do not change shared/profile.schema.json. Do not touch site/ or agent/. Keep every existing route working.
+
+## The user flow this serves
+
+1. Submitter enters a URL (and optionally an email and the Roast Me opt-in).
+2. The agent judges the site with the AI question set. The submitter then answers the human questions (lane two) or skips them (lane one).
+3. The screen shows one word: Sloppy or Not. No numbers, ever, to anyone.
+4. Optional email signs them up for the weekly State of Slop email. Sending comes later with Resend. Today we only store it.
+5. Then they go judge other projects. The project list shows name, URL, and a dating-profile bio. Never a verdict.
+6. A public ridicule board shows verdicts only for projects with consent.roast_me true.
+
+## Storage (KV, env.STORE). Add these keys to the comment in worker/wrangler.toml
+
+- `product:<id>` existing Product Profile. Must still validate the schema. No new fields.
+- `judge:<id>` private. `{ url, lane, ai_answers, automated_checks, ai_score, human_answers, human_score, total, verdict, judged_at }`. Never returned by any public route except as the verdict on the ridicule board.
+- `bio:<id>` `{ headline, into, looking_for, red_flag }`.
+- `url:<normalized url>` the product id for that URL. Used to reuse the first verdict.
+- `subscriber:<lowercased email>` `{ email, product_id, subscribed_at, unsubscribe_token }`. Never returned by any route.
+
+## Routes
+
+### POST /judge  `{ url, email?, roast_me? }`
+
+1. Validate the URL (http or https). Normalize it: lowercase host, drop trailing slash, query, and hash.
+2. If `url:<normalized>` exists, return the saved result for that product. Never rejudge a URL.
+3. Pull the page. Try Cloudflare Browser Rendering first (REST endpoint `/accounts/{account_id}/browser-rendering/content` or the `browser` binding, whichever the account has). If it is not available, plain `fetch` the URL. Reduce the HTML to `{ title, meta_description, text, links, rendered }`. Cap text at about 6,000 words.
+4. Automated checks: call the PageSpeed Insights API (`https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=...&category=performance&category=accessibility&strategy=mobile`) for performance and accessibility (score x 100, integer). `loads` is whether the page fetch returned 2xx. `security_headers` is true when the response has content-security-policy or strict-transport-security. `mobile_ok` is true when the HTML has a viewport meta tag. `console_errors` is 0 unless Browser Rendering reports errors. If PageSpeed fails or times out after 30 seconds, use 50 for both and note it.
+5. If `loads` is false, the verdict is Sloppy. Skip the agent and save.
+6. Run the agent with `runAgent("judge", { url, page, automated_checks }, env)`. If it returns `enough_content: false` and the page was not rendered, retry once with Browser Rendering. If it still lacks content, return `{ needs_description: true }` so the site can ask for one line, and accept `description` on a second POST /judge to append to page.text.
+7. Make the id a slug from the host (for example `floodwatch-chs-pages-dev`). Add a short suffix if taken.
+8. Save the Product Profile: the agent's name, what_it_does, target_user, capabilities, plus `url`, `status: "submitted"`, `match_status: "unmatched"`, `automated_checks`, `consent: { roast_me: roast_me === true }`, `agent_observations: [{ at, note: observation, source: "submission" }]`, created_at, updated_at.
+9. Compute lane one from docs/scoring.md: measured 40 plus the sum of the six AI scores. Save `judge:<id>` with lane 1, `bio:<id>`, `url:<normalized>`. Save the subscriber if an email came in.
+10. Return `{ id, verdict, bio, human_questions }`. human_questions is the eight questions from agent/judging-questions.md as `[{ id, question }]`. The site holds the verdict until the submitter answers or skips.
+
+### POST /judge/:id/answers  `{ answers: [{ id, answer }] }`
+
+1. Load `judge:<id>`. If lane is already 2, return the saved verdict (answers count once).
+2. Run `runAgent("score-answers", { profile, answers }, env)`.
+3. human_score = sum of the eight 0 to 5 scores x 1.25. total = ai_score / 2 + human_score. Apply the AI floor: if ai_score / 2 is under 30, the verdict is Sloppy. Otherwise 70 or above is Not.
+4. Save lane 2 to `judge:<id>`. Append the observation to the profile's agent_observations.
+5. Return `{ id, verdict }`.
+
+### POST /judge/:id/email  `{ email }`
+
+Basic email check. Save `subscriber:<email>` with a random unsubscribe_token. Return `{ ok: true }`. Never echo other subscribers.
+
+### GET /projects
+
+Every product with a `bio:<id>`: `[{ id, name, url, bio }]`. No verdict, no scores, no email.
+
+### GET /ridicule
+
+Only products with consent.roast_me true and a saved verdict: `[{ id, name, url, bio, verdict }]`. Still no numbers.
+
+## Verdict math in one function
+
+```js
+function verdictFor(j) {
+  if (j.automated_checks?.loads === false) return "Sloppy";
+  if (j.lane === 2) {
+    if (j.ai_score / 2 < 30) return "Sloppy";
+    return j.total >= 70 ? "Not" : "Sloppy";
+  }
+  return j.ai_score >= 70 ? "Not" : "Sloppy";
+}
+```
+
+## Done means
+
+- `npm test` passes from the repo root.
+- With `npx wrangler dev`, POST /judge on a real Pages site returns a verdict and a bio in under 60 seconds.
+- POST /judge on the same URL twice returns the same verdict.
+- GET /projects never contains "verdict", "score", or "@".
+- Write one agent-log entry (new file, append only) showing a real judge run.
+- Open a PR into main that says it touches worker/ and why. Jacky merges.
