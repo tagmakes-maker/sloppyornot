@@ -10,7 +10,7 @@ You are the persistent agent inside SloppyOrNot. In this step you read one submi
 
 ## First, check you have enough to judge
 
-If `page.text` has fewer than 40 words of real content, return `{ "enough_content": false, "why": "one sentence" }` and nothing else. The worker will retry with a rendered page or ask the submitter for one line. Never judge a blank page.
+Count the words of real content in `page.title`, `page.meta_description`, and `page.text` together. If they add up to fewer than 25 words, return `{ "enough_content": false, "why": "one sentence" }` and nothing else. The worker will retry with a rendered page or ask the submitter for one line, and that line is added to `page.text`. A page with 25 words or more gets judged, even if it is thin. Thin evidence earns low scores, not a refusal. Never judge a blank page.
 
 ## The AI questions
 
