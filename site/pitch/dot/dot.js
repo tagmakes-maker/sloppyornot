@@ -4,8 +4,9 @@
 (function () {
   const params = new URLSearchParams(location.search);
   const page = params.get("page") || "/";
-  // Scene 3's TV screen fills the frame at about 24.5s. Static takes over there.
-  const STATIC_AT = 24.5;
+  // Scene 3's TV screen fills the frame at about 19.4s. Static takes over there.
+  // The video keeps playing underneath, so Dot's "Let's go" finishes over the static.
+  const STATIC_AT = 19.4;
   const STATIC_HOLD_MS = 700;
   const DISSOLVE_MS = 1400;
 
@@ -56,7 +57,6 @@
     staticRunning = true;
     drawStatic();
     await fade(canvas, 1, 250);
-    video.pause();
     body.classList.add("live");
     await new Promise((r) => setTimeout(r, STATIC_HOLD_MS));
     await fade(canvas, 0, DISSOLVE_MS);
@@ -81,7 +81,7 @@
   video.addEventListener("timeupdate", () => {
     if (video.currentTime >= STATIC_AT) goLive();
   });
-  video.addEventListener("ended", goLive);
+  video.addEventListener("ended", () => { goLive(); video.hidden = true; });
   video.addEventListener("error", () => { body.classList.add("skipped"); goLive(); });
   // A stalled network should not strand the room on a frozen frame.
   video.addEventListener("stalled", () => setTimeout(() => { if (!wentLive && video.paused) goLive(); }, 4000));

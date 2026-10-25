@@ -6,7 +6,7 @@
   --muted: #a19fb4;
   --pink: #ff5cc0;
   --pink-hot: #e92a97;
-  --dot-width: clamp(170px, 15vw, 320px);
+  --dot-width: clamp(110px, 9.5vw, 220px);
 }
 
 * { box-sizing: border-box; }
@@ -54,38 +54,50 @@ body.live #intro, body.skipped #intro { display: none; }
 
 /* Dot, seated, watching from the bottom right corner. */
 #dot {
-  position: fixed; right: 1.2vw; bottom: 0; z-index: 5;
+  position: fixed; right: 1.2vw; bottom: -2.5%; z-index: 5;
   width: var(--dot-width);
   pointer-events: none;
-  opacity: 0; transform: translateY(12%);
-  transition: opacity .9s ease, transform .9s cubic-bezier(.2, .8, .2, 1);
+  opacity: 0; transform: translateY(45%);
 }
-body.live #dot { opacity: 1; transform: none; }
-.dot-figure { position: relative; aspect-ratio: 709 / 603; filter: drop-shadow(0 0 18px rgba(0, 0, 0, .65)); }
+/* Slow rise, same as Therese's Dot_Enter clip: about 4 seconds, easing out. */
+body.live #dot { animation: rise 4s cubic-bezier(.16, .84, .3, 1) forwards; }
+@keyframes rise {
+  0% { opacity: 0; transform: translateY(45%); }
+  35% { opacity: 1; }
+  100% { opacity: 1; transform: none; }
+}
+.dot-figure {
+  position: relative; aspect-ratio: 512 / 856;
+  filter: drop-shadow(0 0 calc(var(--glow, .2) * 22px) rgba(255, 92, 192, calc(var(--glow, .2) + .1)));
+  transition: filter .2s ease;
+}
 .dot-figure img { position: absolute; inset: 0; width: 100%; height: 100%; }
-.dot-head { transform-origin: 61% 35%; transition: transform .25s ease; }
-.dot-glow { opacity: .25; mix-blend-mode: screen; transition: opacity .2s ease; }
+/* One image, split at the neck, so the head can move on its own. */
+.dot-head { clip-path: inset(0 0 57% 0); transform-origin: 50% 42%; transition: transform .25s ease; }
+.dot-body { clip-path: inset(42.5% 0 0 0); }
 
 .dot-status {
-  position: absolute; left: 0; top: 34%; margin: 0;
+  position: absolute; right: 100%; bottom: 12%; margin: 0 8px 0 0;
   font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
   color: var(--muted); white-space: nowrap;
 }
 
 /* States. Listening: a soft pink pulse. Speaking: brighter glow, head moves (set from JS). Muted: dimmed glow. */
-#dot[data-state="listening"] .dot-glow { opacity: .5; animation: pulse 1.6s ease-in-out infinite; }
+#dot[data-state="listening"] .dot-figure { animation: pulse 1.6s ease-in-out infinite; }
 #dot[data-state="idle"] .dot-status { visibility: hidden; }
 #dot[data-state="listening"] .dot-status { color: var(--pink); }
-#dot[data-state="speaking"] .dot-glow { opacity: var(--level, .7); }
-#dot[data-state="muted"] .dot-glow { opacity: .08; }
+#dot[data-state="speaking"] .dot-figure { --glow: var(--level, .7); }
+#dot[data-state="muted"] .dot-figure { --glow: 0; }
 #dot[data-state="muted"] .dot-status { color: var(--muted); }
 
-@keyframes pulse { 50% { opacity: .18; } }
+@keyframes pulse { 0%, 100% { --glow: .25; } 50% { --glow: .7; } }
+@property --glow { syntax: "<number>"; inherits: true; initial-value: .2; }
 
 @media (max-width: 700px) {
-  :root { --dot-width: 34vw; }
+  :root { --dot-width: 22vw; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #dot, .dot-head, .dot-glow { transition: none; animation: none !important; }
+  #dot, .dot-head, .dot-figure { transition: none; animation: none !important; }
+  body.live #dot { opacity: 1; transform: none; }
 }
