@@ -17,20 +17,21 @@ Scored 0 to 10 each in agent/prompts/judge.md.
 
 ## Human set (submitter only)
 
-Source: Olivia's team_question_set.xlsx, Oct 24. The "Get judged" flow asks these in lane two.
+Source: Olivia's Figma (the 9 Questions section and the Agent screen), Oct 25. It replaces her Oct 24 team_question_set.xlsx. The "Get judged" flow asks these in lane two.
 
 ## Question set
 
 | # | Question | Feeds criterion | What to listen for |
 |---|---|---|---|
-| 1 | Who did you talk to or learn from about this problem, and what surprised you? | Theory of change | Named people, partners, or data. A surprise that changed the plan. |
-| 2 | If this works, what changes for one specific person? | Theory of change | A concrete person and outcome, not "an app for X". |
-| 3 | What could go wrong, and who would be hurt first? | Harm awareness | Named risks (privacy, misuse, over-reliance) and some mitigation. |
-| 4 | What already exists, and why wasn't it enough? Why this approach over a simpler one? | Necessity and novelty | Landscape awareness. A specific gap. Tech that earns its place. |
-| 5 | What's the first thing that would break if 1,000 people used this? | Soundness | Honest limits. Architecture and backend thought through. |
-| 6 | What did you cut or simplify, and why? | Soundness, Usability and craft | Deliberate tradeoffs rather than accidents. |
-| 7 | What did you learn and take away from building this? | Growth (evidence of care) | See Growth answer cues below. |
-| 8 | What would you tell the next team attempting this? | Growth (follow-up probe) | Harder to answer generically. Shows whether the lesson was absorbed. |
+| 1 | Who is this for, and what problem are they facing? | Theory of change | A specific person and a real problem, not "everyone". |
+| 2 | If this works perfectly, what changes for them? | Theory of change | A concrete outcome for that person, not "an app for X". |
+| 3 | Who could this hurt or leave out, and what did you do about it? | Harm awareness | Named risks and people left out, and what was done about them. |
+| 4 | Does the way it looks and sounds fit the people it's for? | Merit (usability and craft) | Design and tone chosen for the audience, not a default template. |
+| 5 | What already exists in this space, and why isn't it enough? | Necessity and novelty | Knowing the landscape. A specific gap. |
+| 6 | What's the one thing here you haven't seen done before? | Necessity and novelty | A fresh angle, even a small one, named plainly. |
+| 7 | Who did you test it with, what did they say, and what did you change? | Merit, Growth | Real people, real feedback, and a change it caused. |
+| 8 | Where did you use AI, and where did you step in and overrule it? | Merit (judicious use of AI) | AI used with judgment, and a moment the builder overruled it. |
+| 9 | What did you learn and take away from building this? | Growth (evidence of care) | See Growth answer cues below. |
 
 ## Growth answer cues
 

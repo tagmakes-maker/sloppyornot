@@ -60,7 +60,7 @@ Agent read, 60 points. The agent answers the six AI questions in agent/judging-q
 
 ### Human score (50 points)
 
-The agent scores each of the eight human questions 0 to 5 with agent/prompts/score-answers.md. Sum x 1.25 = human score out of 50. A blank answer scores 0.
+The agent scores each of the nine human questions 0 to 5 with agent/prompts/score-answers.md. Sum x 10 / 9 = human score out of 50, so nine perfect answers (45) make 50. The 70 line and the AI floor do not change. A blank answer scores 0.
 
 ### What never touches the verdict
 
