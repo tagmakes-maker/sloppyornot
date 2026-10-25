@@ -46,15 +46,21 @@ Everything below uses the Product Profile from `shared/profile.schema.json`. Rou
 
 ### Review (the swipe)
 
-**`POST /products/:id/review`** records one person's swipe. Send any of these five fields as a number from 0 to 1 (1 means yes):
+**`POST /products/:id/review`** records one person's swipe. Send all five fields, each as `true`/`false` or a number from 0 to 1 (1 means yes):
 
 ```json
-{ "would_use": 1, "understood_immediately": 0, "feels_distinctive": 1, "easy_to_use": 1, "looks_like_slop": 0 }
+{ "would_use": true, "understood_immediately": false, "feels_distinctive": true, "easy_to_use": true, "looks_like_slop": false }
 ```
+
+A swipe missing a field, or with a value like `"yes"` or `2`, gets a 400 that names the bad fields, and nothing is saved.
 
 The worker averages each field into `human_review`, adds 1 to `human_review.swipe_count`, and sets `human_review.verified` to true at 5 swipes. Returns the profile.
 
 Add `"test": true` to a swipe and the worker throws it away without saving or counting it, then returns `{"ignored": true, "reason": "test swipe", "id": "..."}`. Scripts use this so testing never changes real scores. The site should never send it.
+
+### Automated checks
+
+**`POST /products/:id/check`** visits the product's `url` and records two things in `automated_checks`: `loads` (the page answered with a 2xx status) and `security_headers` (it sends Content-Security-Policy or Strict-Transport-Security), plus `checked_at`. It leaves `performance`, `accessibility`, and the other fields alone. Returns the profile plus `check_details` with the HTTP status and which headers it found. It refuses seed products, because their urls are made up and their checks are seeded. Call it once after a real submission.
 
 ### Agent
 

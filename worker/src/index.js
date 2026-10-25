@@ -74,6 +74,16 @@ async function handleReview(id, request, env) {
   // test swipes prove the route works but never touch real scores
   if (body.test === true) return json({ ignored: true, reason: "test swipe", id });
 
+  // every swipe answers all five, as true/false or a number from 0 to 1,
+  // because one count is shared by every average
+  const bad = SWIPE_FIELDS.filter((f) => {
+    const v = body[f];
+    return typeof v !== "boolean" && !(typeof v === "number" && v >= 0 && v <= 1);
+  });
+  if (bad.length) {
+    return json({ error: "each of these must be true/false or a number from 0 to 1: " + bad.join(", ") }, 400);
+  }
+
   // save the raw swipe
   const rawKey = "reviews:" + id;
   const raw = (await env.STORE.get(rawKey, "json")) || [];
@@ -85,10 +95,8 @@ async function handleReview(id, request, env) {
   const count = (hr.swipe_count || 0) + 1;
 
   for (const field of SWIPE_FIELDS) {
-    if (body[field] !== undefined) {
-      const prev = hr[field] ?? 0;
-      hr[field] = ((prev * (count - 1)) + Number(body[field])) / count;
-    }
+    const prev = hr[field] ?? 0;
+    hr[field] = ((prev * (count - 1)) + Number(body[field])) / count;
   }
 
   hr.swipe_count = count;
@@ -99,6 +107,34 @@ async function handleReview(id, request, env) {
 
   await env.STORE.put("product:" + id, JSON.stringify(profile));
   return json(profile);
+}
+
+// Issue #8 automated checks, a stub: does the url load, does it send security headers.
+// Seed products are skipped because their urls are made up and their checks are seeded.
+async function handleCheck(id, env) {
+  const profile = await env.STORE.get("product:" + id, "json");
+  if (!profile) return json({ error: "not found" }, 404);
+  if (profile.is_seed) return json({ error: "seed products keep their seeded checks" }, 400);
+  if (!profile.url) return json({ error: "product has no url" }, 400);
+
+  let res = null;
+  try {
+    res = await fetch(profile.url, { redirect: "follow", signal: AbortSignal.timeout(10000) });
+  } catch {}
+
+  const found = res ? ["content-security-policy", "strict-transport-security"].filter((h) => res.headers.has(h)) : [];
+
+  // only the fields this stub measures; performance and the rest stay as they were
+  profile.automated_checks = {
+    ...profile.automated_checks,
+    loads: !!res && res.ok,
+    security_headers: found.length > 0,
+    checked_at: new Date().toISOString(),
+  };
+  profile.updated_at = profile.automated_checks.checked_at;
+
+  await env.STORE.put("product:" + id, JSON.stringify(profile));
+  return json({ ...profile, check_details: { status: res ? res.status : null, security_headers_found: found } });
 }
 
 // ---- Issue #9: agent runtime ----
@@ -304,6 +340,9 @@ export default {
     // Issue #8: reviews and automated checks
     const reviewMatch = path.match(/^\/products\/([^\/]+)\/review$/);
     if (reviewMatch && method === "POST") return handleReview(reviewMatch[1], request, env);
+
+    const checkMatch = path.match(/^\/products\/([^\/]+)\/check$/);
+    if (checkMatch && method === "POST") return handleCheck(checkMatch[1], env);
 
     // Issue #9: agent runtime
     const observeMatch = path.match(/^\/agent\/observe\/([^\/]+)$/);
