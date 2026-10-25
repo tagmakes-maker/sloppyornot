@@ -215,7 +215,7 @@ async function runAgent(step, input, env) {
 
   // append to agentlog
   const log = (await env.STORE.get("agentlog", "json")) || [];
-  log.push({ step, at: new Date().toISOString(), input_summary: input.profile?.id || input.product_a?.id || input.url || "unknown", result });
+  log.push({ step, at: new Date().toISOString(), input_summary: input.profile?.id || input.product_a?.id || "unknown", result });
   await env.STORE.put("agentlog", JSON.stringify(log));
 
   return result;
@@ -420,11 +420,7 @@ async function fetchPage(url) {
   for (let hop = 0; hop <= 3; hop++) {
     const u = new URL(target);
     if (u.protocol !== "https:" && u.protocol !== "http:") return null;
-    const r = await fetch(u, {
-      redirect: "manual",
-      signal: AbortSignal.timeout(10000),
-      headers: { "user-agent": "SloppyOrNot/1.0 (+https://sloppyornot.com)" },
-    });
+    const r = await fetch(u, { redirect: "manual", signal: AbortSignal.timeout(10000) });
     const next = r.headers.get("location");
     if (r.status >= 300 && r.status < 400 && next) {
       target = new URL(next, u).href;
@@ -510,9 +506,9 @@ async function pageSpeed(url, env) {
   }
 }
 
-// the og:image as thumbnail bytes. SVG is refused because it can carry scripts.
+// the og:image as thumbnail bytes, PNG or JPEG only
 // TODO: same known limit as fetchPage. Where the image url points is not checked.
-const THUMB_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+const THUMB_TYPES = ["image/jpeg", "image/png"];
 
 async function fetchThumb(imageUrl) {
   if (!imageUrl) return null;
@@ -621,11 +617,9 @@ async function handleJudge(request, env) {
     return json({ error: "Too many new projects were judged from your network. Try again in an hour." }, 429);
   }
 
+  // the card shows "@" + by, and GET /projects must never contain "@"
   const by = String(body.by || "").replace(/@/g, "").trim().slice(0, 40) || "anonymous";
   const now = new Date().toISOString();
-
-  // PageSpeed is the slowest step, so it runs while the page is read and judged
-  const speed = pageSpeed(url, env);
 
   let fetched = null;
   try { fetched = await fetchPage(url); } catch {}
@@ -638,23 +632,25 @@ async function handleJudge(request, env) {
     page.text = (page.text + " " + body.description.trim().slice(0, 500)).trim();
   }
 
+  const ps = await pageSpeed(url, env);
   const checks = {
     loads,
+    performance: ps.performance,
+    accessibility: ps.accessibility,
     mobile_ok: viewport,
     security_headers: !!res && (res.headers.has("content-security-policy") || res.headers.has("strict-transport-security")),
     console_errors: 0,
+    checked_at: now,
   };
 
-  // a page that does not load is Sloppy with no agent call. No profile or card, so it never shows on the Judge screen.
+  // a page that does not load is Sloppy with no agent call. The schema needs fields only the agent writes,
+  // so it gets no profile or card and never shows on the Judge screen.
   if (!loads) {
     const id = await newJudgeId(url, env);
-    checks.performance = 0;
-    checks.accessibility = 0;
-    checks.checked_at = now;
     const judge = {
       url, lane: 1, ai_answers: [], agent_review: null, automated_checks: checks, ai_score: round1(measuredPoints(checks)),
       human_answers: null, human_score: null, total: null, verdict: "Sloppy", judged_at: now,
-      fetch_status: res ? res.status : null,
+      pagespeed_note: ps.note, fetch_status: res ? res.status : null,
     };
     judge.total = judge.ai_score;
     await env.STORE.put("judge:" + id, JSON.stringify(judge));
@@ -662,14 +658,9 @@ async function handleJudge(request, env) {
     return json(judgeResult(id, judge, null));
   }
 
-  const thumbPromise = fetchThumb(image);
-
-  // performance and accessibility are still running, so the agent sees the checks it has so far.
-  // The prompt never scores them; they only feed the measured points below.
   const reply = await runAgent("judge", { url, page, automated_checks: checks }, env);
-  if (reply.enough_content === false) {
-    return json({ needs_description: true, why: String(reply.why || "") });
-  }
+  // TODO: retry once with Browser Rendering before asking, once CF_BROWSER_TOKEN is set
+  if (reply.enough_content === false) return json({ needs_description: true });
 
   // a reply without all six scores is an error, not a zero, so a site is never Sloppy by accident
   const aiAnswers = AI_QUESTIONS.map(({ id, question }) => {
@@ -679,11 +670,7 @@ async function handleJudge(request, env) {
     return { id, question, score: clamp(score, 0, 10), evidence: String(a.evidence || "") };
   });
 
-  const [ps, thumb, id] = await Promise.all([speed, thumbPromise, newJudgeId(url, env)]);
-  checks.performance = ps.performance;
-  checks.accessibility = ps.accessibility;
-  checks.checked_at = now;
-
+  const id = await newJudgeId(url, env);
   const review = agentReview(aiAnswers);
   const aiScore = round1(measuredPoints(checks) + aiAnswers.reduce((sum, a) => sum + a.score, 0));
   const judge = {
@@ -693,7 +680,7 @@ async function handleJudge(request, env) {
   };
   judge.verdict = verdictFor(judge);
 
-  // the Product Profile, with only schema fields so it still validates
+  // the Product Profile, with only schema fields, fallbacks, and length caps so it always validates
   const p = reply.profile || {};
   const capabilities = (Array.isArray(p.capabilities) ? p.capabilities : [])
     .map((c) => String(c).trim().toLowerCase()).filter(Boolean).slice(0, 12);
@@ -715,18 +702,20 @@ async function handleJudge(request, env) {
     updated_at: now,
   };
 
+  // the card shows exactly three features
   const card = {
-    likes_and_goals: String(reply.card?.likes_and_goals || "").trim().slice(0, 160),
-    brings: (Array.isArray(reply.card?.brings) ? reply.card.brings : [])
-      .map((b) => String(b).trim().slice(0, 60)).filter(Boolean).slice(0, 3),
+    likes_and_goals: String(reply.card?.likes_and_goals || "").trim(),
+    brings: (Array.isArray(reply.card?.brings) ? reply.card.brings : []).map((b) => String(b).trim()).filter(Boolean).slice(0, 3),
   };
 
   await Promise.all([
     env.STORE.put("product:" + id, JSON.stringify(profile)),
     env.STORE.put("judge:" + id, JSON.stringify(judge)),
     env.STORE.put("card:" + id, JSON.stringify(card)),
-    thumb ? env.STORE.put("thumb:" + id, thumb.bytes, { metadata: { contentType: thumb.contentType } }) : null,
   ]);
+
+  const thumb = await fetchThumb(image);
+  if (thumb) await env.STORE.put("thumb:" + id, thumb.bytes, { metadata: { contentType: thumb.contentType } });
   // the url key goes last, so a half-saved judgment is never reused
   await env.STORE.put("url:" + url, id);
 
@@ -814,13 +803,11 @@ async function handleGetProjects(env) {
   return json(cards.filter(Boolean));
 }
 
-// one card the judge has not seen, picked at random. Never a 404, because the site reads 404 as "not live yet".
+// the first card the judge has not seen. Never a 404, because the site reads 404 as "not live yet".
 async function handleNextProject(url, env) {
   const seen = new Set((url.searchParams.get("seen") || "").split(",").map((s) => s.trim()).filter(Boolean));
   const { ids, thumbs } = await cardIdsAndThumbs(env);
-  const unseen = ids.filter((id) => !seen.has(id));
-  while (unseen.length) {
-    const [id] = unseen.splice(Math.floor(Math.random() * unseen.length), 1);
+  for (const id of ids.filter((id) => !seen.has(id))) {
     const card = await loadCard(id, thumbs.has(id), env);
     if (card) return json(card);
   }
@@ -834,7 +821,6 @@ async function handleThumb(id, env) {
     headers: {
       "content-type": metadata?.contentType || "image/jpeg",
       "cache-control": "public, max-age=86400",
-      "x-content-type-options": "nosniff",
       ...CORS,
     },
   });
