@@ -8,6 +8,13 @@ compatibility_date = "2026-10-01"
 #   contact:<id>   {email, at} the owner shared at submit. Never in the profile.
 #   rejections     list of {a_id, b_id, reason, at}
 #   agentlog       list of agent entries, newest last
+# Sloppy or Not judge (issue #40, docs/build-judge-routes.md):
+#   judge:<id>     private scores and verdict. Never returned, except a verdict on /ridicule.
+#   card:<id>      {likes_and_goals, brings} for the public Judge screen
+#   thumb:<id>     thumbnail bytes, metadata {contentType}
+#   url:<url>      product id for a normalized url, so the first verdict is reused
+#   votes:<id>     {slop, not, list} from the Judge screen. Never returned.
+#   limit:...      counters for the /judge cap. Expire on their own.
 # Created Oct 24 in the dashboard (Workers KV > STORE).
 # Local dev and production share this one namespace for the weekend.
 [[kv_namespaces]]
@@ -19,4 +26,5 @@ PROMPTS_BASE = "https://raw.githubusercontent.com/tagmakes-maker/sloppyornot/mai
 ANTHROPIC_MODEL = "claude-opus-5-5"
 
 # Secrets (never in this file): npx wrangler secret put ANTHROPIC_API_KEY
+# Optional: PAGESPEED_API_KEY raises Google's PageSpeed quota. Without it /judge still works.
 # Local dev: copy ../.env.example to worker/.dev.vars and fill it in
