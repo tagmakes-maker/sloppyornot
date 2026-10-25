@@ -1,0 +1,66 @@
+{
+  "stack": [
+    "HTML",
+    "CSS",
+    "Cloudflare Pages"
+  ],
+  "integrations": [],
+  "potential_matches": [],
+  "match_status": "unmatched",
+  "consent": {
+    "testing": true,
+    "roast_me": false,
+    "matching": true,
+    "aro_cohort_6mo": false
+  },
+  "status": "seed",
+  "is_seed": true,
+  "created_at": "2026-10-25T19:20:00Z",
+  "updated_at": "2026-10-25T19:20:00Z",
+  "id": "clearpath",
+  "name": "ClearPath",
+  "url": "https://sloppyornot.com/demo/clearpath/",
+  "builder": "AI Tech Girlfriends (demo project)",
+  "what_it_does": "An accessibility fixer for small sites. One script tag audits the page, writes alt text for images, fixes low-contrast text, and makes every button and filter work from the keyboard, then shows what it changed.",
+  "target_user": "Small teams and solo builders who shipped a site and know it fails screen readers but have no time to fix it by hand.",
+  "capabilities": [
+    "accessibility",
+    "alt-text",
+    "keyboard-navigation",
+    "contrast-fixes",
+    "screen-reader-testing"
+  ],
+  "human_review": {
+    "swipe_count": 6,
+    "would_use": 0.44,
+    "understood_immediately": 0.79,
+    "feels_distinctive": 0.71,
+    "easy_to_use": 0.8,
+    "looks_like_slop": 0.21,
+    "verified": true
+  },
+  "automated_checks": {
+    "loads": true,
+    "performance": 91,
+    "accessibility": 100,
+    "mobile_ok": true,
+    "security_headers": true,
+    "console_errors": 0,
+    "checked_at": "2026-10-25T19:20:00Z"
+  },
+  "strengths": [
+    "accessibility",
+    "understood_immediately",
+    "easy_to_use"
+  ],
+  "weaknesses": [
+    "value-prop"
+  ],
+  "agent_observations": [
+    {
+      "at": "2026-10-25T19:20:00Z",
+      "source": "human_review",
+      "note": "ClearPath is clear and well made, but reviewers were not sure why they would use it, because it has no real site of its own to show the fixes on. It is most useful attached to a product people already want."
+    }
+  ]
+}

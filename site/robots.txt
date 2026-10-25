@@ -3,6 +3,7 @@ User-agent: *
 Allow: /
 Disallow: /pitch/
 Disallow: /gituationship/
+Disallow: /demo/
 
 User-agent: GPTBot
 User-agent: OAI-SearchBot
@@ -18,5 +19,6 @@ User-agent: Applebot-Extended
 Allow: /
 Disallow: /pitch/
 Disallow: /gituationship/
+Disallow: /demo/
 
 Sitemap: https://sloppyornot.com/sitemap.xml
