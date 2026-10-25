@@ -16,7 +16,7 @@ The script needs the deck in this order: HelpDock, Porchlight, FloodWatch CHS, t
 2. In site/judge.html, inside `render(p)`, add `document.body.dataset.productId = p.id;`.
 3. In site/pitch/roast-overlay.js, read the product id on each click instead of once at load, so the roast always matches the card on screen.
 4. Add `<script src="/pitch/roast-overlay.js" defer></script>` to site/judge.html. It does nothing without `?demo=1`, so the real product is unaffected.
-5. In roast-overlay.js, drop the "a chat bubble" line from the HelpDock set (see "Lines we cut" below).
+5. In roast-overlay.js, drop the "a chat bubble" line from the HelpDock set (see "Lines we cut" below), and swap the lines that say a score out loud for the number-free versions in this doc.
 
 If none of that lands, use two tabs on the current deck and skip HelpDock:
 
@@ -26,14 +26,14 @@ If none of that lands, use two tabs on the current deck and skip HelpDock:
 
 ## The cached roasts (beat 1)
 
-Two lines per product. The first line is the joke. The second line is the receipt, so the audience learns what the checks do.
+Two lines per product. Each joke points at something the checks really found, so the audience learns what the checks do. No scores out loud: users only ever see Sloppy or Not, and the numbers stay in the backend.
 
 ### HelpDock (lead roast, the real slop)
 
 Seed facts: performance 44, no security headers, 2 console errors, only 33 percent of reviewers found it distinctive, 41 percent said it looks like slop.
 
-1. **Jacky:** "Performance score 44. My microwave loads faster, and it is from 2004."
-2. **Olivia:** "Two console errors. The help widget needs a help widget."
+1. **Jacky:** "This page loads slower than my microwave, and my microwave is from 2004."
+2. **Olivia:** "It throws errors on load. The help widget needs a help widget."
 3. **Therese:** "No security headers. The front door is open and the FAQ bot is the doorman."
 4. **Olivia (backup):** "Two out of three reviewers could not tell it apart from every other chat bubble on the internet."
 
@@ -41,13 +41,13 @@ Seed facts: performance 44, no security headers, 2 console errors, only 33 perce
 
 Seed facts: 4 console errors, no security headers. Reviewers love it (81 percent would use it), so roast the code, not the idea.
 
-1. **Jacky:** "Four console errors. That is not a website, that is a cry for help."
+1. **Jacky:** "Open the browser console. That is not a website, that is a cry for help."
 2. **Therese:** "People love it. The browser console does not."
 3. **Olivia (backup):** "No security headers. Volunteers, please also volunteer to guard the database."
 
 ### ShiftSwap CHS (out of the timed run, use only if the room is slow)
 
-Seed facts: fails the mobile check, performance 68. It comes back later as the agent's fallback match, so keep the roast light.
+Seed facts: fails the mobile check. Do not roast it in the timed run: it is the match Olivia approves live in G3.
 
 1. **Olivia:** "A shift swap app that fails on mobile. Where do you think servers check their shifts? A desk?"
 2. **Jacky:** "Pinch, zoom, scroll sideways, cry. The full mobile experience."
@@ -68,9 +68,9 @@ Stage directions are in brackets. Therese drives the laptop unless noted.
 
 **Therese:** "First contestant. HelpDock. A support chat bot."
 
-**Jacky:** "Performance score 44. My microwave loads faster, and it is from 2004."
+**Jacky:** "This page loads slower than my microwave, and my microwave is from 2004."
 
-**Olivia:** "Two console errors. The help widget needs a help widget."
+**Olivia:** "It throws errors on load. The help widget needs a help widget."
 
 **Therese:** "No security headers. The front door is open and the FAQ bot is the doorman."
 
@@ -80,7 +80,7 @@ Stage directions are in brackets. Therese drives the laptop unless noted.
 
 **Olivia:** "Oh, I like this one."
 
-**Jacky:** "Four console errors. That is not a website, that is a cry for help."
+**Jacky:** "Open the browser console. That is not a website, that is a cry for help."
 
 **Therese:** "People love it. The browser console does not."
 
