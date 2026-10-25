@@ -1,6 +1,23 @@
 # Judging questions
 
-Source: Olivia's team_question_set.xlsx, Oct 24. The "Get judged" flow asks these. The person answers them, or the agent drafts answers from the submitted URL and the person edits them before scoring.
+There are two sets. The AI set is answered only by the agent, from the submitted URL. The human set is answered only by the submitter, and only in lane two (see docs/scoring.md). The agent never drafts answers to the human set.
+
+## AI set (agent only)
+
+Scored 0 to 10 each in agent/prompts/judge.md.
+
+| # | Question | Slop sounds like |
+|---|---|---|
+| A1 | Can a stranger tell what this does and who it is for from the first screen? | A hero line that could sit on any site. |
+| A2 | Does it actually do the thing, or only promise it? | A landing page with a waitlist and no product. |
+| A3 | Would you recognize it a week later, or does it look like a template? | Default gradients, stock icons, three identical feature cards. |
+| A4 | Was the copy written by someone who cares? | Filler like "unlock the power of" and "seamless". |
+| A5 | Can you reach the core action without hitting a dead end? | Broken links, lorem ipsum, buttons that go nowhere. |
+| A6 | Do the claims match what is on the page? | "Trusted by thousands" on a project that is two days old. |
+
+## Human set (submitter only)
+
+Source: Olivia's team_question_set.xlsx, Oct 24. The "Get judged" flow asks these in lane two.
 
 ## Question set
 
@@ -24,6 +41,6 @@ Source: Olivia's team_question_set.xlsx, Oct 24. The "Get judged" flow asks thes
 | Honest about gaps | Names what they would do differently or still don't understand. | Pure triumph with no friction (mild warning sign). |
 | Learned about the problem, not just the tools | Insight about the people they are building for. Feeds the impact claim. | Only framework or tool learning (growth for the builder, weaker signal for impact). |
 
-## Rule for agent-drafted answers
+## Rule for the human set
 
-The agent can only use what the submitted URL shows. Questions 1, 3, 7, and 8 are about the team's experience, so the agent marks its draft as a guess and the human must confirm or rewrite it. No score is shown until a human has seen every answer.
+The agent never drafts answers to the human set. Only the submitter answers it. The agent scores the answers with agent/prompts/score-answers.md, and the submitter never sees a number, only the final Sloppy or Not.
