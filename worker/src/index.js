@@ -11,15 +11,21 @@ const CORS = {
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json", ...CORS } });
 
+// the parsed body if it is a JSON object, otherwise null (bad JSON, null, an array, a number)
+async function readObject(request) {
+  try {
+    const body = await request.json();
+    return body && typeof body === "object" && !Array.isArray(body) ? body : null;
+  } catch {
+    return null;
+  }
+}
+
 // ---- Issue #7: products ----
 
 async function handleSubmitProduct(request, env) {
-  let body;
-  try {
-    body = await request.json();
-  } catch {
-    return json({ error: "invalid JSON" }, 400);
-  }
+  const body = await readObject(request);
+  if (!body) return json({ error: "body must be a JSON object" }, 400);
 
   if (!body.id || !body.name || !body.what_it_does || !body.target_user || !body.capabilities) {
     return json({ error: "missing required fields: id, name, what_it_does, target_user, capabilities" }, 400);
@@ -64,12 +70,8 @@ async function handleReview(id, request, env) {
   const profile = await env.STORE.get("product:" + id, "json");
   if (!profile) return json({ error: "not found" }, 404);
 
-  let body;
-  try {
-    body = await request.json();
-  } catch {
-    return json({ error: "invalid JSON" }, 400);
-  }
+  const body = await readObject(request);
+  if (!body) return json({ error: "body must be a JSON object" }, 400);
 
   // test swipes prove the route works but never touch real scores
   if (body.test === true) return json({ ignored: true, reason: "test swipe", id });
@@ -116,10 +118,24 @@ async function handleCheck(id, env) {
   if (!profile) return json({ error: "not found" }, 404);
   if (profile.is_seed) return json({ error: "seed products keep their seeded checks" }, 400);
   if (!profile.url) return json({ error: "product has no url" }, 400);
+  if (!/^https?:\/\//i.test(profile.url)) return json({ error: "url must start with http:// or https://" }, 400);
 
+  // follow at most 3 redirects by hand so every hop is checked to be http or https
   let res = null;
+  let target = profile.url;
   try {
-    res = await fetch(profile.url, { redirect: "follow", signal: AbortSignal.timeout(10000) });
+    for (let hop = 0; hop <= 3; hop++) {
+      const u = new URL(target);
+      if (u.protocol !== "https:" && u.protocol !== "http:") break;
+      const r = await fetch(u, { redirect: "manual", signal: AbortSignal.timeout(10000) });
+      const next = r.headers.get("location");
+      if (r.status >= 300 && r.status < 400 && next) {
+        target = new URL(next, u).href;
+        continue;
+      }
+      res = r;
+      break;
+    }
   } catch {}
 
   const found = res ? ["content-security-policy", "strict-transport-security"].filter((h) => res.headers.has(h)) : [];
@@ -272,8 +288,7 @@ async function handleApprove(id, request, env) {
   const partner = await env.STORE.get("product:" + proposal.product_id, "json");
   if (!partner) return json({ error: "partner product not found" }, 404);
 
-  let body = {};
-  try { body = await request.json(); } catch {}
+  const body = (await readObject(request)) || {};
 
   const now = new Date().toISOString();
   const match = { ...proposal, approved_by: body.approved_by || "human", approved_at: now };
@@ -293,12 +308,8 @@ async function handleReject(id, request, env) {
   if (!profile) return json({ error: "not found" }, 404);
   if (profile.match_status !== "proposed") return json({ error: "no proposal to reject" }, 400);
 
-  let body;
-  try {
-    body = await request.json();
-  } catch {
-    return json({ error: "invalid JSON" }, 400);
-  }
+  const body = await readObject(request);
+  if (!body) return json({ error: "body must be a JSON object" }, 400);
 
   if (!body.reason) return json({ error: "reason required" }, 400);
 
