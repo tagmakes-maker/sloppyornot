@@ -75,8 +75,8 @@
     color: var(--white); font-weight: 700; font-size: 15px;
   }
   .robot {
-    position: absolute; bottom: 90px; left: calc(50% - 170px);
-    width: 96px; image-rendering: pixelated; transform-origin: 70% 90%;
+    position: absolute; bottom: 112px; left: calc(50% - 210px);
+    width: 120px; image-rendering: pixelated; transform-origin: 70% 90%;
   }
   .robot.digging { animation: dig 450ms steps(2) infinite; }
   .repo {
@@ -105,7 +105,7 @@
   .hug.on #logo-left { animation: slide-left 700ms ease-out forwards, squeeze 400ms 700ms ease-in-out 2; }
   .hug.on #logo-right { animation: slide-right 700ms ease-out forwards, squeeze 400ms 700ms ease-in-out 2; }
   .heart {
-    position: absolute; left: 50%; top: 0 !important; width: 56px !important; height: 48px !important; margin-left: -28px;
+    position: absolute; left: 50%; top: 0 !important; width: 56px !important; height: 50px !important; margin-left: -28px;
     image-rendering: pixelated; opacity: 0;
   }
   .hug.on .heart { animation: heart 1600ms 900ms ease-out forwards; }
@@ -171,20 +171,35 @@
   <h1>The agent goes digging.</h1>
   <p class="sub">FloodWatch is weak at one thing: onboarding.</p>
   <div class="dig">
-    <svg class="robot" id="robot" viewBox="0 0 12 14" shape-rendering="crispEdges" aria-label="Pixel robot with a shovel">
-      <rect x="5" y="0" width="1" height="2" fill="#25252B"/>
-      <rect x="4" y="0" width="3" height="1" fill="#E92A97"/>
-      <rect x="2" y="2" width="7" height="5" fill="#25252B"/>
-      <rect x="3" y="3" width="2" height="2" fill="#FFFFFF"/>
-      <rect x="6" y="3" width="2" height="2" fill="#FFFFFF"/>
-      <rect x="4" y="4" width="1" height="1" fill="#E92A97"/>
-      <rect x="7" y="4" width="1" height="1" fill="#E92A97"/>
-      <rect x="3" y="7" width="5" height="4" fill="#6B6B75"/>
-      <rect x="3" y="11" width="2" height="2" fill="#25252B"/>
-      <rect x="6" y="11" width="2" height="2" fill="#25252B"/>
-      <rect x="8" y="8" width="1" height="1" fill="#6B6B75"/>
-      <rect x="9" y="6" width="1" height="6" fill="#8A5A3B"/>
-      <rect x="8" y="12" width="3" height="2" fill="#B9B9C2"/>
+    <svg class="robot" id="robot" viewBox="0 0 16 18" shape-rendering="crispEdges" aria-label="Pixel robot with a shovel">
+      <rect x="7" y="0" width="2" height="1" fill="#F5C33B"/>
+      <rect x="7.5" y="1" width="1" height="1" fill="#111"/>
+      <rect x="3" y="2" width="10" height="7" fill="#111"/>
+      <rect x="4" y="3" width="8" height="5" fill="#C9D1DB"/>
+      <rect x="5" y="4" width="6" height="3" fill="#111"/>
+      <rect x="6" y="4" width="1" height="1" fill="#3DE0F0"/>
+      <rect x="9" y="4" width="1" height="1" fill="#3DE0F0"/>
+      <rect x="7" y="6" width="2" height="1" fill="#3DE0F0"/>
+      <rect x="6" y="5.5" width="1" height="0.5" fill="#3DE0F0"/>
+      <rect x="9" y="5.5" width="1" height="0.5" fill="#3DE0F0"/>
+      <rect x="2" y="4" width="1" height="3" fill="#3DE0F0"/>
+      <rect x="13" y="4" width="1" height="3" fill="#3DE0F0"/>
+      <rect x="7" y="9" width="2" height="1" fill="#3A3A42"/>
+      <rect x="4" y="10" width="8" height="5" fill="#111"/>
+      <rect x="5" y="10" width="6" height="4" fill="#C9D1DB"/>
+      <rect x="6" y="11" width="1" height="2" fill="#3A3A42"/>
+      <rect x="8" y="11" width="1" height="1" fill="#E53935"/>
+      <rect x="9" y="11" width="1" height="1" fill="#F5C33B"/>
+      <rect x="8" y="12" width="1" height="1" fill="#22C55E"/>
+      <rect x="9" y="12" width="1" height="1" fill="#22C55E"/>
+      <rect x="3" y="10" width="1" height="3" fill="#C9D1DB"/>
+      <rect x="12" y="10" width="1" height="3" fill="#C9D1DB"/>
+      <rect x="6" y="15" width="1" height="1" fill="#8D96A3"/>
+      <rect x="9" y="15" width="1" height="1" fill="#8D96A3"/>
+      <rect x="5" y="16" width="2" height="1" fill="#3DE0F0"/>
+      <rect x="9" y="16" width="2" height="1" fill="#3DE0F0"/>
+      <rect x="13" y="8" width="1" height="7" fill="#8A5A3B"/>
+      <rect x="12" y="15" width="3" height="2" fill="#B9B9C2"/>
     </svg>
     <div class="repo" id="r-helpdock">HelpDock</div>
     <div class="repo" id="r-shiftswap">ShiftSwap CHS</div>
@@ -204,13 +219,29 @@
   </div>
   <p class="why">Fills the gap: <b>onboarding</b>. Confidence 0.85. HelpDock ruled out: it helps users after they are stuck, not on first use.</p>
   <div class="hug" id="hug">
-    <svg class="heart" viewBox="0 0 7 6" shape-rendering="crispEdges" aria-hidden="true">
-      <rect x="1" y="0" width="2" height="1" fill="#E92A97"/><rect x="4" y="0" width="2" height="1" fill="#E92A97"/>
-      <rect x="0" y="1" width="7" height="2" fill="#E92A97"/>
-      <rect x="1" y="3" width="5" height="1" fill="#E92A97"/>
-      <rect x="2" y="4" width="3" height="1" fill="#E92A97"/>
-      <rect x="3" y="5" width="1" height="1" fill="#E92A97"/>
-      <rect x="1" y="1" width="1" height="1" fill="#FFE5F2"/>
+    <svg class="heart" viewBox="0 0 9 8" shape-rendering="crispEdges" aria-hidden="true">
+      <rect x="1" y="0" width="2" height="1" fill="#F01818"/>
+      <rect x="2" y="0" width="1" height="1" fill="#C20E0E"/>
+      <rect x="6" y="0" width="2" height="1" fill="#F01818"/>
+      <rect x="7" y="0" width="1" height="1" fill="#C20E0E"/>
+      <rect x="0" y="1" width="4" height="1" fill="#F01818"/>
+      <rect x="3" y="1" width="1" height="1" fill="#C20E0E"/>
+      <rect x="5" y="1" width="4" height="1" fill="#F01818"/>
+      <rect x="8" y="1" width="1" height="1" fill="#C20E0E"/>
+      <rect x="0" y="2" width="9" height="1" fill="#F01818"/>
+      <rect x="8" y="2" width="1" height="1" fill="#C20E0E"/>
+      <rect x="0" y="3" width="9" height="1" fill="#F01818"/>
+      <rect x="8" y="3" width="1" height="1" fill="#C20E0E"/>
+      <rect x="1" y="4" width="7" height="1" fill="#F01818"/>
+      <rect x="7" y="4" width="1" height="1" fill="#C20E0E"/>
+      <rect x="2" y="5" width="5" height="1" fill="#F01818"/>
+      <rect x="6" y="5" width="1" height="1" fill="#C20E0E"/>
+      <rect x="3" y="6" width="3" height="1" fill="#F01818"/>
+      <rect x="5" y="6" width="1" height="1" fill="#C20E0E"/>
+      <rect x="4" y="7" width="1" height="1" fill="#F01818"/>
+      <rect x="4" y="7" width="1" height="1" fill="#C20E0E"/>
+      <rect x="1" y="1" width="2" height="1" fill="#FFB3B3"/>
+      <rect x="1" y="2" width="1" height="1" fill="#FFB3B3"/>
     </svg>
     <!-- Placeholder logo halves. Replace the contents of these two groups with Olivia's logo halves. -->
     <svg id="logo-left" viewBox="0 0 10 10" shape-rendering="crispEdges" aria-label="Left half of the logo">
