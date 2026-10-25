@@ -18,7 +18,11 @@ The script needs the deck in this order: HelpDock, Porchlight, ShiftSwap CHS, Fl
 4. Add `<script src="/pitch/roast-overlay.js" defer></script>` to site/judge.html. It does nothing without `?demo=1`, so the real product is unaffected.
 5. In roast-overlay.js, drop the "a chat bubble" line from the HelpDock set (see "Lines we cut" below).
 
-If none of that lands, Therese swipes FirstRun right without comment, and the roasts get voiced over whatever card is up. It still works. It is just less tidy.
+If none of that lands, use two tabs on the current deck and skip HelpDock:
+
+1. Tab B (the turn): in the console run `localStorage.setItem("sloppy-seen", '["firstrun"]')`, then reload. FloodWatch CHS shows. Leave this tab alone.
+2. Tab A (the roasts): in a new tab on the same site, run `localStorage.setItem("sloppy-seen", '["firstrun","floodwatch-chs"]')`, then reload. ShiftSwap CHS shows, then Porchlight.
+3. On stage, roast ShiftSwap and Porchlight in Tab A, then switch to Tab B for the turn.
 
 ## The cached roasts (beat 1)
 
