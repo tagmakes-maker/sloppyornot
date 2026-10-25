@@ -1,9 +1,11 @@
-# Robot love clip: white background to the page's near-black, and its fade from white becomes a fade from black.
+# Robot love clip: white background to a page's near-black, and its fade from white becomes a fade from black.
 import sys, glob, os, numpy as np
 from PIL import Image
 from scipy import ndimage as nd
 src, dst = sys.argv[1], sys.argv[2]
-BG = np.array([11, 10, 15], np.float32)  # dot.css --bg
+# Background defaults to dot.css --bg. Pass a hex as the third argument for another page, e.g. 171513 for Gituationship.
+hexbg = sys.argv[3] if len(sys.argv) > 3 else "0b0a0f"
+BG = np.array([int(hexbg[i:i + 2], 16) for i in (0, 2, 4)], np.float32)
 for f in sorted(glob.glob(src + "/*.png")):
     rgb = np.asarray(Image.open(f).convert("RGB")).astype(np.float32)
     # the black outlines are the darkest thing on screen; how washed out they are tells the fade amount

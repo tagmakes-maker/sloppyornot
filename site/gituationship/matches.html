@@ -223,6 +223,7 @@
     if (others.length) html += `<h3 style="font-size:22px;margin-top:8px">Dot also looked at</h3><div class="cards2">${others.map((c) => `<div class="card"><p class="eyebrow">Also considered</p><h3 style="font-size:24px">${esc(c.product_id)}</h3><p>${esc(c.why_not || "")}</p></div>`).join("")}</div>`;
     if (approved && profile.blueprint) {
       const b = profile.blueprint;
+      html += `<video class="robots-movie match-movie" src="assets/robot-love.mp4" autoplay muted playsinline aria-label="Two pixel robots holding hands under a red heart"></video>`;
       html += `<div class="card" style="margin-top:8px"><p class="eyebrow">Super Product Blueprint</p><h3>${esc(b.combined_concept)}</h3>
         <p><strong>${esc(profile.name)} brings:</strong> ${esc(b.contribution_a)}</p><p><strong>${esc(name)} brings:</strong> ${esc(b.contribution_b)}</p>
         <p><strong>Who it is for:</strong> ${esc(b.target_user)}</p><p><strong>First build:</strong> ${esc(b.first_build)}</p></div>`;
