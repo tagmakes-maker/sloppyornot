@@ -1,7 +1,7 @@
 // Pitch demo only. Not part of the product.
 // Plays Dot's intro, cuts to TV static, dissolves into the live site, and seats Dot in the corner.
 // URL options: ?skip=1 goes straight to the live site. ?page=/judge opens a different page in the frame.
-// ?practice=1 is the rehearsal copy: G makes a fresh Gigs Tonight copy every run, so the stage pair stays untouched.
+// ?practice=1 is the rehearsal mode: G makes a fresh Gigs Tonight copy every run, so the stage pair stays untouched.
 // Keys: S skips the intro. G opens the Gituationship match page. C plays the close. Escape leaves the close.
 (function () {
   const params = new URLSearchParams(location.search);
@@ -155,8 +155,9 @@
     setState("idle");
   }
 
-  // Practice: copy the Gigs Tonight profile under a new id, with matching consent off so
-  // the copy is never offered as someone else's match. Then open its match page.
+  // Practice: copy the Gigs Tonight profile under a new id, then open its match page.
+  // Matching consent stays on: the agent reads it as product A opting out. The copies only offer
+  // event listings, which no product in the pool is missing, so they are never anyone's pick.
   let opening = false;
   async function openMatch() {
     if (opening) return;

@@ -10,7 +10,7 @@
   "consent": {
     "testing": true,
     "roast_me": false,
-    "matching": false,
+    "matching": true,
     "aro_cohort_6mo": false
   },
   "status": "seed",
