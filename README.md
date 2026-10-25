@@ -44,7 +44,7 @@ Payments, Stripe, complex accounts, giant profiles, social network, production m
 
 ## Deadlines
 
-- Devpost submission: Sunday Oct 25, 5:00 PM (description, repo access, AI collaboration story)
+- Devpost submission: Sunday Oct 25, 4:00 PM (description, repo access, AI collaboration story)
 - Live pitch: Sunday 6:00 PM, 5 min plus 3 min Q&A
 
 ## Team
