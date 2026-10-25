@@ -24,8 +24,8 @@ A slideshow with links to the live site, done in the style of Mystery Science Th
 | 2:20 to 3:00 | Checks and memory | Jacky | Automated checks next to human scores, kept separate. Then the agent's memory: the rejection she gave it last night and how its reasoning changed. | Straight |
 | 3:00 to 3:15 | 3. "You've been noticed." | Therese | The invite pops up. | Payoff |
 | 3:15 to 4:30 | 4 and 5. The git relationship | Therese narrates, Olivia presses Approve | Slides G1 to G4 below. | Straight with one cute moment |
-| 4:30 to 4:50 | Close | Therese | The Super Product Blueprint and the one line we are proving. | Straight |
-| 4:50 to 5:00 | Buffer | | | |
+| 4:30 to 4:45 | Close | Therese | The Super Product Blueprint and the one line we are proving. | Straight |
+| 4:45 to 5:00 | Community impact | All three | Women in AI connecting, and less AI slop means less AI waste. See docs/community-impact.md. | Warm |
 
 **Rule:** comedy for the problem, straight delivery for the solution. Once signup starts, the hecklers become cheerleaders, not interrupters.
 
@@ -40,6 +40,8 @@ A slideshow with links to the live site, done in the style of Mystery Science Th
 **Therese, match narration:** "FloodWatch is not sloppy. That makes it worth dating. Nobody is perfect, and its weak spot is onboarding. So the agent goes looking."
 
 **Therese, close:** "A persistent agent that understands products, learns from human judgment, and finds the partner that makes both better. Humans approve every match."
+
+**All three, community impact (last 15 seconds):** "We're AI Tech Girlfriends. Three women who build with AI and want more women doing it together. Sloppy or Not pushes everyone to build fewer, better things, because every slop project burns energy for nothing. We bring people together through new tech, and we make it fun."
 
 ## The git relationship slides (G1 to G4)
 

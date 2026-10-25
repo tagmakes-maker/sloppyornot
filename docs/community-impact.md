@@ -2,6 +2,15 @@
 
 Judging includes community building and support. This is the case, strongest first. Lead with what we can demo.
 
+## The headline (added Oct 25, Therese)
+
+We bring people together through new tech, in a fun way. Two folds, and both go in the pitch:
+
+1. **Women in AI, connected.** Sloppy or Not is built by AI Tech Girlfriends (aitechgirlfriends.com): three women who build with AI and want more women doing it together. The footer credits it on every page. Gituationship is the same idea at product scale: it connects builders instead of leaving them to build alone.
+2. **Less AI slop, less AI waste.** Every throwaway project burns compute, energy, and water to make something nobody uses. Sloppy or Not pushes builders toward products that are sustainable, meaningful, and genuinely useful, so the AI that goes into building them is worth it.
+
+Pitch rule for fold 2: say it as a direction, not a number. We do not measure energy saved, so never claim a figure. "Build fewer, better things" is the honest version.
+
 ## 1. The room grades the room
 
 Every HarborHack team gets reviewed by every other team. Scan a QR code, 20 seconds, swipe. The hackathon becomes its own feedback loop, live, on Sunday. This is the one we demonstrate.
