@@ -102,14 +102,14 @@ This is our strongest Non-Human Collaboration moment: a human says no, and the a
 1. When G2 finishes, G3 loads the open proposal for `floodwatch-chs` from `GET /products/floodwatch-chs` and shows the partner and the agent's reasoning. It never shows the confidence number.
 2. Reject opens a reason box, prefilled with Jacky's line. "Send to the agent" calls `POST /matches/floodwatch-chs/reject`, then `POST /agent/propose/floodwatch-chs`, and shows the new pick with "What it remembered", which is the agent's own memory reference.
 3. Approve starts `POST /matches/floodwatch-chs/approve` right away, plays the hug while the agent writes, then shows the Blueprint's idea and first build.
-4. If a call fails or takes over 30 seconds, the slide shows the recorded run from agent-log/2026-10-24-2016-demo-beats-tested.json, labeled "Recorded run, Oct 24, summarized." A recording is never passed off as live.
+4. If a call fails or takes over 60 seconds, the slide shows the recorded run from agent-log/2026-10-24-2016-demo-beats-tested.json, labeled "Recorded run, Oct 24, summarized." A recording is never passed off as live.
 5. After the Blueprint, press the right arrow for G4 only if a judge asks. G4 now names whichever partner was approved.
 
-Tested in Chromium with the API mocked for the live path and switched off for the fallback path. Both work.
+Tested in Chromium with the API mocked for the live path and switched off for the fallback path. Both work. Then tested against the live API at 10:49 AM: the card loaded in under 3 seconds, a re-propose takes about 14 seconds, and the Blueprint takes about 26 seconds. Keep talking through the hug and the Blueprint. See agent-log/2026-10-25-1049-live-loop-dress-rehearsal.md.
 
 ### Pre-show (Jacky, 5:30 PM)
 
-1. Run `scripts/reset-demo.sh`.
+1. Run `scripts/reset-demo.sh`. **This is mandatory.** In the 10:49 AM dress rehearsal the agent still remembered last night's FirstRun rejection and went straight to ShiftSwap, so without a reset there is no FirstRun proposal for Jacky to reject on stage. The reset also loads the judge deck cards for the seed products, and it wipes the projects people submitted today (it backs them up first).
 2. Run `POST /agent/observe/floodwatch-chs`, `POST /agent/find-gap/floodwatch-chs`, and `POST /agent/propose/floodwatch-chs`, so FirstRun is already proposed when G3 opens. That leaves only two live agent calls on stage: the re-propose and the Blueprint.
 3. Open G3 once to confirm the card loads, then reload to the first slide.
 

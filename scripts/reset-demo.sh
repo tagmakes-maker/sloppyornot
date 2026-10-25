@@ -63,4 +63,13 @@ for f in "$ROOT"/seed/*.json; do
 done
 
 echo ""
+echo "--- Loading judge deck cards for the seed products ---"
+# GET /projects only lists products with a card:<id>, and seed products have none until this runs
+python3 -I -c "import json,sys; [print(k) for k in json.load(open(sys.argv[1]))]" "$ROOT/scripts/demo-cards.json" | while read -r ID; do
+  python3 -I -c "import json,sys; print(json.dumps(json.load(open(sys.argv[1]))[sys.argv[2]]))" "$ROOT/scripts/demo-cards.json" "$ID" > "$TMP/card.json"
+  npx wrangler kv key put "card:$ID" --path "$TMP/card.json" --namespace-id "$NS" --remote < /dev/null > /dev/null
+  echo "card:$ID loaded"
+done
+
+echo ""
 echo "Done. 201 means loaded. Check $BASE/products"
