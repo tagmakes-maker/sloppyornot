@@ -8,24 +8,27 @@ Read CLAUDE.md, README.md, CONTRIBUTING.md, shared/profile.schema.json, docs/sco
 
 ## The user flow this serves
 
-1. Submitter enters a URL (and optionally an email and the Roast Me opt-in).
+1. Submitter enters a URL and a user name (and optionally an email and the Roast Me opt-in).
 2. The agent judges the site with the AI question set. The submitter then answers the human questions (lane two) or skips them (lane one).
 3. The screen shows one word: Sloppy or Not. No numbers, ever, to anyone.
 4. Optional email signs them up for the weekly State of Slop email. Sending comes later with Resend. Today we only store it.
-5. Then they go judge other projects. The project list shows name, URL, and a dating-profile bio. Never a verdict.
+5. Then they go judge other projects. Each project is a dating-profile card: thumbnail (the profile pic), project title with name and URL, By (user name), Likes and goals, and What I bring to the table (feature bullets). Never a verdict.
 6. A public ridicule board shows verdicts only for projects with consent.roast_me true.
 
 ## Storage (KV, env.STORE). Add these keys to the comment in worker/wrangler.toml
 
 - `product:<id>` existing Product Profile. Must still validate the schema. No new fields.
 - `judge:<id>` private. `{ url, lane, ai_answers, automated_checks, ai_score, human_answers, human_score, total, verdict, judged_at }`. Never returned by any public route except as the verdict on the ridicule board.
-- `bio:<id>` `{ headline, into, looking_for, red_flag }`.
+- `card:<id>` `{ likes_and_goals, brings: [string] }` from the judge agent.
+- `thumb:<id>` the thumbnail image bytes (PNG or JPEG), stored with metadata `{ contentType }`.
 - `url:<normalized url>` the product id for that URL. Used to reuse the first verdict.
 - `subscriber:<lowercased email>` `{ email, product_id, subscribed_at, unsubscribe_token }`. Never returned by any route.
 
 ## Routes
 
-### POST /judge  `{ url, email?, roast_me? }`
+### POST /judge  `{ url, by, email?, roast_me? }`
+
+`by` is the user name shown on the card. Required, trimmed, 1 to 40 characters.
 
 1. Validate the URL (http or https). Normalize it: lowercase host, drop trailing slash, query, and hash.
 2. If `url:<normalized>` exists, return the saved result for that product. Never rejudge a URL.
@@ -34,9 +37,10 @@ Read CLAUDE.md, README.md, CONTRIBUTING.md, shared/profile.schema.json, docs/sco
 5. If `loads` is false, the verdict is Sloppy. Skip the agent and save.
 6. Run the agent with `runAgent("judge", { url, page, automated_checks }, env)`. If it returns `enough_content: false` and the page was not rendered, retry once with Browser Rendering. If it still lacks content, return `{ needs_description: true }` so the site can ask for one line, and accept `description` on a second POST /judge to append to page.text.
 7. Make the id a slug from the host (for example `floodwatch-chs-pages-dev`). Add a short suffix if taken.
-8. Save the Product Profile: the agent's name, what_it_does, target_user, capabilities, plus `url`, `status: "submitted"`, `match_status: "unmatched"`, `automated_checks`, `consent: { roast_me: roast_me === true }`, `agent_observations: [{ at, note: observation, source: "submission" }]`, created_at, updated_at.
-9. Compute lane one from docs/scoring.md: measured 40 plus the sum of the six AI scores. Save `judge:<id>` with lane 1, `bio:<id>`, `url:<normalized>`. Save the subscriber if an email came in.
-10. Return `{ id, verdict, bio, human_questions }`. human_questions is the eight questions from agent/judging-questions.md as `[{ id, question }]`. The site holds the verdict until the submitter answers or skips.
+8. Save the Product Profile: `builder` set to `by`, the agent's name, what_it_does, target_user, capabilities, plus `url`, `status: "submitted"`, `match_status: "unmatched"`, `automated_checks`, `consent: { roast_me: roast_me === true }`, `agent_observations: [{ at, note: observation, source: "submission" }]`, created_at, updated_at.
+9. Compute lane one from docs/scoring.md: measured 40 plus the sum of the six AI scores. Save `judge:<id>` with lane 1, `card:<id>`, `url:<normalized>`. Save the subscriber if an email came in.
+10. Thumbnail: take a screenshot with Browser Rendering (`/browser-rendering/screenshot`, 1200 x 630 viewport, JPEG). If that is not available, fetch the page's og:image. If neither exists, save no thumbnail and the site shows a placeholder. Save to `thumb:<id>`.
+11. Return `{ id, verdict, card, human_questions }`. human_questions is the eight questions from agent/judging-questions.md as `[{ id, question }]`. The site holds the verdict until the submitter answers or skips.
 
 ### POST /judge/:id/answers  `{ answers: [{ id, answer }] }`
 
@@ -52,11 +56,15 @@ Basic email check. Save `subscriber:<email>` with a random unsubscribe_token. Re
 
 ### GET /projects
 
-Every product with a `bio:<id>`: `[{ id, name, url, bio }]`. No verdict, no scores, no email.
+Every product with a `card:<id>`: `[{ id, name, url, by, thumb_url, likes_and_goals, brings }]`. `by` comes from the profile's `builder` field. `thumb_url` is `/projects/<id>/thumb` or null. No verdict, no scores, no email.
+
+### GET /projects/:id/thumb
+
+Serves `thumb:<id>` with its content type and a one-day cache header. 404 when there is none.
 
 ### GET /ridicule
 
-Only products with consent.roast_me true and a saved verdict: `[{ id, name, url, bio, verdict }]`. Still no numbers.
+Only products with consent.roast_me true and a saved verdict: `[{ id, name, url, by, thumb_url, likes_and_goals, brings, verdict }]`. Still no numbers.
 
 ## Verdict math in one function
 
@@ -74,7 +82,7 @@ function verdictFor(j) {
 ## Done means
 
 - `npm test` passes from the repo root.
-- With `npx wrangler dev`, POST /judge on a real Pages site returns a verdict and a bio in under 60 seconds.
+- With `npx wrangler dev`, POST /judge on a real Pages site returns a verdict, a card, and a thumbnail in under 60 seconds.
 - POST /judge on the same URL twice returns the same verdict.
 - GET /projects never contains "verdict", "score", or "@".
 - Write one agent-log entry (new file, append only) showing a real judge run.
