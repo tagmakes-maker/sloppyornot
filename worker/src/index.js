@@ -1051,11 +1051,16 @@ async function handleVote(id, request, env) {
   const body = await readObject(request);
   if (!body || (body.vote !== "slop" && body.vote !== "not")) return json({ error: 'vote must be "slop" or "not"' }, 400);
 
+  // one key per swipe, so a room swiping the same card at once never loses a vote
+  const at = new Date().toISOString();
+  await env.STORE.put("vote:" + id + ":" + at + ":" + crypto.randomUUID().slice(0, 8), JSON.stringify({ vote: body.vote, at }));
+
+  // running tally, best effort: KV is last write wins, so count from the vote: keys when it matters
   const key = "votes:" + id;
   const votes = (await env.STORE.get(key, "json")) || { slop: 0, not: 0, list: [] };
   votes[body.vote] += 1;
-  votes.list.push({ vote: body.vote, at: new Date().toISOString() });
-  await env.STORE.put(key, JSON.stringify(votes));
+  votes.list.push({ vote: body.vote, at });
+  try { await env.STORE.put(key, JSON.stringify(votes)); } catch {}
   return json({ ok: true });
 }
 

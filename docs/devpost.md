@@ -22,7 +22,7 @@ Sloppy or Not + Gituationship
 
 **The problem.** Anyone can build with AI now, so every hackathon weekend ships a pile of products. Most of them are slop. The good ones still have holes, and the builder who could fill that hole is usually sitting two tables away. Nobody has time to tell the difference, and good projects end on Sunday night.
 
-**Our solution.** Sloppy or Not proves whether a product is good. A builder pastes a live link, automated checks test whether it loads, how fast it is, whether it is accessible, and whether it works on a phone, and humans swipe on it: left for slop, right for not. The answer is one word, never a number. Gituationship then takes the good products and finds what each one is missing. A persistent agent names the weakest spot, searches only the products whose owners opted in to sharing, and proposes the partner that fills the gap. A human approves every match, and only then does the agent write a Super Product Blueprint for the combined product.
+**Our solution.** Sloppy or Not proves whether a product is good. A builder pastes a live link, automated checks test whether it loads, how fast it is, whether it is accessible, and whether it works on a phone. Dot, our agent, answers six questions about the page, and the builder can answer nine about their thinking. The answer is one word, Sloppy or Not, never a number. The room also swipes on every project, left for slop and right for not. Swipes feed the weekly State of Slop email and never change a verdict. Gituationship then takes the good products and finds what each one is missing. A persistent agent names the weakest spot, searches the product pool, and proposes the partner that fills the gap. A human approves every match before the agent writes a Super Product Blueprint for the combined product, and an owner's email reaches a partner only if that owner opted in.
 
 **The challenge we entered.** Agent In The Loop. One persistent agent runs through the whole product. It remembers what reviewers said, what the checks found, and every match a human approved or rejected, and it changes its reasoning because of them. Humans keep direction and the final decision.
 
@@ -30,7 +30,7 @@ Sloppy or Not + Gituationship
 
 ## How we built it
 
-- Site: static HTML, CSS, and client JavaScript on Cloudflare Pages, built by Olivia from her own Figma design.
+- Site: static HTML, CSS, and client JavaScript on Cloudflare Pages, designed by Olivia in Figma and coded by Therese's Claude Code sessions from that design.
 - API and agent runtime: a Cloudflare Worker with Cloudflare KV for persistent state, built by Jacky. It stores the Product Profiles, reviews, agent observations, proposals, approvals, rejections, and Blueprints.
 - Agent intelligence: Therese wrote the system prompts (observe, find gap, propose match, blueprint, judge, score answers, expert review), the tool boundaries, the matching method, and the eval scenarios in agent/. The worker loads them and calls the Claude API.
 - The contract: shared/profile.schema.json is the one Product Profile shape the site and the worker both speak. Every seed product is tested against it.
@@ -94,7 +94,7 @@ A persistent agent is only as trustworthy as the tests it can fail. Writing the 
 
 ## What's next
 
-1. Connect the live judge routes so every submission gets a real verdict, a dating card, and a thumbnail.
+1. Ask every site submission for matching consent on the submit page, and have the worker enforce it.
 2. Run Sloppy or Not at the next Charleston hackathon and student showcase, free.
 3. Send the weekly State of Slop email to opted-in builders.
 4. Add more Think Like experts, so the agent can review a product the way a specific designer, engineer, or founder would.
