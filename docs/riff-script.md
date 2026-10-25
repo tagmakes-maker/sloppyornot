@@ -58,7 +58,7 @@ Seed facts: fails the mobile check. Do not roast it in the timed run: it is the 
 - "This hero image loaded slower than my dial-up in 1998." ShiftSwap's performance is 68, which is middling, not slow. Not grounded.
 - "Is that Comic Sans or a cry for help?" and "Four fonts. Four." None of our seed products have that problem. Use them only as ad libs, never as a product's roast.
 
-## Full riff script, beats 1 to 3 (0:25 to 2:40 in the run of show)
+## Full riff script, beats 1 to 3 (0:25 to 2:25 in the run of show)
 
 Stage directions are in brackets. Therese drives the laptop unless noted.
 
@@ -104,7 +104,7 @@ Stage directions are in brackets. Therese drives the laptop unless noted.
 
 Then Olivia's human review block and Jacky's checks and memory block run straight, as written in docs/pitch-demo-plan.md.
 
-### Beat 3: "You've been noticed." (2:30 to 2:40)
+### Beat 3: "You've been noticed." (2:15 to 2:25)
 
 [Therese switches to sloppyornot.com/pitch/gituationship.html.]
 
