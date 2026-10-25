@@ -135,6 +135,8 @@
     closeEl.hidden = false;
     for (let i = 0; i < cards.length && closing; i++) {
       cards.forEach((c, j) => { c.hidden = j !== i; });
+      const clip = cards[i].querySelector("video");
+      if (clip) { clip.currentTime = 0; clip.play().catch(() => {}); }
       await speak(lines[i]);
       if (i < cards.length - 1) await new Promise((r) => setTimeout(r, 500));
     }

@@ -118,7 +118,8 @@ body.live #dot { animation: rise 4s cubic-bezier(.16, .84, .3, 1) forwards; }
 .close-qr { width: clamp(180px, 22vh, 280px); height: auto; background: #fff; border-radius: 16px; padding: 10px; box-shadow: 0 0 40px rgba(255, 92, 192, .35); }
 .close-url { margin: 0; color: var(--muted); font: 700 clamp(16px, 1.6vw, 22px)/1 "Space Mono", ui-monospace, monospace; }
 .close-wordmark { width: clamp(260px, 32vw, 520px); height: auto; }
-.close-robots { width: clamp(140px, 14vw, 220px); height: auto; margin-top: -8px; image-rendering: pixelated; }
+/* Therese's robot love clip has a white background, so it sits in a little white screen. */
+.close-robots { width: clamp(260px, 26vw, 440px); height: auto; border-radius: 18px; background: #fff; box-shadow: 0 0 40px rgba(255, 92, 192, .35); }
 .close-line { margin: 0; max-width: 40ch; color: var(--text); font: 400 clamp(16px, 1.5vw, 21px)/1.45 "Inter", system-ui, sans-serif; }
 .close-git h2 { font-size: clamp(28px, 3.4vw, 50px); }
 @keyframes close-in { from { opacity: 0; transform: translateY(12px); } }
