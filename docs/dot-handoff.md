@@ -11,7 +11,9 @@ The pitch runs from one page: `sloppyornot.com/pitch/dot` (Therese's lane, site/
 3. G opens the Gituationship match page for the demo couple inside the same frame.
 4. C plays the close: a QR card for sloppyornot.com/submit, then the Gituationship card with the robot love clip and a QR for gituationship.com. Dot voices both lines and her glow follows her voice. Escape clears it.
 
-Keys: S skips the intro, G opens the match, C plays the close, Escape leaves the close. Keys work even after someone clicks into the site.
+5. L opens the live mic for Q&A with Dot: Ask Dot, Mute mic, End, and a 5 minute countdown. X ends it. See `site/pitch/dot/README.md`.
+
+Keys: S skips the intro, G opens the match, C plays the close, Escape leaves the close, L starts or mutes the live mic, X ends it. Keys work even after someone clicks into the site.
 
 Practice: `sloppyornot.com/pitch/dot?practice=1`. G makes a fresh copy of Gigs Tonight CHS each time (id `gigs-tonight-practice-<timestamp>`), so rehearsals never touch the stage pair. A yellow PRACTICE RUN badge shows. Tested end to end on Oct 25: copy, Find my match picked ClearPath in 28 seconds, Approve wrote the Blueprint.
 
@@ -44,7 +46,7 @@ Do not reset the live demo data. Therese decided the first entries stay. Dot tel
 ## Open items, most important first
 
 1. The Gituationship match page shows numbers ("understood immediately (0.88)", "scores 38 on accessibility") in "Why Dot picked it". That breaks the no-numbers rule on stage. The text comes from `agent/prompts/propose-match.md` (Therese's lane). Not fixed yet. Therese was asked.
-2. The live mic is not on the pitch page. No mic, stop, end, or timer controls, and no server-enforced time limit. Today the Q&A runs through the ElevenLabs talk page for the agent. The agent has auth off and a 300 second max per conversation, so anyone with the id can spend credits.
+2. The live mic is on the pitch page (Oct 25), through a signed URL from `functions/pitch/dot/session.js`. Still to do: set the `ELEVENLABS_API_KEY` secret on the Pages project, then turn agent auth on and set a daily conversation cap. Until auth is on, anyone with the agent id can spend credits. Turning auth on also retires the ElevenLabs talk page as a fallback.
 3. Practice copies pile up in the live store, one per G press in practice mode. Harmless (they only offer event listings, and the swipe deck only shows judged projects). Delete them after the hackathon with the Cloudflare KV API, keys `product:gigs-tonight-practice-*`.
 4. Small cutout flaw: a pink smudge by watcher Dot's left arm. The source clip is 330 by 432, so she is soft on a big projector. A larger export fixes it.
 5. The robot love clip has a tiny artifact where the hands meet.

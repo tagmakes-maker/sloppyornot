@@ -40,6 +40,11 @@ The page cuts to static drawn in code at 19.4 seconds, when the TV screen fills 
 
 Both voiced with ElevenLabs eleven_v3 and tone tags, and checked with speech to text. The QR codes are SVGs in `close/`. The Gituationship wordmark comes from `site/gituationship/assets/`. The robots are Therese's `original/robot-love.mp4`, moved from white to the page black by `scripts/robot-love-black.py` as `close/robot-love.mp4`, played each time the card appears.
 
-## Not built yet
+## Live Q&A
 
-The live mic conversation, the controls (mic, stop, end, timer), and the time limit. The overlay states are ready for them.
+Press L (or Ask Dot, left of her) to open the live mic. Dot answers out loud and her glow and head follow her voice. L again mutes or unmutes the mic. X (or End) hangs up. A countdown shows the time left and turns yellow in the last 30 seconds.
+
+- The page gets a one-time signed URL from `/pitch/dot/session`, a Cloudflare Pages Function in `functions/pitch/dot/session.js`. It needs the `ELEVENLABS_API_KEY` secret on the `sloppyornot-site` Pages project.
+- The time limit is enforced by ElevenLabs on the agent (`max_duration_seconds`, 300). `MAX_SECONDS` in the function must match it.
+- The voice client is `vendor/elevenlabs-client-1.27.0.js`, the `@elevenlabs/client` browser build, kept here so the stage never waits on a CDN.
+- If the mic cannot connect, Dot's status says so and L tries again. The rest of the demo keeps working.

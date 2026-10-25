@@ -3,6 +3,7 @@
 // URL options: ?skip=1 goes straight to the live site. ?page=/judge opens a different page in the frame.
 // ?practice=1 is the rehearsal mode: G makes a fresh Gigs Tonight copy every run, so the stage pair stays untouched.
 // Keys: S skips the intro. G opens the Gituationship match page. C plays the close. Escape leaves the close.
+// L starts the live mic (and mutes or unmutes it once live). X ends the live conversation.
 (function () {
   const params = new URLSearchParams(location.search);
   const page = params.get("page") || "/";
@@ -187,15 +188,109 @@
     }
   }
 
+  // Live Q&A. The page asks /pitch/dot/session for a signed URL (functions/pitch/dot/session.js), so the
+  // agent keeps auth on. ElevenLabs ends the call at max_seconds on its side; the timer here just shows it.
+  const micBtn = document.getElementById("live-mic");
+  const endBtn = document.getElementById("live-end");
+  const timerEl = document.getElementById("live-timer");
+  let convo = null;
+  let starting = false;
+  let muted = false;
+  let mode = "listening";
+  let deadline = 0;
+  let timerId = 0;
+  let levelRaf = 0;
+
+  const clock = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+  function showLiveState() {
+    if (!convo) return;
+    setState(mode === "speaking" ? "speaking" : muted ? "muted" : "listening");
+  }
+  function tickTimer() {
+    const left = Math.max(0, Math.ceil((deadline - Date.now()) / 1000));
+    timerEl.textContent = clock(left);
+    timerEl.classList.toggle("ending", left <= 30);
+    if (left === 0) endLive();
+  }
+  function tickLevel() {
+    if (!convo) return;
+    if (mode === "speaking") setLevel(Math.min(1, convo.getOutputVolume() * 2.5));
+    levelRaf = requestAnimationFrame(tickLevel);
+  }
+
+  async function startLive() {
+    if (convo) { muted = !muted; convo.setMicMuted(muted); micBtn.textContent = muted ? "Unmute mic" : "Mute mic"; showLiveState(); return; }
+    if (starting) return;
+    starting = true;
+    gate.hidden = true;
+    if (!wentLive) { body.classList.add("skipped"); goLive(); }
+    micBtn.disabled = true;
+    micBtn.textContent = "Calling Dot";
+    status.textContent = "Calling Dot";
+    try {
+      if (!window.ElevenLabsClient) throw new Error("voice client did not load");
+      const res = await fetch("/pitch/dot/session", { cache: "no-store" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.signed_url) throw new Error(data.error || `session ${res.status}`);
+      const session = await window.ElevenLabsClient.Conversation.startSession({
+        signedUrl: data.signed_url,
+        connectionType: "websocket",
+        onModeChange: (m) => { mode = m.mode; showLiveState(); },
+        onDisconnect: () => stopLive(),
+        onError: (msg) => console.warn("Dot live:", msg),
+      });
+      convo = session;
+      muted = false;
+      mode = "listening";
+      deadline = Date.now() + (data.max_seconds || 300) * 1000;
+      timerEl.hidden = false;
+      endBtn.hidden = false;
+      micBtn.textContent = "Mute mic";
+      tickTimer();
+      timerId = setInterval(tickTimer, 250);
+      tickLevel();
+      showLiveState();
+    } catch (err) {
+      console.warn("Live mic failed:", err);
+      micBtn.textContent = "Ask Dot";
+      status.textContent = "Mic did not connect. Press L to try again.";
+      dot.dataset.state = "muted";
+    } finally {
+      starting = false;
+      micBtn.disabled = false;
+    }
+  }
+  // Tidy the page once the call is over, whoever ended it.
+  function stopLive() {
+    if (!convo) return;
+    convo = null;
+    clearInterval(timerId);
+    cancelAnimationFrame(levelRaf);
+    timerEl.hidden = true;
+    timerEl.classList.remove("ending");
+    endBtn.hidden = true;
+    micBtn.textContent = "Ask Dot";
+    setState("idle");
+  }
+  function endLive() {
+    const c = convo;
+    stopLive();
+    if (c) c.endSession().catch(() => {});
+  }
+  micBtn.addEventListener("click", startLive);
+  endBtn.addEventListener("click", endLive);
+
   function onKey(e) {
     const k = e.key.toLowerCase();
     if (k === "s" && !wentLive) { gate.hidden = true; goLive(); }
     else if (k === "g") openMatch();
     else if (k === "c" && !closing) playClose();
     else if (k === "escape" && closing) endClose();
+    else if (k === "l") startLive();
+    else if (k === "x") endLive();
   }
   document.addEventListener("keydown", (e) => {
-    if (e.target !== document.body && e.target !== start && e.target !== site) return;
+    if (e.target !== document.body && e.target !== start && e.target !== site && !e.target.closest(".dot-live")) return;
     onKey(e);
   });
   // Once someone clicks the site, keys go to the frame. Listen there too, but never while typing in a form.
@@ -222,7 +317,7 @@
     head.style.transform = `rotate(${(l * 3 - 1).toFixed(2)}deg) translateY(${(-l * 1.5).toFixed(2)}%)`;
     dot.style.setProperty("--level", (0.35 + l * 0.65).toFixed(2));
   }
-  window.DotOverlay = { setState, setLevel, goLive, playClose, endClose, openMatch };
+  window.DotOverlay = { setState, setLevel, goLive, playClose, endClose, openMatch, startLive, endLive };
 
   if (params.get("skip") === "1") { gate.hidden = true; body.classList.add("skipped"); goLive(); }
 })();
