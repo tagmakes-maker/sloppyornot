@@ -8,21 +8,12 @@ Pitch only. The product tone stays clean. Roasts use our seed products only, nev
 - Clear the judge page's memory so the deck starts at the first card: open the browser console on sloppyornot.com and run `localStorage.removeItem("sloppy-seen")`, or use a fresh private window.
 - The roasts are voiced live. The "Roast me" overlay is a bonus. If it is not on the page, say the lines anyway. That is the whole MST3K bit.
 
-## Needs from Olivia (site/, her lane)
+## The judge deck (built Oct 25)
 
-The script needs the deck in this order: HelpDock, Porchlight, FloodWatch CHS, then the rest. Today the preview deck in site/app.js is FirstRun, FloodWatch CHS, ShiftSwap CHS, Porchlight, and HelpDock is missing. Without the change, FirstRun shows up first and gets roasted before it becomes the hero match.
-
-1. In site/app.js, add a HelpDock card to `SAMPLE_PROJECTS` and reorder it as above.
-2. In site/judge.html, inside `render(p)`, add `document.body.dataset.productId = p.id;`.
-3. In site/pitch/roast-overlay.js, read the product id on each click instead of once at load, so the roast always matches the card on screen.
-4. Add `<script src="/pitch/roast-overlay.js" defer></script>` to site/judge.html. It does nothing without `?demo=1`, so the real product is unaffected.
-5. In roast-overlay.js, drop the "a chat bubble" line from the HelpDock set (see "Lines we cut" below), and swap the lines that say a score out loud for the number-free versions in this doc.
-
-If none of that lands, use two tabs on the current deck and skip HelpDock:
-
-1. Tab B (the turn): in the console run `localStorage.setItem("sloppy-seen", '["firstrun"]')`, then reload. FloodWatch CHS shows. Leave this tab alone.
-2. Tab A (the roasts): in a new tab on the same site, run `localStorage.setItem("sloppy-seen", '["firstrun","floodwatch-chs","shiftswap-chs"]')`, then reload. Porchlight shows.
-3. On stage, roast Porchlight in Tab A, then switch to Tab B for the turn.
+- The preview deck in site/app.js now runs HelpDock, Porchlight, FloodWatch CHS, ShiftSwap CHS, FirstRun, so the two roasts come first and the turn lands on the third card.
+- site/judge.html loads the "Roast me" overlay. It only appears with `?demo=1`, so the real product is unaffected. Stage URL: https://sloppyornot.com/judge?demo=1
+- The overlay reads the card on screen at every click, so the roast always matches the product. The lines are the number-free versions below.
+- Once the live judge routes are up, the deck order comes from the API instead. Then the roasts are voiced live over whatever cards come up.
 
 ## The cached roasts (beat 1)
 

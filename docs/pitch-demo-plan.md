@@ -97,14 +97,15 @@ Therese takes the question and hands off to the owner named in brackets.
 
 This is our strongest Non-Human Collaboration moment: a human says no, and the agent re-plans in front of the judges. The routes are already live on api.sloppyornot.com. The only missing piece is the buttons.
 
-### Needs from Olivia (site/pitch/gituationship.html, her lane)
+### How G3 works (built Oct 25 in site/pitch/gituationship.html)
 
-Wire G3 to the API instead of the mocked card. Product id is `floodwatch-chs`.
+1. When G2 finishes, G3 loads the open proposal for `floodwatch-chs` from `GET /products/floodwatch-chs` and shows the partner and the agent's reasoning. It never shows the confidence number.
+2. Reject opens a reason box, prefilled with Jacky's line. "Send to the agent" calls `POST /matches/floodwatch-chs/reject`, then `POST /agent/propose/floodwatch-chs`, and shows the new pick with "What it remembered", which is the agent's own memory reference.
+3. Approve starts `POST /matches/floodwatch-chs/approve` right away, plays the hug while the agent writes, then shows the Blueprint's idea and first build.
+4. If a call fails or takes over 30 seconds, the slide shows the recorded run from agent-log/2026-10-24-2016-demo-beats-tested.json, labeled "Recorded run, Oct 24, summarized." A recording is never passed off as live.
+5. After the Blueprint, press the right arrow for G4 only if a judge asks. G4 now names whichever partner was approved.
 
-1. When G3 opens: `GET /products/floodwatch-chs`. Show the last entry of `potential_matches`: the partner name and the agent's reasoning. Do not show the confidence number.
-2. Reject: a text box for the reason, then `POST /matches/floodwatch-chs/reject` with `{ "reason": "..." }`. Then `POST /agent/propose/floodwatch-chs` and show "The agent is thinking..." until it returns. Render the new proposal the same way.
-3. Approve: `POST /matches/floodwatch-chs/approve` with `{ "approved_by": "Olivia" }`. Fire the hug right away, then show the Blueprint when the call returns. The Blueprint call takes several seconds, and the hug covers it.
-4. If any call fails or takes over 30 seconds, show the cached version of the same step from agent-log/2026-10-24-2016-demo-beats-tested.json with a small "Recorded run, Oct 24" label. Never pass a recording off as live.
+Tested in Chromium with the API mocked for the live path and switched off for the fallback path. Both work.
 
 ### Pre-show (Jacky, 5:30 PM)
 
@@ -114,7 +115,7 @@ Wire G3 to the API instead of the mocked card. Product id is `floodwatch-chs`.
 
 ## The git relationship slides (G1 to G4)
 
-Built: `site/pitch/gituationship.html`. Open it, press the buttons, use the arrow keys between slides. Olivia: swap your logo halves into the `#logo-left` and `#logo-right` SVGs, and restyle anything you want.
+Built: `site/pitch/gituationship.html`. Open it, press the buttons, use the arrow keys between slides. Olivia designs; Therese's Claude session drops her logo halves into the `#logo-left` and `#logo-right` SVGs.
 
 ### G1: Add your product
 
@@ -139,7 +140,7 @@ Built: `site/pitch/gituationship.html`. Open it, press the buttons, use the arro
 - Only after Approve: the two halves of Olivia's logo slide in from each side, meet in the middle, and hug.
 - A pixelated heart pops above them, holds for one beat, and fades.
 - Keep it simple: CSS keyframes, about 1.5 seconds total, no library.
-- Needs from Olivia: the logo as an SVG with the two halves as separate groups.
+- Needs from Olivia: the logo as an SVG (or a PNG) with the two halves as separate pieces. Claude does the code.
 
 **Why the hug waits for Approve:** the core loop says humans approve matches. If the hug fires on the agent's proposal alone, the animation tells the judges the opposite of our pitch.
 
@@ -181,13 +182,13 @@ Built: `site/pitch/gituationship.html`. Open it, press the buttons, use the arro
 ## Still open
 
 1. Olivia: is the logo ready as a two-part SVG?
-2. Olivia: push the email field. The worker now accepts `email` (or `contact_email`) on POST /products, stores it in KV as `contact:<product_id>`, and never puts it in the public profile. GET /matches/:id/contact returns the partner's email only after the match is approved. Jacky: please review, since it is your lane.
+2. Claude (Therese's session): push the email field on the submit page. The worker now accepts `email` (or `contact_email`) on POST /products, stores it in KV as `contact:<product_id>`, and never puts it in the public profile. GET /matches/:id/contact returns the partner's email only after the match is approved. Jacky: please review, since it is your lane.
 3. Jacky: are you comfortable telling the rejection story in your own words? Rewrite your lines freely.
 4. All three: one full run-through with a timer before 5:00 PM.
 
 ## Next 3 actions
 
-1. Olivia: swap your logo into `site/pitch/gituationship.html`, add the roast overlay script tag to the product page, and push the email field.
+1. Olivia: send her logo halves. Claude puts them in the slides. The overlay and the live G3 are already built.
 2. Jacky: review and merge PR #46 (the email stays out of the public profile).
 3. All three: one timed run-through before 5:00 PM, after the Devpost is in, each person reading their own lines.
 

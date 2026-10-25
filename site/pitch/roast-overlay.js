@@ -9,19 +9,18 @@
   // Grounded in each seed product's real numbers, so the jokes match what the checks found.
   const ROASTS = {
     helpdock: [
-      "Performance score 44. My microwave loads faster, and it is from 2004.",
-      "Two console errors. The help widget needs a help widget.",
+      "This page loads slower than my microwave, and my microwave is from 2004.",
+      "It throws errors on load. The help widget needs a help widget.",
       "No security headers. The front door is open and the FAQ bot is the doorman.",
-      "Only a third of reviewers called it distinctive. The other two thirds called it 'a chat bubble.'",
+      "Two out of three reviewers could not tell it apart from every other chat bubble on the internet.",
     ],
     porchlight: [
-      "Four console errors. That is not a website, that is a cry for help.",
+      "Open the browser console. That is not a website, that is a cry for help.",
       "No security headers. Volunteers, please also volunteer to guard the database.",
       "People love it. The browser console does not.",
     ],
     "shiftswap-chs": [
       "A shift swap app that fails on mobile. Where do you think servers check their shifts? A desk?",
-      "This hero image loaded slower than my dial-up in 1998.",
       "Pinch, zoom, scroll sideways, cry. The full mobile experience.",
     ],
     "floodwatch-chs": [
@@ -35,9 +34,9 @@
     ],
   };
 
-  const id = params.get("product") || document.body.dataset.productId || "generic";
-  const lines = ROASTS[id] || ROASTS.generic;
-  let next = 0;
+  // Read the product on every click, so the roast always matches the card on screen.
+  const currentId = () => params.get("product") || document.body.dataset.productId || "generic";
+  const shown = {};
 
   const style = document.createElement("style");
   style.textContent = `
@@ -66,7 +65,10 @@
 
   const line = ui.querySelector(".roast-line");
   ui.querySelector("button").addEventListener("click", () => {
-    line.textContent = lines[next % lines.length];
-    next += 1;
+    const id = currentId();
+    const lines = ROASTS[id] || ROASTS.generic;
+    shown[id] = shown[id] || 0;
+    line.textContent = lines[shown[id] % lines.length];
+    shown[id] += 1;
   });
 })();
