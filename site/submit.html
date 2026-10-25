@@ -119,7 +119,7 @@
       <a href="/criteria" class="pill pill-ghost">How we judge</a>
       <a href="/judge" class="pill pill-pink"><img src="/assets/icon-eye.svg" alt="">Go judge</a>
       <a href="/" class="pill pill-white">Go home</a>
-      <a href="https://gituationship.com/matches" class="pill pill-pink" id="gitu-back" hidden>See how matching works on Gituationship</a>
+      <a href="https://gituationship.com/matches" class="pill pill-pink" id="gitu-back" hidden>See my matches on Gituationship</a>
     </div>
   </section>
 
@@ -285,6 +285,7 @@
     const word = verdict === "Not" ? "Not" : "Sloppy";
     $("verdict-word").textContent = word;
     $("verdict-word").className = "verdict-word " + word.toLowerCase();
+    if (result && result.id && result.id !== "preview") $("gitu-back").href = "https://gituationship.com/matches?id=" + encodeURIComponent(result.id);
     show("step-verdict");
   }
 
