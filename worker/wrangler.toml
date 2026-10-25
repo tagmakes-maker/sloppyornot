@@ -26,7 +26,11 @@ preview_id = "ccf3f3081542491c96020fe1e679c8ac"
 [vars]
 PROMPTS_BASE = "https://raw.githubusercontent.com/tagmakes-maker/sloppyornot/main/agent/prompts/"
 ANTHROPIC_MODEL = "claude-opus-5-5"
+# the Tagmakes account, for the Browser Rendering REST endpoints
+CF_ACCOUNT_ID = "24e9a7cf816f435cac65da9daef6dc82"
 
 # Secrets (never in this file): npx wrangler secret put ANTHROPIC_API_KEY
 # Optional: PAGESPEED_API_KEY raises Google's PageSpeed quota. Without it /judge still works.
+# CF_BROWSER_TOKEN (Browser Rendering Edit) turns on screenshots and rendered pages. Without it /judge
+# falls back to a plain fetch and og:image. For local dev it also goes in worker/.dev.vars.
 # Local dev: copy ../.env.example to worker/.dev.vars and fill it in

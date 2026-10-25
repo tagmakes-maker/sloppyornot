@@ -526,6 +526,38 @@ async function fetchThumb(imageUrl) {
   }
 }
 
+// Cloudflare Browser Rendering REST endpoints. null when the token is not set or the call fails,
+// so every caller falls back to the plain fetch and og:image.
+async function browserRendering(path, payload, env) {
+  if (!env.CF_BROWSER_TOKEN || !env.CF_ACCOUNT_ID) return null;
+  try {
+    const r = await fetch("https://api.cloudflare.com/client/v4/accounts/" + env.CF_ACCOUNT_ID + "/browser-rendering/" + path, {
+      method: "POST",
+      headers: { "content-type": "application/json", authorization: "Bearer " + env.CF_BROWSER_TOKEN },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(30000),
+    });
+    return r.ok ? r : null;
+  } catch {
+    return null;
+  }
+}
+
+// the page's HTML after a real browser ran it
+async function renderPage(url, env) {
+  const r = await browserRendering("content", { url }, env);
+  const d = r ? await r.json().catch(() => null) : null;
+  return d?.success && typeof d.result === "string" ? d.result.slice(0, 2000000) : null;
+}
+
+// a 1200 x 630 JPEG for the card
+async function screenshot(url, env) {
+  const r = await browserRendering("screenshot", { url, viewport: { width: 1200, height: 630 }, screenshotOptions: { type: "jpeg" } }, env);
+  if (!r || !(r.headers.get("content-type") || "").startsWith("image/")) return null;
+  const bytes = await r.arrayBuffer();
+  return bytes.byteLength ? { bytes, contentType: "image/jpeg" } : null;
+}
+
 const round1 = (n) => Math.round(n * 10) / 10;
 const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 
@@ -634,16 +666,30 @@ async function handleJudge(request, env) {
   const by = String(body.by || "").replace(/@/g, "").trim().slice(0, 40) || "anonymous";
   const now = new Date().toISOString();
 
+  // Browser Rendering first for the page text. The plain fetch always runs too,
+  // because only it reports the site's status and headers for the checks.
+  const rendered = await renderPage(url, env);
+
   let fetched = null;
   try { fetched = await fetchPage(url); } catch {}
   const res = fetched?.res;
   const loads = !!res && res.ok;
   const isHtml = /html/i.test(res?.headers.get("content-type") || "");
   const html = loads && isHtml ? (await res.text()).slice(0, 2000000) : "";
-  const { page, viewport, image } = parsePage(html, fetched?.finalUrl || url);
-  if (typeof body.description === "string" && body.description.trim()) {
-    page.text = (page.text + " " + body.description.trim().slice(0, 500)).trim();
-  }
+  const baseUrl = fetched?.finalUrl || url;
+
+  const withDescription = (p) => {
+    if (typeof body.description === "string" && body.description.trim()) {
+      p.text = (p.text + " " + body.description.trim().slice(0, 500)).trim();
+    }
+    return p;
+  };
+  const fromRendered = (h) => withDescription({ ...parsePage(h, baseUrl).page, rendered: true });
+
+  const plain = parsePage(html, baseUrl);
+  const viewport = plain.viewport || (!!rendered && parsePage(rendered, baseUrl).viewport);
+  const image = plain.image || (rendered ? parsePage(rendered, baseUrl).image : null);
+  let page = rendered ? fromRendered(rendered) : withDescription(plain.page);
 
   const ps = await pageSpeed(url, env);
   const checks = {
@@ -671,8 +717,15 @@ async function handleJudge(request, env) {
     return json(judgeResult(id, judge, null));
   }
 
-  const reply = await runAgent("judge", { url, page, automated_checks: checks }, env);
-  // TODO: retry once with Browser Rendering before asking, once CF_BROWSER_TOKEN is set
+  let reply = await runAgent("judge", { url, page, automated_checks: checks }, env);
+  // not enough to judge from a plain fetch: retry once with Browser Rendering before asking for a description
+  if (reply.enough_content === false && !page.rendered) {
+    const retry = await renderPage(url, env);
+    if (retry) {
+      page = fromRendered(retry);
+      reply = await runAgent("judge", { url, page, automated_checks: checks }, env);
+    }
+  }
   if (reply.enough_content === false) return json({ needs_description: true });
 
   // a reply without all six scores is an error, not a zero, so a site is never Sloppy by accident
@@ -727,7 +780,8 @@ async function handleJudge(request, env) {
     env.STORE.put("card:" + id, JSON.stringify(card)),
   ]);
 
-  const thumb = await fetchThumb(image);
+  // a screenshot first, the page's og:image when Browser Rendering is not available
+  const thumb = (await screenshot(url, env)) || (await fetchThumb(image));
   if (thumb) await env.STORE.put("thumb:" + id, thumb.bytes, { metadata: { contentType: thumb.contentType } });
   // the url key goes last, so a half-saved judgment is never reused
   await env.STORE.put("url:" + url, id);
