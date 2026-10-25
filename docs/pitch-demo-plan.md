@@ -109,7 +109,7 @@ Animations live in `site/` (Olivia's lane). This doc is the spec, not the build.
 ## Still open
 
 1. Olivia: is the logo ready as a two-part SVG?
-2. Olivia and Jacky: the email field saves to the worker's KV today, not Supabase. Fine for Sunday. It is not in `shared/profile.schema.json` and not in the repo yet. Where does it live in KV, and does the match screen read it from there? If it should become part of the Product Profile, that is a contract change for all three of us after the pitch.
+2. Olivia and Jacky: push the email field. Store it in KV under its own key, `contact:<product_id>`, not inside the Product Profile. GET /products is public, so an email in the profile would be readable by anyone. The worker hands the email over only after both owners approve the match. This keeps `shared/profile.schema.json` unchanged.
 3. Jacky: are you comfortable telling the rejection story in your own words? Rewrite your lines freely.
 4. All three: one full run-through with a timer before 5:00 PM.
 
