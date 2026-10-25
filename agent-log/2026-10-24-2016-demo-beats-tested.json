@@ -1,0 +1,148 @@
+{
+  "exported_from": "https://api.sloppyornot.com",
+  "note": "demo beat tests after reset: decoy, rejection memory, no match",
+  "agentlog": [
+    {
+      "step": "find-gap",
+      "at": "2026-10-25T00:16:29.194Z",
+      "input_summary": "floodwatch-chs",
+      "result": {
+        "product_id": "floodwatch-chs",
+        "gap": "onboarding",
+        "metric": "human_review.understood_immediately",
+        "value": 0.3,
+        "why": "Charleston commuters need to read the flood map in the few seconds before they pick a route, but only 30 percent of nine verified reviewers understood the app on first look and several asked what the colored pins mean, so a clear first-run explanation would let the strong demand (would_use 0.82) turn into actual use."
+      }
+    },
+    {
+      "step": "propose-match",
+      "at": "2026-10-25T00:16:37.524Z",
+      "input_summary": "floodwatch-chs",
+      "result": {
+        "product_a_id": "floodwatch-chs",
+        "proposal": {
+          "product_id": "firstrun",
+          "fills_gap": "onboarding",
+          "reason": "FloodWatch CHS has strong demand (would_use 0.82 from nine verified reviewers), but only 30 percent understood it on first look, and reviewers asked what the colored pins mean. FirstRun is a drop-in onboarding engine that lists onboarding as its first capability and adds a three-step guided tour and contextual tooltips from one script tag, which fits a Leaflet map that needs its pin colors and route alerts explained. FirstRun is also the easiest product in the pool to understand (understood_immediately 0.86 across seven verified swipes), so Charleston commuters could learn to read the flood map in the few seconds before they choose a route.",
+          "confidence": 0.85
+        },
+        "memory_reference": "The 2026-10-24T13:42:00Z observation on FloodWatch CHS recorded that three swipe comments asked what the colored pins mean, and the 2026-10-24T13:47:00Z observation warned that HelpDock only looks like an onboarding tool because it answers questions after a user is already stuck, so I excluded HelpDock and chose FirstRun, which the 2026-10-24T13:45:00Z observation described as most useful when attached to another build.",
+        "considered": [
+          {
+            "product_id": "firstrun",
+            "eligible": true,
+            "why_not": null
+          },
+          {
+            "product_id": "shiftswap-chs",
+            "eligible": true,
+            "why_not": "ShiftSwap CHS lists onboarding as a secondary feature built for SMS staff signup, and its own understood_immediately of 0.69 is weaker proof than FirstRun's 0.86."
+          },
+          {
+            "product_id": "helpdock",
+            "eligible": false,
+            "why_not": "HelpDock does not list onboarding in its capabilities, and it helps users after they are stuck rather than orienting them on first use."
+          },
+          {
+            "product_id": "porchlight",
+            "eligible": false,
+            "why_not": "Porchlight does not list onboarding in its capabilities, because it is a volunteer matching product."
+          }
+        ]
+      }
+    },
+    {
+      "step": "find-gap",
+      "at": "2026-10-25T00:16:47.281Z",
+      "input_summary": "floodwatch-chs",
+      "result": {
+        "product_id": "floodwatch-chs",
+        "gap": "onboarding",
+        "metric": "human_review.understood_immediately",
+        "value": 0.3,
+        "why": "Only 30 percent of nine verified reviewers understood FloodWatch CHS on first look, even though 82 percent want to use it, so a Charleston commuter who cannot read the colored pins in the few seconds before choosing a route will miss the flood warning the app exists to give."
+      }
+    },
+    {
+      "step": "propose-match",
+      "at": "2026-10-25T00:17:00.678Z",
+      "input_summary": "floodwatch-chs",
+      "result": {
+        "product_a_id": "floodwatch-chs",
+        "proposal": {
+          "product_id": "shiftswap-chs",
+          "fills_gap": "onboarding",
+          "reason": "FloodWatch CHS has strong demand (would_use 0.82 from nine verified reviewers), but only 30 percent understood it on first look, and reviewers asked what the colored pins mean. ShiftSwap CHS lists onboarding as a capability and already runs an SMS setup flow that gets new users ready in under a minute, built on the same Twilio SMS integration FloodWatch uses for route alerts, so a new driver could text a code, get a plain-language legend for the pin colors, and opt into alerts without needing to read the map first. Because that onboarding happens in the phone's own messaging app instead of in on-screen tooltips, it addresses the screen reader concern a human raised about the earlier FirstRun proposal, although onboarding is a side feature for ShiftSwap and its proof is moderate (understood_immediately 0.69 across eight verified swipes).",
+          "confidence": 0.55
+        },
+        "memory_reference": "A human rejected the FloodWatch CHS and FirstRun match at 2026-10-25T00:16:43.245Z, saying \"FirstRun scores 47 on accessibility and FloodWatch drivers need tooltips that work with screen readers.\" That taught me that accessibility of the onboarding itself matters for this user, so I favored ShiftSwap's SMS onboarding (noted at 2026-10-24T13:49:00Z), and I kept HelpDock out because the 2026-10-24T13:47:00Z observation found it has no onboarding capability.",
+        "considered": [
+          {
+            "product_id": "shiftswap-chs",
+            "eligible": true,
+            "why_not": null
+          },
+          {
+            "product_id": "firstrun",
+            "eligible": false,
+            "why_not": "A human rejected this exact match at 2026-10-25T00:16:43.245Z because FirstRun scores 47 on accessibility and FloodWatch drivers need screen reader friendly tooltips."
+          },
+          {
+            "product_id": "helpdock",
+            "eligible": false,
+            "why_not": "HelpDock does not list onboarding in its capabilities, because it answers questions after a user is stuck instead of guiding them at first run."
+          },
+          {
+            "product_id": "porchlight",
+            "eligible": false,
+            "why_not": "Porchlight does not list onboarding in its capabilities, because it is a volunteer matching product."
+          }
+        ]
+      }
+    },
+    {
+      "step": "find-gap",
+      "at": "2026-10-25T00:17:08.867Z",
+      "input_summary": "porchlight",
+      "result": {
+        "product_id": "porchlight",
+        "gap": "reliability",
+        "metric": "automated_checks.console_errors",
+        "value": 4,
+        "why": "Reviewers already want to use Porchlight, so the biggest risk is that the 4 console errors could break the one-click shift signup, and Charleston residents who miss a shift because of that may stop trusting both Porchlight and the nonprofits it lists."
+      }
+    },
+    {
+      "step": "propose-match",
+      "at": "2026-10-25T00:17:17.567Z",
+      "input_summary": "porchlight",
+      "result": {
+        "product_a_id": "porchlight",
+        "proposal": null,
+        "memory_reference": "This confirms my earlier observation on Porchlight at 2026-10-24T13:51:00Z, which said no product in the pool lists reliability or security as a capability, and none of the four candidates has added one since, so I return no proposal. I am not proposing a weak fit just to fill the slot.",
+        "considered": [
+          {
+            "product_id": "firstrun",
+            "eligible": false,
+            "why_not": "FirstRun lists onboarding, guided-tours, contextual-help, embeddable-widget, and activation-analytics, and reliability is not among them, even though it has 0 console errors itself."
+          },
+          {
+            "product_id": "floodwatch-chs",
+            "eligible": false,
+            "why_not": "FloodWatch CHS lists maps, geolocation, alerts, crowdsourcing, and tide-data, so it does not offer reliability as a capability, and a clean console of its own is not a service it provides to other builds."
+          },
+          {
+            "product_id": "helpdock",
+            "eligible": false,
+            "why_not": "HelpDock does not list reliability as a capability, and it lists reliability as one of its own weaknesses, with 2 console errors and no security headers, so it shares Porchlight's gap instead of filling it."
+          },
+          {
+            "product_id": "shiftswap-chs",
+            "eligible": false,
+            "why_not": "ShiftSwap CHS lists scheduling, sms, notifications, onboarding, and approvals, and reliability is not among them."
+          }
+        ]
+      }
+    }
+  ]
+}
