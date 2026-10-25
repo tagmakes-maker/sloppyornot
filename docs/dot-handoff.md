@@ -41,6 +41,7 @@ Practice mode makes a fresh copy (`gigs-tonight-practice-<timestamp>`) and has t
   - Pronunciation: Therese is said "Theresa". Her prompt writes the name as Theresa in every reply so the voice says it right. Every "ask Therese" line became "ask Theresa".
   - Short answers: one or two sentences, under 25 words, no line breaks or lists.
   - Numbers: never a score, rating, or percentage. Dates, times, and plain counts are fine.
+  - Redo: asked about resubmitting or changing a verdict, she says this launch does not support a redo and an option is coming by tomorrow. Update her when the 30 day redo ships.
   - Three new canned answers: does the agent learn ("Yes, from people. Jacky rejected its first pick with a reason, and it read that and picked better."), how the judge decides, and did Olivia review anything ("She approved her own expert profile. Want her take? Ask her, she is right there.").
 - Test her by text: open a signed URL (GET /v1/convai/conversation/get-signed-url) with Python websockets through the proxy CA `/root/.ccr/ca-bundle.crt`, send `conversation_initiation_client_data` with `text_only: true`, then a `user_message`.
 - Tested by text on Oct 25: best team, the name, judge, Gituationship, score bait, Olivia, learning, weather (she refuses with sass). Not yet tested with a real mic in the room.
