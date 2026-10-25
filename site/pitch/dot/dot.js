@@ -157,9 +157,33 @@
     setState("idle");
   }
 
-  // Practice: copy the Gigs Tonight profile under a new id, then open its match page.
+  // Practice: copy the Gigs Tonight profile under a new id and have the agent propose its match right away,
+  // in the background while the intro plays, so the match page opens with ClearPath already picked.
+  // The stage pair is pre-proposed the same way before the pitch (docs/dot-handoff.md), so only Approve runs live.
   // Matching consent stays on: the agent reads it as product A opting out. The copies only offer
   // event listings, which no product in the pool is missing, so they are never anyone's pick.
+  let practiceReady = null;
+  function preparePractice() {
+    if (practiceReady) return practiceReady;
+    practiceReady = (async () => {
+      const seed = await (await fetch("/pitch/dot/practice/gigs-tonight.json")).json();
+      const stamp = new Date().toISOString().replace(/\D/g, "").slice(4, 14);
+      const id = `gigs-tonight-practice-${stamp}`;
+      const now = new Date().toISOString();
+      const res = await fetch(API + "/products", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...seed, id, created_at: now, updated_at: now }),
+      });
+      if (!res.ok) throw new Error(`practice copy failed: ${res.status} ${await res.text()}`);
+      const pick = await fetch(API + `/agent/propose/${encodeURIComponent(id)}`, { method: "POST" });
+      if (!pick.ok) console.warn("practice propose failed, the page will offer Find my match:", pick.status);
+      return id;
+    })();
+    practiceReady.catch(() => { practiceReady = null; });
+    return practiceReady;
+  }
+  if (practice) preparePractice();
+
   let opening = false;
   async function openMatch() {
     if (opening) return;
@@ -169,15 +193,10 @@
     let id = STAGE_MATCH_ID;
     try {
       if (practice) {
-        const seed = await (await fetch("/pitch/dot/practice/gigs-tonight.json")).json();
-        const stamp = new Date().toISOString().replace(/\D/g, "").slice(4, 14);
-        id = `gigs-tonight-practice-${stamp}`;
-        const now = new Date().toISOString();
-        const res = await fetch(API + "/products", {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...seed, id, created_at: now, updated_at: now }),
-        });
-        if (!res.ok) throw new Error(`practice copy failed: ${res.status} ${await res.text()}`);
+        if (!convo) { dot.dataset.state = "listening"; status.textContent = "Dot is picking a match"; }
+        id = await preparePractice();
+        practiceReady = null;
+        if (!convo) setState("idle");
       }
       site.src = `/gituationship/matches?id=${encodeURIComponent(id)}`;
     } catch (err) {
