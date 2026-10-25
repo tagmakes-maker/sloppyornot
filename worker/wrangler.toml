@@ -5,6 +5,7 @@ compatibility_date = "2026-10-01"
 # One KV namespace for everything. Keys:
 #   product:<id>   Product Profile JSON (shared/profile.schema.json)
 #   reviews:<id>   list of swipe answers
+#   contact:<id>   {email, at} the owner shared at submit. Never in the profile.
 #   rejections     list of {a_id, b_id, reason, at}
 #   agentlog       list of agent entries, newest last
 # Created Oct 24 in the dashboard (Workers KV > STORE).

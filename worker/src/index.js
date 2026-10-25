@@ -34,9 +34,16 @@ async function handleSubmitProduct(request, env) {
   const existing = await env.STORE.get("product:" + body.id);
   if (existing) return json({ error: "product id already exists" }, 409);
 
+  // the owner's email never goes in the profile, because GET /products is public
+  const { email, contact_email, ...fields } = body;
+  const ownerEmail = String(email || contact_email || "").trim();
+  if (ownerEmail && (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(ownerEmail) || ownerEmail.length > 254)) {
+    return json({ error: "email is not valid" }, 400);
+  }
+
   const now = new Date().toISOString();
   const profile = {
-    ...body,
+    ...fields,
     status: "submitted",
     match_status: "unmatched",
     created_at: body.created_at || now,
@@ -44,6 +51,7 @@ async function handleSubmitProduct(request, env) {
   };
 
   await env.STORE.put("product:" + profile.id, JSON.stringify(profile));
+  if (ownerEmail) await env.STORE.put("contact:" + profile.id, JSON.stringify({ email: ownerEmail, at: now }));
   return json(profile, 201);
 }
 
@@ -335,6 +343,20 @@ async function handleReject(id, request, env) {
   return json(profile);
 }
 
+// the partner's email, only once a human has approved the match
+async function handleContact(id, env) {
+  const profile = await env.STORE.get("product:" + id, "json");
+  if (!profile) return json({ error: "not found" }, 404);
+  if (profile.match_status !== "blueprint_ready") return json({ error: "match not approved" }, 403);
+
+  const proposal = profile.potential_matches?.[profile.potential_matches.length - 1];
+  if (!proposal) return json({ error: "no match found" }, 400);
+
+  const contact = await env.STORE.get("contact:" + proposal.product_id, "json");
+  if (!contact) return json({ error: "partner did not share an email" }, 404);
+  return json({ product_id: proposal.product_id, email: contact.email });
+}
+
 // ---- Worker entry ----
 
 export default {
@@ -387,6 +409,9 @@ export default {
       try { return await handleApprove(approveMatch[1], request, env); }
       catch (e) { return json({ error: e.message }, 500); }
     }
+
+    const contactMatch = path.match(/^\/matches\/([^\/]+)\/contact$/);
+    if (contactMatch && method === "GET") return handleContact(contactMatch[1], env);
 
     const rejectMatch = path.match(/^\/matches\/([^\/]+)\/reject$/);
     if (rejectMatch && method === "POST") {
