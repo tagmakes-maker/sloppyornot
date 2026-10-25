@@ -90,6 +90,29 @@ body.live #dot { animation: rise 4s cubic-bezier(.16, .84, .3, 1) forwards; }
 #dot[data-state="muted"] .dot-figure { --glow: 0; }
 #dot[data-state="muted"] .dot-status { color: var(--muted); }
 
+/* Live mic controls, left of Dot, above her status line. They rise with her. */
+.dot-live {
+  position: absolute; right: 100%; bottom: 22%; margin-right: 8px;
+  display: flex; align-items: center; gap: 8px;
+  pointer-events: auto;
+}
+.dot-live button {
+  font: 700 13px/1 "Space Mono", ui-monospace, monospace; letter-spacing: .06em;
+  color: #fff; background: var(--pink-hot); border: 0; border-radius: 999px;
+  padding: 10px 16px; cursor: pointer; white-space: nowrap;
+  box-shadow: 0 0 18px rgba(255, 92, 192, .45);
+}
+.dot-live button[hidden], #live-timer[hidden] { display: none; }
+.dot-live button:disabled { opacity: .6; cursor: wait; }
+.dot-live button:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+#live-end { background: #2a2530; box-shadow: none; }
+#live-timer {
+  min-width: 5ch; padding: 9px 12px; border-radius: 999px;
+  background: rgba(11, 10, 15, .8); color: var(--text);
+  font: 700 14px/1 "Space Mono", ui-monospace, monospace; text-align: center;
+}
+#live-timer.ending { color: #141216; background: #ffd23f; }
+
 @keyframes pulse { 0%, 100% { --glow: .25; } 50% { --glow: .7; } }
 @property --glow { syntax: "<number>"; inherits: true; initial-value: .2; }
 

@@ -20,7 +20,7 @@
   <p class="gate-kicker">HarborHacks pitch demo</p>
   <h1 id="gate-title">Sloppy or Not</h1>
   <button id="start" type="button" autofocus>Start demo</button>
-  <p class="gate-hint">Press Start for sound. S skips the intro. G opens the Gituationship match. C plays the close.</p>
+  <p class="gate-hint">Press Start for sound. S skips the intro. G opens the Gituationship match. C plays the close. L opens the live mic, and X ends it.</p>
 </div>
 
 <!-- The close. Press C. Two cards, Dot talks over both from her corner. -->
@@ -49,8 +49,15 @@
     <img class="dot-head" src="/pitch/dot/silhouette/dot-watcher.webp" alt="">
   </div>
   <p class="dot-status" role="status" aria-live="polite"></p>
+  <!-- Live Q&A with Dot. L starts the mic or mutes it, X ends. ElevenLabs ends the call at the time limit too. -->
+  <div class="dot-live" role="group" aria-label="Talk to Dot">
+    <button id="live-mic" type="button">Ask Dot</button>
+    <button id="live-end" type="button" hidden>End</button>
+    <span id="live-timer" hidden aria-label="Time left"></span>
+  </div>
 </aside>
 
+<script src="/pitch/dot/vendor/elevenlabs-client-1.27.0.js" defer></script>
 <script src="/pitch/dot/dot.js" defer></script>
 </body>
 </html>
