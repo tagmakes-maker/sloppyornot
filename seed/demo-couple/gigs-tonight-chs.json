@@ -1,0 +1,65 @@
+{
+  "stack": [
+    "HTML",
+    "CSS",
+    "Cloudflare Pages"
+  ],
+  "integrations": [],
+  "potential_matches": [],
+  "match_status": "unmatched",
+  "consent": {
+    "testing": true,
+    "roast_me": false,
+    "matching": true,
+    "aro_cohort_6mo": false
+  },
+  "status": "seed",
+  "is_seed": true,
+  "created_at": "2026-10-25T19:20:00Z",
+  "updated_at": "2026-10-25T19:20:00Z",
+  "id": "gigs-tonight-chs",
+  "name": "Gigs Tonight CHS",
+  "url": "https://sloppyornot.com/demo/gigs-tonight/",
+  "builder": "AI Tech Girlfriends (demo project)",
+  "what_it_does": "Tonight's live music in Charleston on one page. Every show at every venue, filtered to what starts in the next few hours, with set times, cover charge, and a one-tap add to your calendar.",
+  "target_user": "Charleston locals and visitors deciding at 7 PM where to hear live music tonight.",
+  "capabilities": [
+    "event-listings",
+    "tonight-filter",
+    "venue-directory",
+    "calendar-export"
+  ],
+  "human_review": {
+    "swipe_count": 8,
+    "would_use": 0.81,
+    "understood_immediately": 0.88,
+    "feels_distinctive": 0.62,
+    "easy_to_use": 0.75,
+    "looks_like_slop": 0.19,
+    "verified": true
+  },
+  "automated_checks": {
+    "loads": true,
+    "performance": 94,
+    "accessibility": 38,
+    "mobile_ok": true,
+    "security_headers": true,
+    "console_errors": 0,
+    "checked_at": "2026-10-25T19:20:00Z"
+  },
+  "strengths": [
+    "would_use",
+    "understood_immediately",
+    "performance"
+  ],
+  "weaknesses": [
+    "accessibility"
+  ],
+  "agent_observations": [
+    {
+      "at": "2026-10-25T19:20:00Z",
+      "source": "human_review",
+      "note": "People get Gigs Tonight right away and say they would use it. The gap is accessibility: show posters have no text alternatives, the times are low-contrast gray, and the filters only work with a mouse, so a screen reader user cannot find tonight's shows."
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClearPath | Accessibility fixes for small sites</title>
+<meta name="description" content="One script tag that audits your page, writes alt text, fixes contrast, and makes every control work from the keyboard. A demo project for Sloppy or Not and Gituationship.">
+<meta name="robots" content="noindex">
+<style>
+  :root { --ink: #10233a; --blue: #1f5fbf; --bg: #f6f8fb; }
+  body { margin: 0; font: 18px/1.6 system-ui, sans-serif; background: var(--bg); color: var(--ink); }
+  .demo { background: #fff3b0; color: #222; text-align: center; padding: 10px 16px; font-size: 15px; margin: 0; }
+  .demo a { color: #222; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 24px; }
+  header { padding: 64px 0 24px; }
+  h1 { font-size: 48px; line-height: 1.1; margin: 0 0 16px; letter-spacing: -0.02em; }
+  .lede { font-size: 21px; margin: 0 0 28px; }
+  code { display: block; background: var(--ink); color: #fff; padding: 16px 20px; border-radius: 12px; font-size: 15px; overflow-x: auto; }
+  ul.fixes { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin: 40px 0; }
+  .fixes li { background: #fff; border: 2px solid #d5dde8; border-radius: 16px; padding: 20px; }
+  .fixes h2 { font-size: 20px; margin: 0 0 6px; }
+  .fixes p { margin: 0; font-size: 16px; }
+  a.cta { display: inline-block; background: var(--blue); color: #fff; padding: 14px 24px; border-radius: 999px; text-decoration: none; font-weight: 700; }
+  a.cta:focus-visible, a:focus-visible { outline: 3px solid #f5a300; outline-offset: 3px; }
+  footer { padding: 40px 0 64px; font-size: 15px; }
+</style>
+</head>
+<body>
+<p class="demo"><strong>Demo project.</strong> ClearPath was built by AI Tech Girlfriends to show matching on <a href="https://gituationship.com/matches?id=clearpath">Gituationship</a>. The script below is an example.</p>
+<div class="wrap">
+  <header>
+    <h1>Your site works. ClearPath makes it work for everyone.</h1>
+    <p class="lede">One script tag audits your page, writes alt text for images, fixes low-contrast text, and makes every button and filter work from the keyboard. Then it shows you exactly what it changed.</p>
+    <code>&lt;script src="https://clearpath.example/fix.js" defer&gt;&lt;/script&gt;</code>
+  </header>
+  <main>
+    <ul class="fixes">
+      <li><h2>Alt text that says something</h2><p>Every image gets a short, specific description, and you can edit any of them.</p></li>
+      <li><h2>Contrast you can read</h2><p>Text that fails contrast checks gets darker or larger until it passes.</p></li>
+      <li><h2>Keyboard all the way down</h2><p>Clickable divs become real buttons, with a focus ring you can see.</p></li>
+      <li><h2>A before and after report</h2><p>See what a screen reader heard before ClearPath, and what it hears now.</p></li>
+    </ul>
+    <p><a class="cta" href="https://gituationship.com/matches?id=clearpath">See ClearPath on Gituationship</a></p>
+  </main>
+  <footer>ClearPath is looking for a real product people already love, so the fixes have something to prove themselves on.</footer>
+</div>
+</body>
+</html>

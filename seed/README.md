@@ -11,3 +11,7 @@ Demo products. Each file validates against shared/profile.schema.json with "is_s
 ## Why the demo pair works
 
 FloodWatch CHS has nine swipes, so it is verified. Every other human metric is at or above 0.5 and every automated check passes, so onboarding is its only weakness and the gap is clear. FirstRun lists onboarding as its core capability and scores 0.86 on understood_immediately, so it proves it can do the thing FloodWatch cannot. The combined product is a flood map that teaches new drivers what the pins mean in their first ten seconds.
+
+## Demo couple (Oct 25)
+
+`demo-couple/` holds two more seed products for the live Gituationship demo. They are not in the five-product pool that `npm test` checks. Gigs Tonight CHS (product A) is weak on accessibility, and ClearPath (product B) is the only product whose capabilities include `accessibility`, so the matcher has one clear answer. Both have real pages at `sloppyornot.com/demo/`, each labeled as a demo project with made-up venues and bands. Load them with `POST /products`.
