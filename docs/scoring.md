@@ -43,7 +43,7 @@ Every submission goes through exactly one lane.
 - Total 70 or above is Not. Below 70 is Sloppy.
 - AI floor in lane two: the AI half must be at least 30 of 50 (an AI score of 60 or more). Below the floor the verdict is Sloppy, whatever the answers say. Answers can rescue a borderline site. They cannot rescue a bad one.
 - If the site does not load, the verdict is Sloppy and no other scoring runs.
-- The first verdict for a URL is saved and reused. The same URL never flips on a second submission.
+- A verdict for a URL is saved and reused for 30 days, so nobody can re-roll it. After 30 days the same URL is judged again from scratch. The new verdict gets a new id, and the old one stays as history (`previous` on the new judgment). Before 30 days, POST /judge returns the saved verdict plus `redo_after`.
 
 ### AI score (100 points)
 

@@ -760,6 +760,8 @@ function judgeResult(id, judge, card) {
   };
 }
 
+const REDO_AFTER_DAYS = 30;
+
 async function handleJudge(request, env) {
   const body = await readObject(request);
   if (!body) return json({ error: "body must be a JSON object" }, 400);
@@ -767,11 +769,17 @@ async function handleJudge(request, env) {
   const url = normalizeJudgeUrl(body.url);
   if (!url) return json({ error: "url must be a full link that starts with http:// or https://" }, 400);
 
-  // the first verdict for a url is final, so a second submission never rejudges it
+  // a verdict holds for REDO_AFTER_DAYS, so nobody can re-roll it. After that the url can be judged again.
+  // The new verdict gets its own id and the url points to it; the old judgment stays as history.
+  let previous = null;
   const known = await env.STORE.get("url:" + url);
   if (known) {
     const [judge, card] = await Promise.all([env.STORE.get("judge:" + known, "json"), env.STORE.get("card:" + known, "json")]);
-    if (judge) return json(judgeResult(known, judge, card));
+    if (judge) {
+      const redoAt = Date.parse(judge.judged_at) + REDO_AFTER_DAYS * 86400000;
+      if (!(Date.now() >= redoAt)) return json({ ...judgeResult(known, judge, card), redo_after: new Date(redoAt).toISOString() });
+      previous = { id: known, verdict: judge.verdict, judged_at: judge.judged_at };
+    }
   }
 
   if (await overJudgeLimit(request, env)) {
@@ -825,7 +833,7 @@ async function handleJudge(request, env) {
     const judge = {
       url, lane: 1, ai_answers: [], agent_review: null, automated_checks: checks, ai_score: round1(measuredPoints(checks)),
       human_answers: null, human_score: null, total: null, verdict: "Sloppy", judged_at: now,
-      pagespeed_note: ps.note, fetch_status: res ? res.status : null,
+      pagespeed_note: ps.note, fetch_status: res ? res.status : null, previous,
     };
     judge.total = judge.ai_score;
     await env.STORE.put("judge:" + id, JSON.stringify(judge));
@@ -858,7 +866,7 @@ async function handleJudge(request, env) {
   const judge = {
     url, lane: 1, ai_answers: aiAnswers, agent_review: review, automated_checks: checks, ai_score: aiScore,
     human_answers: null, human_score: null, total: aiScore, verdict: null, judged_at: now,
-    pagespeed_note: ps.note,
+    pagespeed_note: ps.note, previous,
   };
   judge.verdict = verdictFor(judge);
 
