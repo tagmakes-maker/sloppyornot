@@ -26,7 +26,7 @@ npm run secret           # once; sets ANTHROPIC_API_KEY on the deployed worker
 - #8  POST /products/:id/review, POST /products/:id/check
 - #9  POST /agent/observe/:id, POST /agent/find-gap/:id, POST /agent/propose/:id, GET /agent/log
 - #10 POST /matches/:id/approve, POST /matches/:id/reject, GET /matches/:id/contact
-- #40 POST /judge, POST /judge/:id/answers, GET /projects, GET /projects/next, POST /projects/:id/vote, GET /projects/:id/thumb, POST /judge/:id/email. Still to build: GET /ridicule.
+- #40 POST /judge, POST /judge/:id/answers, GET /projects, GET /projects/next, POST /projects/:id/vote, GET /projects/:id/thumb, POST /judge/:id/email, GET /ridicule.
 
 ## The agent
 
@@ -123,12 +123,14 @@ The full spec is docs/build-judge-routes.md. No route ever returns a score. The 
 
 **`GET /projects/:id/thumb`** returns the thumbnail image, or 404. Use `thumb_url` from the card, prefixed with the base URL.
 
+**`GET /ridicule`** returns the public board: only projects whose owner checked Roast Me, as `[{ id, name, url, by, thumb_url, likes_and_goals, brings, verdict }]`. Still no numbers.
+
 ### Where the judge differs from the spec, and why
 
 - **A cap on new judgments.** 30 per network per hour and 200 per day. Each judgment is a paid Claude call on the team key, and the API is public. The demo room shares one wifi address, so the per-network number is high. A URL that was already judged does not count.
 - **A site that does not load gets no profile or card.** Its Sloppy verdict is saved. The Product Profile schema needs fields only the agent writes, and the agent is skipped for a site that does not load.
 - **Guards that keep profiles valid.** If the agent leaves out a field, the worker fills in a plain fallback. Fields are cut to the schema's lengths. A reply missing any of the six scores is an error, so the submitter can try again, and is never counted as zero. `by` loses any "@" because the card adds its own.
-- **Not built yet:** `/ridicule` and Browser Rendering. Until Browser Rendering is set up, pages are read with a plain fetch, and thumbnails come from the page's og:image.
+- **Not built yet:** Browser Rendering. Until Browser Rendering is set up, pages are read with a plain fetch, and thumbnails come from the page's og:image.
 
 ### The demo path
 
