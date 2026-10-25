@@ -130,7 +130,7 @@ The full spec is docs/build-judge-routes.md. No route ever returns a score. The 
 - **A cap on new judgments.** 30 per network per hour and 200 per day. Each judgment is a paid Claude call on the team key, and the API is public. The demo room shares one wifi address, so the per-network number is high. A URL that was already judged does not count.
 - **A site that does not load gets no profile or card.** Its Sloppy verdict is saved. The Product Profile schema needs fields only the agent writes, and the agent is skipped for a site that does not load.
 - **Guards that keep profiles valid.** If the agent leaves out a field, the worker fills in a plain fallback. Fields are cut to the schema's lengths. A reply missing any of the six scores is an error, so the submitter can try again, and is never counted as zero. `by` loses any "@" because the card adds its own.
-- **Not built yet:** Browser Rendering. Until Browser Rendering is set up, pages are read with a plain fetch, and thumbnails come from the page's og:image.
+- **Browser Rendering needs a token.** With `CF_BROWSER_TOKEN` set, pages are read with a real browser and the thumbnail is a screenshot. Without it, or if the call fails, pages are read with a plain fetch and thumbnails come from the page's og:image.
 
 ### The demo path
 
