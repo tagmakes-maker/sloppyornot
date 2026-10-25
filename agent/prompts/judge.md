@@ -28,7 +28,7 @@ Score each 0 to 10. Use only what the page shows. Quote or name the evidence.
 The public project list shows each project as a dating-profile card. Write the two parts below. Weird, warm, specific to this site. Kind: these owners did not opt in to a roast. Never mention the verdict or any score.
 
 - `likes_and_goals`: what the project seems to want in life, written like a dating profile. One or two sentences, under 160 characters. This is your assumption about its goal, drawn from the page.
-- `brings`: "What I bring to the table." Three to five features the page actually shows, one short line each, under 60 characters. Only features you can see on the page. Never invent one.
+- `brings`: "What I bring." Exactly three features the page actually shows, one short line each, under 40 characters, because the card has room for three. Only features you can see on the page. Never invent one.
 
 ## Return
 

@@ -8,7 +8,7 @@ Read CLAUDE.md, README.md, CONTRIBUTING.md, shared/profile.schema.json, docs/sco
 
 ## The user flow this serves
 
-1. Submitter enters a URL and a user name (and optionally an email and the Roast Me opt-in).
+1. Submitter enters a URL and picks one of two buttons: "Manually answer questions" (lane two) or "Have agent do it for me" (lane one). The design source is Olivia's Figma: https://www.figma.com/design/G1ulYipDtAJ7dRiEvZmGPx/Sloppy-Or-Not
 2. The agent judges the site with the AI question set. The submitter then answers the human questions (lane two) or skips them (lane one).
 3. The screen shows one word: Sloppy or Not. No numbers, ever, to anyone.
 4. Optional email signs them up for the weekly State of Slop email. Sending comes later with Resend. Today we only store it.
@@ -22,13 +22,14 @@ Read CLAUDE.md, README.md, CONTRIBUTING.md, shared/profile.schema.json, docs/sco
 - `card:<id>` `{ likes_and_goals, brings: [string] }` from the judge agent.
 - `thumb:<id>` the thumbnail image bytes (PNG or JPEG), stored with metadata `{ contentType }`.
 - `url:<normalized url>` the product id for that URL. Used to reuse the first verdict.
+- `votes:<id>` `{ slop, not, list: [{ vote, at }] }` from the Judge screen.
 - `subscriber:<lowercased email>` `{ email, product_id, subscribed_at, unsubscribe_token }`. Never returned by any route.
 
 ## Routes
 
 ### POST /judge  `{ url, by, email?, roast_me? }`
 
-`by` is the user name shown on the card. Required, trimmed, 1 to 40 characters.
+`by` is the user name shown on the card as @username. Optional, trimmed, 1 to 40 characters. The Figma submit screen has no username field yet, so default to "anonymous" when it is missing.
 
 1. Validate the URL (http or https). Normalize it: lowercase host, drop trailing slash, query, and hash.
 2. If `url:<normalized>` exists, return the saved result for that product. Never rejudge a URL.
@@ -40,7 +41,7 @@ Read CLAUDE.md, README.md, CONTRIBUTING.md, shared/profile.schema.json, docs/sco
 8. Save the Product Profile: `builder` set to `by`, the agent's name, what_it_does, target_user, capabilities, plus `url`, `status: "submitted"`, `match_status: "unmatched"`, `automated_checks`, `consent: { roast_me: roast_me === true }`, `agent_observations: [{ at, note: observation, source: "submission" }]`, created_at, updated_at.
 9. Compute lane one from docs/scoring.md: measured 40 plus the sum of the six AI scores. Save `judge:<id>` with lane 1, `card:<id>`, `url:<normalized>`. Save the subscriber if an email came in.
 10. Thumbnail: take a screenshot with Browser Rendering (`/browser-rendering/screenshot`, 1200 x 630 viewport, JPEG). If that is not available, fetch the page's og:image. If neither exists, save no thumbnail and the site shows a placeholder. Save to `thumb:<id>`.
-11. Return `{ id, verdict, card, human_questions }`. human_questions is the eight questions from agent/judging-questions.md as `[{ id, question }]`. The site holds the verdict until the submitter answers or skips.
+11. Return `{ id, verdict, card, ai_answers, human_questions }`. ai_answers is `[{ id, question, evidence }]` with no scores, for the "agent animation" loading screen that shows the questions being answered. human_questions is the eight questions from agent/judging-questions.md as `[{ id, question }]`. The site holds the verdict until the submitter answers or skips.
 
 ### POST /judge/:id/answers  `{ answers: [{ id, answer }] }`
 
@@ -61,6 +62,14 @@ Every product with a `card:<id>`: `[{ id, name, url, by, thumb_url, likes_and_go
 ### GET /projects/:id/thumb
 
 Serves `thumb:<id>` with its content type and a one-day cache header. 404 when there is none.
+
+### POST /projects/:id/vote  `{ vote: "slop" | "not" }`
+
+The Judge screen in Figma is a binary swipe: left for SLOP, right for NOT. Append `{ vote, at }` to `votes:<id>` and keep running counts. Return `{ ok: true }`. Never return the counts to the public. They feed the weekly State of Slop email, not the verdict. The old five-field `POST /products/:id/review` stays for the agent loop.
+
+### GET /projects/next?seen=<comma separated ids>
+
+One card the judge has not seen yet, in the same shape as GET /projects. Returns `{ done: true }` when there are none left. The Judge screen shows one card at a time.
 
 ### GET /ridicule
 
