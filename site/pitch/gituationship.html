@@ -6,7 +6,7 @@
 <title>Gituationship Demo</title>
 <meta name="robots" content="noindex">
 <style>
-  /* Pitch only. Not part of the product. Swap the logo halves in #logo-left and #logo-right. */
+  /* Pitch only. Not part of the product. */
   :root {
     --pink: #E92A97;
     --ink: #25252B;
@@ -104,18 +104,9 @@
   .match .card p { margin: 0; font-size: 15px; color: var(--muted); }
   .why { width: min(500px, 100%); margin: 16px auto 0; font-size: 16px; }
   .why b { color: var(--pink); }
-  .hug { position: relative; width: 260px; height: 200px; margin: 10px auto 0; display: none; }
-  .hug.on { display: block; }
-  .hug svg { position: absolute; top: 80px; width: 110px; height: 110px; }
-  #logo-left { left: -60px; opacity: 0; }
-  #logo-right { right: -60px; opacity: 0; }
-  .hug.on #logo-left { animation: slide-left 700ms ease-out forwards, squeeze 400ms 700ms ease-in-out 2; }
-  .hug.on #logo-right { animation: slide-right 700ms ease-out forwards, squeeze 400ms 700ms ease-in-out 2; }
-  .heart {
-    position: absolute; left: 50%; top: 0 !important; width: 56px !important; height: 50px !important; margin-left: -28px;
-    image-rendering: pixelated; opacity: 0;
-  }
-  .hug.on .heart { animation: heart 1600ms 900ms ease-out forwards; }
+  .hug { width: 320px; margin: 10px auto 0; display: none; }
+  .hug.on { display: block; animation: pop 300ms ease-out; }
+  .hug video { display: block; width: 100%; height: auto; border-radius: 12px; image-rendering: pixelated; }
   .approved-note { display: none; margin-top: 8px; font-weight: 700; }
   .approved-note.on { display: block; }
 
@@ -143,10 +134,6 @@
   @keyframes dig { 0% { transform: rotate(0); } 100% { transform: rotate(-12deg); } }
   @keyframes rise { to { opacity: 1; transform: translate(-50%, -130px) scale(1); } }
   @keyframes toss { 0% { opacity: 1; transform: translate(-50%, -130px) rotate(0); } 100% { opacity: 0; transform: translate(-420px, 40px) rotate(-200deg); } }
-  @keyframes slide-left { to { left: 30px; opacity: 1; } }
-  @keyframes slide-right { to { right: 30px; opacity: 1; } }
-  @keyframes squeeze { 50% { transform: scale(1.08, 0.94); } }
-  @keyframes heart { 0% { opacity: 0; transform: translateY(20px) scale(0.4); } 25% { opacity: 1; transform: translateY(0) scale(1.1); } 40% { transform: scale(1); } 80% { opacity: 1; } 100% { opacity: 0; transform: translateY(-16px); } }
   @keyframes blink { 50% { opacity: 0; } }
 
   @media (prefers-reduced-motion: reduce) {
@@ -233,37 +220,7 @@
     <button id="send-reject">Send to the agent</button>
   </div>
   <div class="hug" id="hug">
-    <svg class="heart" viewBox="0 0 9 8" shape-rendering="crispEdges" aria-hidden="true">
-      <rect x="1" y="0" width="2" height="1" fill="#F01818"/>
-      <rect x="2" y="0" width="1" height="1" fill="#C20E0E"/>
-      <rect x="6" y="0" width="2" height="1" fill="#F01818"/>
-      <rect x="7" y="0" width="1" height="1" fill="#C20E0E"/>
-      <rect x="0" y="1" width="4" height="1" fill="#F01818"/>
-      <rect x="3" y="1" width="1" height="1" fill="#C20E0E"/>
-      <rect x="5" y="1" width="4" height="1" fill="#F01818"/>
-      <rect x="8" y="1" width="1" height="1" fill="#C20E0E"/>
-      <rect x="0" y="2" width="9" height="1" fill="#F01818"/>
-      <rect x="8" y="2" width="1" height="1" fill="#C20E0E"/>
-      <rect x="0" y="3" width="9" height="1" fill="#F01818"/>
-      <rect x="8" y="3" width="1" height="1" fill="#C20E0E"/>
-      <rect x="1" y="4" width="7" height="1" fill="#F01818"/>
-      <rect x="7" y="4" width="1" height="1" fill="#C20E0E"/>
-      <rect x="2" y="5" width="5" height="1" fill="#F01818"/>
-      <rect x="6" y="5" width="1" height="1" fill="#C20E0E"/>
-      <rect x="3" y="6" width="3" height="1" fill="#F01818"/>
-      <rect x="5" y="6" width="1" height="1" fill="#C20E0E"/>
-      <rect x="4" y="7" width="1" height="1" fill="#F01818"/>
-      <rect x="4" y="7" width="1" height="1" fill="#C20E0E"/>
-      <rect x="1" y="1" width="2" height="1" fill="#FFB3B3"/>
-      <rect x="1" y="2" width="1" height="1" fill="#FFB3B3"/>
-    </svg>
-    <!-- Placeholder logo halves. Replace the contents of these two groups with Olivia's logo halves. -->
-    <svg id="logo-left" viewBox="0 0 10 10" shape-rendering="crispEdges" aria-label="Left half of the logo">
-      <g><rect x="2" y="1" width="8" height="8" rx="0" fill="#25252B"/><rect x="4" y="3" width="2" height="2" fill="#FFFFFF"/><rect x="9" y="4" width="1" height="3" fill="#E92A97"/></g>
-    </svg>
-    <svg id="logo-right" viewBox="0 0 10 10" shape-rendering="crispEdges" aria-label="Right half of the logo">
-      <g><rect x="0" y="1" width="8" height="8" fill="#E92A97"/><rect x="4" y="3" width="2" height="2" fill="#FFFFFF"/><rect x="0" y="4" width="1" height="3" fill="#25252B"/></g>
-    </svg>
+    <video id="hug-video" src="/assets/robot-love.mp4" muted playsinline preload="auto" aria-label="Two pixel robots holding hands under a red heart"></video>
   </div>
   <p class="approved-note" id="approved-note">Approved by a human. It's a Gituationship.</p>
   <div class="blueprint" id="blueprint" hidden></div>
@@ -421,7 +378,10 @@
 
   // The hug fires only after a human presses Approve
   $id("approve").addEventListener("click", async () => {
+    const video = $id("hug-video");
+    video.currentTime = 0;
     $id("hug").classList.add("on");
+    video.play().catch(() => {});
     $id("approved-note").classList.add("on");
     $id("approve").style.display = "none";
     $id("reject").style.display = "none";
@@ -430,7 +390,8 @@
     // Start the Blueprint call now, and let the hug play while the agent writes.
     const pending = call("/matches/" + PRODUCT + "/approve", { approved_by: "Olivia" });
     pending.catch(() => {});
-    await wait(2600);
+    // Let the robots finish their moment. Stop waiting after 6 seconds in case the video stalls.
+    await Promise.race([new Promise((r) => video.addEventListener("ended", r, { once: true })), wait(6000)]);
     $id("hug").classList.remove("on");
     bp.hidden = false;
     bp.textContent = "The agent is writing the Super Product Blueprint...";

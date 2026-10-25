@@ -19,8 +19,8 @@ for f in $files; do
       continue ;;
   esac
   case "$f" in
-    site/*.js|site/*.html|site/*.css|site/*.svg|site/*.png|site/*.jpg|site/*.webp|site/*.ico|site/*.json|site/*.woff2|site/*.txt) ;;
-    site/*) echo "BLOCKED: $f. site/ holds static assets only (html, css, js, images, fonts)."; fail=1 ;;
+    site/*.js|site/*.html|site/*.css|site/*.svg|site/*.png|site/*.jpg|site/*.webp|site/*.ico|site/*.json|site/*.woff2|site/*.txt|site/*.mp4) ;;
+    site/*) echo "BLOCKED: $f. site/ holds static assets only (html, css, js, images, video, fonts)."; fail=1 ;;
   esac
   case "$f" in
     seed/*.json|seed/README.md) ;;
