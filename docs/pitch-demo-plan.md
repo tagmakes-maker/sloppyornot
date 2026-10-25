@@ -80,7 +80,7 @@ Animations live in `site/` (Olivia's lane). This doc is the spec, not the build.
 
   > "Hi FirstRun team. Our flood alert app gets great reviews but new users get lost on the first screen. Your onboarding could fix that. Want to build something together?"
 
-- No send button works. A small label under the box says: "Preview only. We will share your email with the owner once you both approve."
+- No send button works. A small label under the box says: "Preview only. We share the owner's email once the match is approved."
 - We are not building messaging. The label keeps us honest if a judge clicks it.
 
 ## "Roast me" button (demo build)
@@ -109,7 +109,7 @@ Animations live in `site/` (Olivia's lane). This doc is the spec, not the build.
 ## Still open
 
 1. Olivia: is the logo ready as a two-part SVG?
-2. Olivia and Jacky: push the email field. Store it in KV under its own key, `contact:<product_id>`, not inside the Product Profile. GET /products is public, so an email in the profile would be readable by anyone. The worker hands the email over only after both owners approve the match. This keeps `shared/profile.schema.json` unchanged.
+2. Olivia: push the email field. The worker now accepts `email` (or `contact_email`) on POST /products, stores it in KV as `contact:<product_id>`, and never puts it in the public profile. GET /matches/:id/contact returns the partner's email only after the match is approved. Jacky: please review, since it is your lane.
 3. Jacky: are you comfortable telling the rejection story in your own words? Rewrite your lines freely.
 4. All three: one full run-through with a timer before 5:00 PM.
 
