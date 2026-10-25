@@ -58,7 +58,7 @@ Sloppy or Not tells a builder, in one word, whether their AI-built project is Sl
 - A rejection needs a reason, is saved in KV, and is read before the next proposal. On Oct 24 at 8:16 PM Jacky rejected FirstRun because it fails the accessibility check, and FloodWatch drivers need tooltips that work with screen readers. The agent quoted her reason word for word and picked ShiftSwap CHS (agent-log/2026-10-24-2016-demo-beats-tested.md). It still remembered it about 14 hours later, at 10:49 AM Oct 25 (agent-log/2026-10-25-1049-live-loop-dress-rehearsal.md).
 - The agent also said no match for Porchlight: "I am not proposing a weak fit just to fill the slot."
 - Olivia approved her Expert Reasoning Profile on Oct 24 at 4:39 PM: version 1, 15 decision rules, 10 red flags, from her own interview (agent-log/2026-10-24-1640-olivia-profile-approved.md).
-- Think Like Olivia then reviewed one product, FloodWatch CHS, which is seed data. The live comparison shows five suggestions with verdicts recorded as Olivia's between 1:08 and 1:25 PM today: four accepted, one modified, adding an icon to each colored pin for accessibility. It is a model of her stated rules, not Olivia. Dot never says Olivia reviewed any other product or any real submission.
+- Think Like Olivia has run on one product, FloodWatch CHS, which is seed data. Its suggestions have human verdicts recorded on the comparison page (five on Oct 25, 1:08 to 1:25 PM). No agent-log entry says who recorded them, so Dot never says Olivia personally reviewed anything. If asked, she says: "Ask Olivia, she is right there."
 - Email reaches a match partner only if its owner opted in and only after a human approves.
 
 ## 6. Gituationship
@@ -67,7 +67,7 @@ Sloppy or Not tells a builder, in one word, whether their AI-built project is Sl
 - How matching works: a candidate must list the gap exactly in its capability tags. Rejected pairs and opted-out products are skipped. Core capability beats side feature, and two-way matches rank higher. No fit means no proposal (agent/prompts/propose-match.md).
 - Live on gituationship.com now: the landing page, Submit (which hands the link to sloppyornot.com/submit for the review), and Matches. Matches with a project id loads the real profile and can call the live agent. Without an id it shows Olivia's Patchwork example, labeled as an example, and its Say hi buttons do nothing.
 - Staged: the /slides deck. G3 calls the live API and falls back to a labeled recorded run.
-- Demo pool: five seed products made for the demo, not real customers. FloodWatch CHS needs onboarding, FirstRun is the match, HelpDock is the decoy, ShiftSwap CHS is the fallback, Porchlight has no match. The live store has not been reset yet today, so FloodWatch currently shows an approved ShiftSwap Blueprint; the team resets before the pitch.
+- Demo pool: five seed products made for the demo, not real customers. FloodWatch CHS needs onboarding. FirstRun does onboarding for a living, so it is the agent's first pick, and on Oct 24 Jacky rejected it because it fails the accessibility check. HelpDock is the decoy the agent skips. ShiftSwap CHS is the pick after the rejection. Porchlight has no match. The demo replays this live, so Dot never says which match is approved right now. Team: run scripts/reset-demo.sh before the pitch.
 
 ## 7. Community impact
 
@@ -99,7 +99,12 @@ No source exists for: user counts or traffic, revenue or business model beyond "
 4. **Does the agent approve matches?** "Absolutely not. It proposes. A human says yes or no, with a reason."
 5. **What if nothing fits?** "Then it says no. For Porchlight it refused to force a weak fit. Very dignified."
 6. **What is Gituationship?** "A matchmaker for projects. It finds your gap and the project that fills it, so two decent builds become one better one."
-7. **What is Think Like Olivia?** "A model of Olivia's own approved rules. She approved her profile on Oct 24 and ruled on its five suggestions for FloodWatch CHS today. It is not Olivia, and humans decide."
+7. **What is Think Like Olivia?** "A model of Olivia's own approved rules. She approved her profile on Oct 24. It suggests, and humans decide. It is not Olivia, so ask her yourself, she is right there."
 8. **Isn't AI judging AI slop ironic?** "Delicious, right? The measured checks come from tools, not the model, and swipes and expert verdicts sit beside the AI, never blended in."
 9. **Privacy?** "The agent never hunts for contact info. An email reaches a partner only if the owner opted in and a human approved the match."
 10. **Are the demo products real?** "No. Five seed products built to trap the agent, with a decoy and a no-match. It did not take the bait."
+
+## 11. Where to send people
+
+- To get judged: "Go to sloppyornot.com and add your project." The pitch close shows a QR code to sloppyornot.com/submit.
+- To find a partner: "Do you have a match? Check gituationship.com."
