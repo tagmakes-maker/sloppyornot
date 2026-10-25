@@ -111,25 +111,6 @@ async function handleReview(id, request, env) {
   return json(profile);
 }
 
-// false for names and IP literals that point at private or internal addresses.
-// URL() has already normalized odd IPv4 spellings like 0x7f.1 to 127.0.0.1.
-// It does not catch a public name whose DNS points somewhere private.
-function isPublicHost(host) {
-  host = host.toLowerCase();
-  if (host.startsWith("[")) return false; // IPv6 literal; real sites use names
-  if (!host.includes(".") || /\.(localhost|local|internal|lan|home|test|invalid)$/.test(host)) return false;
-  const ip = host.match(/^(\d+)\.(\d+)\.(\d+)\.(\d+)$/);
-  if (!ip) return true;
-  const [a, b] = [Number(ip[1]), Number(ip[2])];
-  return !(
-    a === 0 || a === 10 || a === 127 || a >= 224 ||
-    (a === 100 && b >= 64 && b <= 127) || // carrier-grade NAT, also Tailscale
-    (a === 169 && b === 254) ||
-    (a === 172 && b >= 16 && b <= 31) ||
-    (a === 192 && b === 168)
-  );
-}
-
 // Issue #8 automated checks, a stub: does the url load, does it send security headers.
 // Seed products are skipped because their urls are made up and their checks are seeded.
 async function handleCheck(id, env) {
@@ -139,16 +120,19 @@ async function handleCheck(id, env) {
   if (!profile.url) return json({ error: "product has no url" }, 400);
   if (!/^https?:\/\//i.test(profile.url)) return json({ error: "url must start with http:// or https://" }, 400);
 
-  // follow at most 3 redirects by hand so every hop is checked, all within one 10 second deadline
+  // TODO: known limits, left on purpose to keep the stub small.
+  // The url and each redirect are checked to be http or https, but not where they point,
+  // so a submitted url could aim at a private or internal address.
+  // The 10 second timeout is per hop, so a redirect chain can take longer overall.
+  // A fix for both was tried in f7ed195 and rolled back.
+  // follow at most 3 redirects by hand so every hop is checked to be http or https
   let res = null;
   let target = profile.url;
-  const deadline = AbortSignal.timeout(10000);
   try {
     for (let hop = 0; hop <= 3; hop++) {
       const u = new URL(target);
       if (u.protocol !== "https:" && u.protocol !== "http:") break;
-      if (!isPublicHost(u.hostname)) break;
-      const r = await fetch(u, { redirect: "manual", signal: deadline });
+      const r = await fetch(u, { redirect: "manual", signal: AbortSignal.timeout(10000) });
       const next = r.headers.get("location");
       if (r.status >= 300 && r.status < 400 && next) {
         target = new URL(next, u).href;
