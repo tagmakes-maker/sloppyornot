@@ -1,0 +1,22 @@
+# One URL per line. Lines starting with # are skipped.
+# Run: bash scripts/bulk-judge.sh scripts/bulk-urls.txt
+https://ideafy-project.lovable.app/
+https://title-tracker-plus.lovable.app
+https://quizcraft.iamjeevan.com/
+https://altifypro.lovable.app
+https://triple-ai-quest.lovable.app
+https://www.ughbutton.com/
+https://avian.lovable.app
+https://bitcoin-calc.lovable.app
+https://www.boomhabits.com/
+https://buzz-guess-jam.lovable.app/
+https://calm-mate-buddy.lovable.app
+https://readit.lovable.app/
+https://push-app-unlock.lovable.app/
+https://roll-a-path.lovable.app/
+https://billable-freelance-hub.lovable.app/
+https://my-mosaic.me
+https://getcosmos.app
+https://theallgood.app
+https://www.outputcharts.com/
+https://product-vision-log.lovable.app
