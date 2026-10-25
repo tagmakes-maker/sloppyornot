@@ -1,0 +1,91 @@
+/* Pitch demo only. Dot's intro, the TV static, and her seated silhouette over the live site. */
+
+:root {
+  --bg: #0b0a0f;
+  --text: #f5f2ed;
+  --muted: #a19fb4;
+  --pink: #ff5cc0;
+  --pink-hot: #e92a97;
+  --dot-width: clamp(170px, 15vw, 320px);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); overflow: hidden; }
+body { font-family: "Space Mono", ui-monospace, monospace; }
+
+#site {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  border: 0; background: var(--bg);
+  opacity: 0; visibility: hidden;
+}
+body.live #site { opacity: 1; visibility: visible; }
+
+#intro {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; background: #000;
+  z-index: 2;
+}
+body.live #intro, body.skipped #intro { display: none; }
+
+#static {
+  position: fixed; inset: 0; width: 100%; height: 100%;
+  z-index: 3; pointer-events: none;
+  opacity: 0;
+}
+
+/* Start gate: browsers block autoplay with sound, so a human presses Start. */
+#gate {
+  position: fixed; inset: 0; z-index: 10;
+  display: grid; place-content: center; justify-items: center; gap: 18px;
+  background: radial-gradient(ellipse at center, #1b1622 0%, #000 70%);
+  text-align: center; padding: 24px;
+}
+#gate[hidden] { display: none; }
+.gate-kicker { margin: 0; color: var(--muted); letter-spacing: .2em; text-transform: uppercase; font-size: 13px; }
+#gate h1 { margin: 0; font: 900 clamp(40px, 7vw, 88px)/1 "Poppins", system-ui, sans-serif; }
+#start {
+  font: 700 20px/1 "Space Mono", ui-monospace, monospace;
+  color: #fff; background: var(--pink-hot);
+  border: 0; border-radius: 999px; padding: 18px 40px; cursor: pointer;
+  box-shadow: 0 0 32px rgba(255, 92, 192, .55);
+}
+#start:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
+.gate-hint { margin: 0; color: var(--muted); font-size: 13px; max-width: 34ch; }
+
+/* Dot, seated, watching from the bottom right corner. */
+#dot {
+  position: fixed; right: 1.2vw; bottom: 0; z-index: 5;
+  width: var(--dot-width);
+  pointer-events: none;
+  opacity: 0; transform: translateY(12%);
+  transition: opacity .9s ease, transform .9s cubic-bezier(.2, .8, .2, 1);
+}
+body.live #dot { opacity: 1; transform: none; }
+.dot-figure { position: relative; aspect-ratio: 709 / 603; filter: drop-shadow(0 0 18px rgba(0, 0, 0, .65)); }
+.dot-figure img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.dot-head { transform-origin: 61% 35%; transition: transform .25s ease; }
+.dot-glow { opacity: .25; mix-blend-mode: screen; transition: opacity .2s ease; }
+
+.dot-status {
+  position: absolute; left: 0; top: 34%; margin: 0;
+  font-size: 11px; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted); white-space: nowrap;
+}
+
+/* States. Listening: a soft pink pulse. Speaking: brighter glow, head moves (set from JS). Muted: dimmed glow. */
+#dot[data-state="listening"] .dot-glow { opacity: .5; animation: pulse 1.6s ease-in-out infinite; }
+#dot[data-state="idle"] .dot-status { visibility: hidden; }
+#dot[data-state="listening"] .dot-status { color: var(--pink); }
+#dot[data-state="speaking"] .dot-glow { opacity: var(--level, .7); }
+#dot[data-state="muted"] .dot-glow { opacity: .08; }
+#dot[data-state="muted"] .dot-status { color: var(--muted); }
+
+@keyframes pulse { 50% { opacity: .18; } }
+
+@media (max-width: 700px) {
+  :root { --dot-width: 34vw; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #dot, .dot-head, .dot-glow { transition: none; animation: none !important; }
+}

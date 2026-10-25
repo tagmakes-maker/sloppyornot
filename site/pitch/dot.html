@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sloppy or Not, with Dot</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Pitch demo only. Dot's intro plays, the TV static clears, and the live Sloppy or Not site takes over with Dot watching from the corner.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@900&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="/pitch/dot/dot.css">
+</head>
+<body>
+<!-- Pitch demo only. Not part of the product. The real site runs in the frame below, fully interactive. -->
+<iframe id="site" title="Sloppy or Not, live site" src="about:blank" tabindex="-1"></iframe>
+
+<video id="intro" playsinline preload="auto" src="/pitch/dot/intro.mp4"></video>
+<canvas id="static" aria-hidden="true"></canvas>
+
+<div id="gate" role="dialog" aria-labelledby="gate-title">
+  <p class="gate-kicker">HarborHacks pitch demo</p>
+  <h1 id="gate-title">Sloppy or Not</h1>
+  <button id="start" type="button" autofocus>Start demo</button>
+  <p class="gate-hint">Press Start for sound. Press S during the intro to skip to the live site.</p>
+</div>
+
+<aside id="dot" data-state="idle" aria-label="Dot, watching the demo">
+  <div class="dot-figure" aria-hidden="true">
+    <img class="dot-body" src="/pitch/dot/silhouette/dot-seated-body.webp" alt="">
+    <img class="dot-head" src="/pitch/dot/silhouette/dot-seated-head.webp" alt="">
+    <img class="dot-glow" src="/pitch/dot/silhouette/dot-seated-glow.webp" alt="">
+  </div>
+  <p class="dot-status" role="status" aria-live="polite"></p>
+</aside>
+
+<script src="/pitch/dot/dot.js" defer></script>
+</body>
+</html>
