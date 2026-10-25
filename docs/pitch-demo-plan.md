@@ -45,20 +45,22 @@ A slideshow with links to the live site, done in the style of Mystery Science Th
 
 Animations live in `site/` (Olivia's lane). This doc is the spec, not the build.
 
-### G1: Sign in
+### G1: Add your product
 
-- One button: "Sign in with GitHub". Show Cheri or GitHub, whichever login Olivia's screens already use.
-- **No live login on stage.** Clicking the button jumps straight to a mocked "Connected!" screen with the staged demo repo.
+- Lead with a URL box: "Paste your live link." The automated checks already run on the URL, and many vibe coders ship without GitHub.
+- Below it, an optional "Connect GitHub" link for builders who have a repo.
+- An email field, using the one already on Olivia's site. The owner types it and chooses to share it. The agent never goes looking for contact info.
+- **No live login on stage.** Paste the FloodWatch URL, then jump to a mocked "Connected!" screen.
 
 ### G2: The robot digs
 
-- A small pixel robot with a shovel digs into a pile labeled "Shared repos".
+- A small pixel robot with a shovel digs into a pile labeled "Shared products".
 - Repo cards pop out of the dirt one at a time:
   1. HelpDock. The robot looks at it and tosses it aside. Caption: "Looks like onboarding. It is not." (This is the decoy the agent rules out for real.)
   2. ShiftSwap CHS. Set to the side. Caption: "Close, but onboarding is a side feature."
   3. FirstRun. The robot holds it up. Caption: "Onboarding is its core."
 - Captions come from the agent's real reasoning in the 20:16 agent-log entry, so the cartoon matches what the agent actually did.
-- Only repos whose owners opted in to sharing appear in the pile. Say that out loud. Judges will ask.
+- Only products whose owners opted in to sharing appear in the pile. Say that out loud. Judges will ask.
 
 ### G3: The hug
 
@@ -72,12 +74,13 @@ Animations live in `site/` (Olivia's lane). This doc is the spec, not the build.
 
 ### G4: Connect to owner (optional)
 
-- The match screen shows both GitHub repos with links. That is the real product. People reach out to each other on GitHub.
+- The match screen shows both products with their live links, plus the GitHub repo where one was connected.
+- Contact comes from the email the owner shared when they submitted. Nothing is scraped.
 - An optional "Connect to owner" button opens a simulated text box. A message types itself out:
 
   > "Hi FirstRun team. Our flood alert app gets great reviews but new users get lost on the first screen. Your onboarding could fix that. Want to build something together?"
 
-- No send button works. A small label under the box says: "Preview only. Reach the owner on GitHub."
+- No send button works. A small label under the box says: "Preview only. We will share your email with the owner once you both approve."
 - We are not building messaging. The label keeps us honest if a judge clicks it.
 
 ## "Roast me" button (demo build)
@@ -98,20 +101,22 @@ Animations live in `site/` (Olivia's lane). This doc is the spec, not the build.
 ## Decisions made in this revision
 
 1. **Overlay vs. full UI for "Roast me":** overlay.
-2. **Who matches with whom:** repos with repos. Owners contact each other through GitHub.
+2. **Who matches with whom:** products with products. A live URL is required. GitHub is optional.
+5. **Contact info:** the owner provides an email at submit. Finding contact info is not an agent job.
 3. **The "not sloppy" hero:** FloodWatch CHS. It is seed data, so no permission is needed.
 4. **Disclaimer copy:** "Pitch demo. The roasts are ours, not the product's."
 
 ## Still open
 
-1. Olivia: is the logo ready as a two-part SVG, and is the login Cheri or GitHub?
-2. Jacky: are you comfortable telling the rejection story in your own words? Rewrite your lines freely.
-3. All three: one full run-through with a timer before 5:00 PM.
+1. Olivia: is the logo ready as a two-part SVG?
+2. Olivia and Jacky: the email field saves to the worker's KV today, not Supabase. Fine for Sunday. It is not in `shared/profile.schema.json` and not in the repo yet. Where does it live in KV, and does the match screen read it from there? If it should become part of the Product Profile, that is a contract change for all three of us after the pitch.
+3. Jacky: are you comfortable telling the rejection story in your own words? Rewrite your lines freely.
+4. All three: one full run-through with a timer before 5:00 PM.
 
 ## Next 3 actions
 
 1. Send this to Olivia and Jacky. Each of them edits their own lines.
-2. Olivia builds G2 to G4 and the `?demo=1` overlay in `site/`.
+2. Olivia builds G1 to G4 and the `?demo=1` overlay in `site/`.
 3. Therese writes the cached roasts for beat 1 and times a full run-through.
 
 ## Starter riffs (placeholders)
