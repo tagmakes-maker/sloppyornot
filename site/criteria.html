@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How We Judge</title>
+<meta name="description" content="The criteria behind every Sloppy or Not verdict: six questions the agent answers from your site, eight questions you can answer yourself, and the checks we measure.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="glow glow-tl"><img src="/assets/glow-pink.svg" alt=""></div>
+<main class="page">
+  <header data-header></header>
+
+  <section class="thinking" style="gap:16px">
+    <h1 class="hero-title">How we judge</h1>
+    <p class="hero-sub" style="max-width:900px">Every project gets one word: Sloppy or Not. No number is ever shown to anyone. Here is everything that goes into that word.</p>
+  </section>
+
+  <section class="card steps" style="flex-direction:column;gap:24px">
+    <p class="eyebrow">Measured checks</p>
+    <div class="prose" style="font-size:18px">
+      <p>Before any opinion, we measure. Does the page load? How fast is it? Can people using screen readers get through it? Does it work on a phone? Does it send basic security headers? Does it throw errors? A site that doesn't load is Sloppy, and nothing else runs.</p>
+    </div>
+  </section>
+
+  <section class="card steps" style="flex-direction:column;gap:24px">
+    <p class="eyebrow">Six questions the agent answers from your site</p>
+    <table class="qtable">
+      <thead><tr><th>#</th><th>Question</th><th>Slop sounds like</th></tr></thead>
+      <tbody>
+        <tr><td>A1</td><td>Can a stranger tell what this does and who it is for from the first screen?</td><td>A hero line that could sit on any site.</td></tr>
+        <tr><td>A2</td><td>Does it actually do the thing, or only promise it?</td><td>A landing page with a waitlist and no product.</td></tr>
+        <tr><td>A3</td><td>Would you recognize it a week later, or does it look like a template?</td><td>Default gradients, stock icons, three identical feature cards.</td></tr>
+        <tr><td>A4</td><td>Was the copy written by someone who cares?</td><td>Filler like "unlock the power of" and "seamless".</td></tr>
+        <tr><td>A5</td><td>Can you reach the core action without hitting a dead end?</td><td>Broken links, lorem ipsum, buttons that go nowhere.</td></tr>
+        <tr><td>A6</td><td>Do the claims match what is on the page?</td><td>"Trusted by thousands" on a project that is two days old.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card steps" style="flex-direction:column;gap:24px">
+    <p class="eyebrow">Eight questions only you can answer</p>
+    <div class="prose" style="font-size:18px"><p>Choose "Manually answer questions" and these count toward your verdict. The agent never writes these answers for you. Good answers can rescue a borderline site. They cannot rescue a broken one.</p></div>
+    <table class="qtable">
+      <thead><tr><th>#</th><th>Question</th><th>What we listen for</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Who did you talk to or learn from about this problem, and what surprised you?</td><td>Named people, partners, or data. A surprise that changed the plan.</td></tr>
+        <tr><td>2</td><td>If this works, what changes for one specific person?</td><td>A concrete person and outcome, not "an app for X".</td></tr>
+        <tr><td>3</td><td>What could go wrong, and who would be hurt first?</td><td>Named risks and some plan for them.</td></tr>
+        <tr><td>4</td><td>What already exists, and why wasn't it enough? Why this approach over a simpler one?</td><td>Knowing the landscape. A specific gap. Tech that earns its place.</td></tr>
+        <tr><td>5</td><td>What's the first thing that would break if 1,000 people used this?</td><td>Honest limits.</td></tr>
+        <tr><td>6</td><td>What did you cut or simplify, and why?</td><td>Deliberate tradeoffs rather than accidents.</td></tr>
+        <tr><td>7</td><td>What did you learn and take away from building this?</td><td>Something specific that changed, not "we learned a lot about APIs."</td></tr>
+        <tr><td>8</td><td>What would you tell the next team attempting this?</td><td>A lesson that was actually absorbed.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="card steps" style="flex-direction:column;gap:16px">
+    <p class="eyebrow">What never touches your verdict</p>
+    <div class="prose" style="font-size:18px">
+      <p>Swipes from other people on the Judge screen. They feed the weekly State of Slop email, not your verdict.</p>
+      <p>Roast me. It only decides whether your verdict may appear on the public board.</p>
+      <p>Resubmitting. Your first verdict for a link is saved. The same link never flips on a second try.</p>
+    </div>
+  </section>
+
+  <div class="actions">
+    <a href="/submit.html" class="pill pill-cyan"><img src="/assets/icon-plus.svg" alt="">Test my project</a>
+    <a href="/judge.html" class="pill pill-pink"><img src="/assets/icon-eye.svg" alt="">Judge other's projects</a>
+  </div>
+
+  <footer data-footer></footer>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>

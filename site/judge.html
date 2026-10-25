@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Judge Projects</title>
+<meta name="description" content="Meet the project. Read its goals. Make the call: left for slop, right for not.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="glow glow-tl" style="width:840px;height:840px;left:-270px;top:-270px"><img src="/assets/glow-pink-lg.svg" alt=""></div>
+<div class="glow glow-br" style="width:700px;height:700px"><img src="/assets/glow-cyan-lg.svg" alt=""></div>
+<main class="page compact">
+  <header data-header="small"></header>
+
+  <div class="thinking" style="gap:12px">
+    <h1 class="section-title">Slop or not? You decide.</h1>
+    <p class="hero-sub" style="font-size:18px">Meet the project. Read its goals. Make the call: left for slop, right for not.</p>
+  </div>
+
+  <article class="card profile" id="card" aria-live="polite">
+    <div class="thumb" id="thumb"></div>
+    <div>
+      <h2><a id="title" href="#" target="_blank" rel="noopener"></a></h2>
+      <p class="by" id="by"></p>
+    </div>
+    <div>
+      <h3>MY LIKES / GOALS</h3>
+      <p class="goals" id="goals"></p>
+    </div>
+    <div>
+      <h3>WHAT I BRING</h3>
+      <ul class="brings" id="brings"></ul>
+    </div>
+  </article>
+
+  <div class="vote" id="vote">
+    <button class="pill pill-pink" data-vote="slop"><img src="/assets/icon-x.svg" alt="">&larr; SLOP</button>
+    <button class="pill pill-cyan" data-vote="not"><img src="/assets/icon-heart.svg" alt="">NOT &rarr;</button>
+  </div>
+
+  <section class="thinking" id="done" hidden>
+    <img class="robot" src="/assets/robot.svg" alt="">
+    <h2 class="section-title">You judged them all.</h2>
+    <p class="hero-sub">Thanks. Your votes feed the weekly State of Slop. Now it's your turn.</p>
+    <div class="actions">
+      <a href="/submit.html" class="pill pill-cyan"><img src="/assets/icon-plus.svg" alt="">Submit your project</a>
+      <button class="pill pill-ghost" id="again">Start over</button>
+    </div>
+  </section>
+
+  <footer data-footer></footer>
+</main>
+<script src="/app.js"></script>
+<script>
+  const $ = (id) => document.getElementById(id);
+  let seen = store.get("sloppy-seen", []);
+  let current = null;
+  let busy = false;
+
+  async function nextCard() {
+    let project = previewMode ? undefined : await api("/projects/next?seen=" + encodeURIComponent(seen.join(",")));
+    if (project === null || project === undefined) {
+      markPreview();
+      project = SAMPLE_PROJECTS.find((p) => !seen.includes(p.id)) || { done: true };
+    }
+    if (project.done) return finish();
+    current = project;
+    render(project);
+  }
+
+  function render(p) {
+    const thumb = $("thumb");
+    if (p.thumb_url) {
+      thumb.className = "thumb";
+      thumb.innerHTML = `<img src="${escapeHTML(API + p.thumb_url)}" alt="Screenshot of ${escapeHTML(p.name)}">`;
+    } else {
+      thumb.className = "thumb placeholder";
+      thumb.textContent = (p.name || "?").slice(0, 1).toUpperCase();
+    }
+    $("title").textContent = p.name;
+    $("title").href = /^https?:\/\//.test(p.url) ? p.url : "#";
+    $("by").textContent = "by @" + (p.by || "anonymous");
+    $("goals").textContent = p.likes_and_goals || "";
+    $("brings").innerHTML = (p.brings || []).slice(0, 3)
+      .map((b) => `<li><img src="/assets/icon-check.svg" alt="">${escapeHTML(b)}</li>`).join("");
+    $("card").className = "card profile";
+  }
+
+  async function vote(choice) {
+    if (!current || busy) return;
+    busy = true;
+    $("card").classList.add(choice === "slop" ? "out-left" : "out-right");
+    if (!previewMode) {
+      try { await api(`/projects/${encodeURIComponent(current.id)}/vote`, { method: "POST", body: { vote: choice } }); } catch {}
+    }
+    seen.push(current.id);
+    store.set("sloppy-seen", seen);
+    await new Promise((r) => setTimeout(r, 260));
+    await nextCard();
+    busy = false;
+  }
+
+  function finish() {
+    current = null;
+    $("card").hidden = true;
+    $("vote").hidden = true;
+    $("done").hidden = false;
+  }
+
+  document.querySelectorAll("[data-vote]").forEach((b) => b.addEventListener("click", () => vote(b.dataset.vote)));
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowLeft") vote("slop");
+    if (e.key === "ArrowRight") vote("not");
+  });
+
+  // Swipe on phones
+  let startX = null;
+  $("card").addEventListener("touchstart", (e) => (startX = e.touches[0].clientX), { passive: true });
+  $("card").addEventListener("touchend", (e) => {
+    if (startX === null) return;
+    const dx = e.changedTouches[0].clientX - startX;
+    startX = null;
+    if (Math.abs(dx) > 70) vote(dx < 0 ? "slop" : "not");
+  });
+
+  $("again").addEventListener("click", () => {
+    seen = [];
+    store.set("sloppy-seen", seen);
+    $("card").hidden = false;
+    $("vote").hidden = false;
+    $("done").hidden = true;
+    nextCard();
+  });
+
+  nextCard();
+</script>
+</body>
+</html>
