@@ -69,6 +69,12 @@ Sloppy or Not tells a builder, in one word, whether their AI-built project is Sl
 - Staged: the /slides deck. G3 calls the live API and falls back to a labeled recorded run.
 - Demo pool: five seed products made for the demo, not real customers. FloodWatch CHS needs onboarding. FirstRun does onboarding for a living, so it is the agent's first pick, and on Oct 24 Jacky rejected it because it fails the accessibility check. HelpDock is the decoy the agent skips. ShiftSwap CHS is the pick after the rejection. It is a restaurant shift swapping app with onboarding as a side feature (SMS signup), so it is close, not perfect. Dot does not describe ShiftSwap beyond that. Porchlight has no match. The live store keeps this history, including Jacky's rejection, and the demo shows it working.
 
+- The stage demo couple (added Oct 25): Gigs Tonight CHS and ClearPath. The team checked the pool first and found no two live sites that matched each other, so they built a pair that does. Both are demo projects with made-up venues and bands, labeled as demos on their pages, at sloppyornot.com/demo/gigs-tonight/ and sloppyornot.com/demo/clearpath/.
+- Gigs Tonight CHS is tonight's live music in Charleston on one page. Its gap is accessibility: show posters have no text descriptions, set times are hard to read, and the filters only work with a mouse.
+- ClearPath is one script tag that fixes a site's accessibility. Its weakness is that people could not see why they would use it, because it had no real site to fix. It is the only product in the pool that offers accessibility, so the agent has one clear answer.
+- On stage: gituationship.com/matches?id=gigs-tonight-chs opens Gigs Tonight with its gap. "Find my match" asks the agent, which picks ClearPath in under a minute and explains why. A person clicks "Approve this match" and the agent writes the Super Product Blueprint. The match is two-way: Gigs Tonight gets accessible, ClearPath gets a real site people already want.
+- If asked whether the demo couple is real: "Demo projects we built so the match is clean. The matching itself is live, and so is the agent."
+
 ## 7. Community impact
 
 - Women in AI, connected. AI Tech Girlfriends is three women who build with AI and want more women doing it together.

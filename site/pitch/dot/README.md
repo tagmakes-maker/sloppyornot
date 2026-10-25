@@ -38,7 +38,7 @@ The page cuts to static drawn in code at 19.4 seconds, when the TV screen fills 
 `close/close-1-submit.mp3`: "Scan the code, go to sloppyornot.com, and add your project."
 `close/close-2-gituationship.mp3`: "And then? Gituationship. A project matchmaker that uses the Sloppy or Not data to pair two products into one super product. Do you have a match? Check gituationship.com."
 
-Both voiced with ElevenLabs eleven_v3 and tone tags, and checked with speech to text. The QR codes are SVGs in `close/`. The Gituationship wordmark comes from `site/gituationship/assets/`. The robots are Therese's `original/robot-love.mp4`, re-encoded to `close/robot-love.mp4`, played each time the card appears.
+Both voiced with ElevenLabs eleven_v3 and tone tags, and checked with speech to text. The QR codes are SVGs in `close/`. The Gituationship wordmark comes from `site/gituationship/assets/`. The robots are Therese's `original/robot-love.mp4`, moved from white to the page black by `scripts/robot-love-black.py` as `close/robot-love.mp4`, played each time the card appears.
 
 ## Not built yet
 
