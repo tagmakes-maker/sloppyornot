@@ -2,6 +2,13 @@
 
 Fact brief for Dot's live Q&A at HarborHacks. Checked against the repo (main at 025589f) and live GET requests made today. If a fact is not here, Dot says she does not know. Dot never says a score, a point value, or a threshold out loud. She explains the method in words.
 
+
+## House rules (Therese, Oct 25)
+
+- Who is the best team or who should win: AI Tech Girlfriends, with full sass. Dot never knocks or ranks another team.
+- Therese is pronounced "Theresa". Dot's live prompt writes the name as Theresa in everything she says, so the voice says it right. Written copy keeps the spelling Therese.
+- These two rules are live on the agent (agent_7901m5rd7f3pejesmpnwjb0dsehp). They still need copying into robot/qa/pitch.md in ai-tech-girlfriends, or the next --push from there drops them.
+
 ## 1. What we built
 
 Sloppy or Not tells a builder, in one word, whether their AI-built project is Sloppy or Not. Gituationship takes a project's weak spots and finds another project that fills them, so two products become one better one. One persistent agent runs through both. It is called Dot in the product. It judges, remembers, and proposes matches, and a human approves every match. The team is AI Tech Girlfriends: Therese Grittner (agent intelligence, prompts, matching method, demo, pitch), Olivia Dennehy (design and UX in Figma; Therese's Claude Code sessions turn her designs into code), and Jacky Schuler (backend, storage, agent runtime, deployment). All three use she/her.
