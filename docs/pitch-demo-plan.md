@@ -13,39 +13,109 @@ A slideshow with links to the live site, done in the style of Mystery Science Th
 
 **Why the silhouettes are us:** the judges hear three humans, not one agent. Each of us steps out of the riff to present the feature we built. That is the proof we are making: the agent reasons, and humans judge, correct, and approve.
 
-## Run of show (5:00)
+## Run of show (5:00), tightened Oct 25 morning
 
-| Time | Beat | Who talks | What they show | Tone |
-|---|---|---|---|---|
-| 0:00 to 0:30 | Cold open | Therese | The problem: a weekend of products, most of them slop, and the good ones still have holes. | Straight |
-| 0:30 to 1:20 | 1. Sloppy sites get roasted | All three riff | Two or three seed sites with cached roasts. | Comedy |
-| 1:20 to 1:35 | 2. The turn | Olivia | FloodWatch CHS appears. "...wait. Nobody say anything. This one's actually good." | The turn |
-| 1:35 to 2:20 | Human review | Olivia | The swipe flow. Human votes become the Verified badge. Her review is why the site counts as good. | Straight |
-| 2:20 to 3:00 | Checks and memory | Jacky | Automated checks next to human scores, kept separate. Then the agent's memory: the rejection she gave it last night and how its reasoning changed. | Straight |
-| 3:00 to 3:15 | 3. "You've been noticed." | Therese | The invite pops up. | Payoff |
-| 3:15 to 4:30 | 4 and 5. The git relationship | Therese narrates, Olivia presses Approve | Slides G1 to G4 below. | Straight with one cute moment |
-| 4:30 to 4:45 | Close | Therese | The Super Product Blueprint and the one line we are proving. | Straight |
-| 4:45 to 5:00 | Community impact | All three | Women in AI connecting, and less AI slop means less AI waste. See docs/community-impact.md. | Warm |
+Spoken pace is about 140 words a minute. Every block below is timed to its word count with room for the clicks.
+
+The HarborHack rules (https://harborhack-2026.devpost.com) say the live demo must show the problem, the solution, the role of our synthetic teammate, and lessons learned. Non-human collaboration is one third of the score. The "Our fourth teammate" beat is required. Never cut it.
+
+If we run long, cut in this order: the Porchlight sentence in Jacky's block, then the second roast. G4 and the ShiftSwap roast are already out of the timed run and are only for Q&A or a slow room.
+
+| Time | Beat | Who talks | On screen |
+|---|---|---|---|
+| 0:00 to 0:25 | Cold open (the problem) | Therese | sloppyornot.com home page |
+| 0:25 to 0:55 | 1. Sloppy sites get roasted | All three riff (script in docs/riff-script.md) | Judge page with the "Roast me" overlay |
+| 0:55 to 1:05 | 2. The turn | Olivia | FloodWatch CHS card |
+| 1:05 to 1:45 | Human review | Olivia | Submit page, then the swipe |
+| 1:45 to 2:15 | Checks and memory | Jacky | Judge page |
+| 2:15 to 2:25 | 3. "You've been noticed." | Therese | gituationship.html, first slide |
+| 2:25 to 3:50 | 4 and 5. The git relationship, live | Therese narrates, Jacky presses Reject, Olivia presses Approve | Slides G1 and G2, then G3 wired to the live API |
+| 3:50 to 4:05 | Close (the solution) | Therese | The Blueprint |
+| 4:05 to 4:40 | Our fourth teammate (synthetic teammate and lessons learned) | Therese | The agent-log/ folder on GitHub |
+| 4:40 to 5:00 | Community impact | All three | sloppyornot.com footer |
+
+**No numbers on stage.** Users only ever see one word: Sloppy or Not. Scores live in the backend as data. Nobody says a score out loud, and the match card shows the agent's reasoning, not its confidence number.
 
 **Rule:** comedy for the problem, straight delivery for the solution. Once signup starts, the hecklers become cheerleaders, not interrupters.
 
-### Speaking parts, first draft
+### The lines
 
-**Therese, cold open:** "Hackathons ship a hundred products a weekend. Most of them are slop. The good ones still have holes. We built an agent that knows the difference and finds the fix."
+**Therese, cold open (0:00):** "Anyone can build with AI now, so every hackathon ships a pile of products. Most of them are slop. The good ones still have holes, and the person who could fill that hole is sitting two tables away. Sloppy or Not tells the difference. Gituationship finds the fix. Let's meet tonight's contestants."
 
-**Olivia, human review:** "The agent does not decide what is good. People do. Every swipe is one human answering four questions. Enough swipes and a product earns the Verified badge. FloodWatch earned it. People said they would use it. They also said they did not understand it at first."
+**Beat 1 (0:25):** see docs/riff-script.md. HelpDock and Porchlight, swipe left after each one.
 
-**Jacky, checks and memory:** "Human taste is one signal. Here is the other: does it load, is it fast, is it accessible. We never blend the two. And the agent remembers. Last night it proposed a match and I said no, with a reason. Watch what it did next." (Show the 20:16 rejection from agent-log. The agent quoted her reason and changed its pick.)
+**Olivia, the turn (0:55):** "...wait. Nobody say anything. This one's actually good."
 
-**Therese, match narration:** "FloodWatch is not sloppy. That makes it worth dating. Nobody is perfect, and its weak spot is onboarding. So the agent goes looking."
+**Olivia, human review (1:05):** "The agent does not decide what is good. People do. You paste a link. The agent answers six questions about the page, and you answer eight about the work. Then the room swipes: left for slop, right for not. You get one word, never a number, because we grade the product, not the person. People said they would use FloodWatch. Most of them did not get it at first look. That is its hole."
 
-**Therese, close:** "A persistent agent that understands products, learns from human judgment, and finds the partner that makes both better. Humans approve every match."
+**Jacky, checks and memory (1:45):** "Human taste is one signal. The machines are the other: does it load, is it fast, is it accessible, does it work on a phone. That data stays in the backend. You only ever see one word. And the agent remembers everything we tell it, including when we tell it no. In a minute I am going to tell it no, live."
 
-**All three, community impact (last 15 seconds):** "We're AI Tech Girlfriends. Three women who build with AI and want more women doing it together. Sloppy or Not pushes everyone to build fewer, better things, because every slop project burns energy for nothing. We bring people together through new tech, and we make it fun."
+**Therese, beat 3 (2:15):** "FloodWatch, you've been noticed."
+
+**Therese, G1 (2:25):** "FloodWatch is not sloppy. That makes it worth dating. Nobody is perfect, and its weak spot is onboarding. The owner pastes a live link. GitHub is optional, because plenty of vibe coders ship without it."
+
+**Therese, G2:** "The agent digs through products whose owners opted in to sharing. Nobody else is in that pile. HelpDock looks like onboarding. It is not. ShiftSwap is close, but onboarding is a side feature. FirstRun does onboarding for a living."
+
+**G3, live (about 3:00):** the match card loads the agent's real proposal from the API.
+
+**Therese:** "The agent proposes FirstRun. It does not decide. Jacky?"
+**Jacky:** "No. FirstRun fails our accessibility check, and drivers need tooltips that work with screen readers." (She types that reason and presses Reject.)
+**Therese:** (while the agent thinks, about 10 to 15 seconds) "Every rejection gets saved with its reason. The agent reads it before it picks again. It does not get to forget."
+(The new proposal loads. It names ShiftSwap CHS and quotes Jacky.)
+**Therese:** "It quoted her word for word, and it switched to text message onboarding, which happens in the phone's own messaging app."
+**Olivia:** "Approved." (She presses Approve. The logos hug.)
+**Therese:** "Nothing happens until a human says yes."
+
+**Therese, G4 (out of the timed run, use only if a judge asks):** "The owner's email is shared only if they chose to share it, and only after a human approves. This box is a preview. We are not building messaging."
+
+**Therese, close (3:50):** "Approval unlocks the Super Product Blueprint: what each product brings, the first thing to build, and the requirements, written after a human said yes. A persistent agent that understands products, learns from human judgment, and finds the partner that makes both better. Humans approve every match."
+
+**Therese, our fourth teammate (4:05):** "We had a fourth teammate: Claude. It had two jobs. Inside the product, Claude is the agent that judges, remembers, and matches. Outside it, Claude Code built with us. It wrote prompts with me, built the expert worker that learned Olivia's rules, and kept a log you can read on GitHub. Together we built a trap: a decoy product and one with no honest match, so the agent could fail in public. It did not. The lesson: an agent is only as trustworthy as the tests it can fail. And humans make the final call."
+
+**Community impact (4:40):**
+- **Olivia:** "We're AI Tech Girlfriends: three women who build with AI and want more women doing it together."
+- **Jacky:** "Every slop project burns energy for nothing. Sloppy or Not pushes everyone to build fewer, better things."
+- **Therese:** "We bring people together through new tech, and we make it fun. Thank you."
+
+## Likely judge questions (Q&A, 3:00)
+
+Therese takes the question and hands off to the owner named in brackets.
+
+1. **"Is the agent actually live, or is this a mockup?"** [Jacky] Live. The rejection you just watched went to our API at api.sloppyornot.com, and the agent re-planned on the spot; agent-log/ holds the same test from last night with timestamps.
+
+2. **"Do you show builders their score?"** [Olivia] No. Builders see one word, Sloppy or Not, and the scores stay in the backend as data for the agent and the weekly State of Slop. A number invites gaming and grades the person, and we grade the product.
+
+3. **"What makes the memory persistent, and not just a long prompt?"** [Jacky] Every observation, proposal, approval, and rejection is saved per product in Cloudflare KV and loaded into the next agent call. The agent cites those memories with timestamps, which is how it quoted a rejection from an earlier run word for word.
+
+4. **"Isn't it ironic to use AI to judge AI slop? What about bias?"** [Olivia] The agent does not decide what is good; humans swipe, and the agent explains and matches. In Think Like Olivia the agent learned my stated rules, and my verdict sits beside every AI suggestion so you can see exactly where it got me wrong.
+
+5. **"What about privacy? Are you scraping founders' contact info?"** [Therese] No. The agent never looks for contact info, and an owner's email reaches a match partner only if the owner opted in to sharing it and a human approved the match.
+
+6. **"Who is this for after the weekend?"** [Therese] It is free for hackathons, student showcases, and local dev meetups, starting with the next one in Charleston. Builders leave with honest feedback and possibly a collaborator, and organizers get a room that reviews itself.
+
+## The live match on stage (G3)
+
+This is our strongest Non-Human Collaboration moment: a human says no, and the agent re-plans in front of the judges. The routes are already live on api.sloppyornot.com. The only missing piece is the buttons.
+
+### How G3 works (built Oct 25 in site/pitch/gituationship.html)
+
+1. When G2 finishes, G3 loads the open proposal for `floodwatch-chs` from `GET /products/floodwatch-chs` and shows the partner and the agent's reasoning. It never shows the confidence number.
+2. Reject opens a reason box, prefilled with Jacky's line. "Send to the agent" calls `POST /matches/floodwatch-chs/reject`, then `POST /agent/propose/floodwatch-chs`, and shows the new pick with "What it remembered", which is the agent's own memory reference.
+3. Approve starts `POST /matches/floodwatch-chs/approve` right away, plays the hug while the agent writes, then shows the Blueprint's idea and first build.
+4. If a call fails or takes over 30 seconds, the slide shows the recorded run from agent-log/2026-10-24-2016-demo-beats-tested.json, labeled "Recorded run, Oct 24, summarized." A recording is never passed off as live.
+5. After the Blueprint, press the right arrow for G4 only if a judge asks. G4 now names whichever partner was approved.
+
+Tested in Chromium with the API mocked for the live path and switched off for the fallback path. Both work.
+
+### Pre-show (Jacky, 5:30 PM)
+
+1. Run `scripts/reset-demo.sh`.
+2. Run `POST /agent/observe/floodwatch-chs`, `POST /agent/find-gap/floodwatch-chs`, and `POST /agent/propose/floodwatch-chs`, so FirstRun is already proposed when G3 opens. That leaves only two live agent calls on stage: the re-propose and the Blueprint.
+3. Open G3 once to confirm the card loads, then reload to the first slide.
 
 ## The git relationship slides (G1 to G4)
 
-Built: `site/pitch/gituationship.html`. Open it, press the buttons, use the arrow keys between slides. Olivia: swap your logo halves into the `#logo-left` and `#logo-right` SVGs, and restyle anything you want.
+Built: `site/pitch/gituationship.html`. Open it, press the buttons, use the arrow keys between slides. Olivia designs; Therese's Claude session drops her logo halves into the `#logo-left` and `#logo-right` SVGs.
 
 ### G1: Add your product
 
@@ -70,7 +140,7 @@ Built: `site/pitch/gituationship.html`. Open it, press the buttons, use the arro
 - Only after Approve: the two halves of Olivia's logo slide in from each side, meet in the middle, and hug.
 - A pixelated heart pops above them, holds for one beat, and fades.
 - Keep it simple: CSS keyframes, about 1.5 seconds total, no library.
-- Needs from Olivia: the logo as an SVG with the two halves as separate groups.
+- Needs from Olivia: the logo as an SVG (or a PNG) with the two halves as separate pieces. Claude does the code.
 
 **Why the hug waits for Approve:** the core loop says humans approve matches. If the hug fires on the agent's proposal alone, the animation tells the judges the opposite of our pitch.
 
@@ -112,15 +182,15 @@ Built: `site/pitch/gituationship.html`. Open it, press the buttons, use the arro
 ## Still open
 
 1. Olivia: is the logo ready as a two-part SVG?
-2. Olivia: push the email field. The worker now accepts `email` (or `contact_email`) on POST /products, stores it in KV as `contact:<product_id>`, and never puts it in the public profile. GET /matches/:id/contact returns the partner's email only after the match is approved. Jacky: please review, since it is your lane.
+2. Claude (Therese's session): push the email field on the submit page. The worker now accepts `email` (or `contact_email`) on POST /products, stores it in KV as `contact:<product_id>`, and never puts it in the public profile. GET /matches/:id/contact returns the partner's email only after the match is approved. Jacky: please review, since it is your lane.
 3. Jacky: are you comfortable telling the rejection story in your own words? Rewrite your lines freely.
 4. All three: one full run-through with a timer before 5:00 PM.
 
 ## Next 3 actions
 
-1. Olivia: swap your logo into `site/pitch/gituationship.html`, add the roast overlay script tag to the product page, and push the email field.
+1. Olivia: send her logo halves. Claude puts them in the slides. The overlay and the live G3 are already built.
 2. Jacky: review and merge PR #46 (the email stays out of the public profile).
-3. All three: one timed run-through before 4:00 PM, each person reading their own lines.
+3. All three: one timed run-through before 5:00 PM, after the Devpost is in, each person reading their own lines.
 
 ## Starter riffs (placeholders)
 

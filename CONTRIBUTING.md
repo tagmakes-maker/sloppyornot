@@ -6,7 +6,7 @@ Answer the first question that applies. Stop there.
    `shared/profile.schema.json`. Do not edit alone. Say it in the group chat first.
 
 2. **Does a browser load it directly (HTML, CSS, images, client-side JS)?**
-   `site/`. Olivia's lane.
+   `site/`. Olivia designs it in Figma. Therese's Claude sessions write the code.
 
 3. **Is it a prompt, a tool definition, a matching rule, or an eval scenario?**
    `agent/`. Therese's lane. The worker loads it, it does not live in the worker.

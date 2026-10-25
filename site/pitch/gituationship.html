@@ -87,6 +87,13 @@
   }
   .repo.up { animation: rise 500ms ease-out forwards; }
   .repo.tossed { animation: toss 700ms ease-in forwards; }
+  [hidden] { display: none !important; }
+  .memory { max-width: 640px; margin-left: auto; margin-right: auto; text-align: left; border-left: 4px solid var(--pink); padding-left: 12px; font-style: italic; }
+  .source { font-size: 12px; color: var(--muted); min-height: 1em; }
+  .reject-box { margin: 12px auto; max-width: 640px; display: grid; gap: 8px; text-align: left; }
+  .reject-box input { font: inherit; padding: 10px; border: 2px solid var(--ink); border-radius: 8px; }
+  .blueprint { max-width: 720px; margin: 12px auto; text-align: left; background: #fff; border: 2px solid var(--ink); border-radius: 12px; padding: 14px; }
+  .blueprint h3 { margin: 0 0 6px; }
   .caption { min-height: 2.8em; margin-top: 18px; font-size: 20px; font-weight: 600; }
   .caption em { color: var(--muted); font-weight: 400; font-style: normal; display: block; font-size: 14px; }
 
@@ -215,9 +222,16 @@
   <h1>The agent proposes. A human decides.</h1>
   <div class="match">
     <div class="card"><h3>FloodWatch CHS</h3><p>Great reviews. New users get lost on the first screen.</p></div>
-    <div class="card"><h3>FirstRun</h3><p>Onboarding is its core. 0.86 understood immediately.</p></div>
+    <div class="card"><h3 id="partner-name">Asking the agent...</h3><p id="partner-gap"></p></div>
   </div>
-  <p class="why">Fills the gap: <b>onboarding</b>. Confidence 0.85. HelpDock ruled out: it helps users after they are stuck, not on first use.</p>
+  <p class="why" id="why"></p>
+  <p class="why memory" id="memory" hidden></p>
+  <p class="source" id="source"></p>
+  <div class="reject-box" id="reject-box" hidden>
+    <label for="reason">Why not? The agent will remember.</label>
+    <input id="reason" type="text" value="FirstRun fails our accessibility check, and drivers need tooltips that work with screen readers.">
+    <button id="send-reject">Send to the agent</button>
+  </div>
   <div class="hug" id="hug">
     <svg class="heart" viewBox="0 0 9 8" shape-rendering="crispEdges" aria-hidden="true">
       <rect x="1" y="0" width="2" height="1" fill="#F01818"/>
@@ -252,6 +266,7 @@
     </svg>
   </div>
   <p class="approved-note" id="approved-note">Approved by a human. It's a Gituationship.</p>
+  <div class="blueprint" id="blueprint" hidden></div>
   <div>
     <button id="approve">Approve</button>
     <button class="ghost" id="reject">Reject</button>
@@ -264,8 +279,8 @@
   <p class="sub">We make the match. You reach out.</p>
   <div class="card">
     <ul class="links">
-      <li>FloodWatch CHS: <a href="https://floodwatch-chs.pages.dev" target="_blank" rel="noopener">floodwatch-chs.pages.dev</a></li>
-      <li>FirstRun: <a href="https://firstrun.pages.dev" target="_blank" rel="noopener">firstrun.pages.dev</a> and its GitHub repo</li>
+      <li>FloodWatch CHS: live link and GitHub repo, shared by its owner</li>
+      <li><span id="partner-link">FirstRun</span>: live link and GitHub repo, shared by its owner</li>
     </ul>
     <button id="connect">Connect to owner</button>
     <div class="chat" id="chat">
@@ -330,26 +345,120 @@
     robot.classList.remove("digging");
     settle(first, "translate(-50%, -200px) scale(1.15)", 1);
     first.style.borderColor = "var(--pink)";
-    say("Onboarding is its core.", "Understood immediately by 86 percent of reviewers.");
+    say("Onboarding is its core.", "Helping new users is its whole job.");
     await wait(2200);
     show(2);
+    loadProposal();
   });
 
-  // G3: the hug fires only after a human presses Approve
-  document.getElementById("approve").addEventListener("click", () => {
-    document.getElementById("hug").classList.add("on");
-    document.getElementById("approved-note").classList.add("on");
-    document.getElementById("approve").style.display = "none";
-    document.getElementById("reject").style.display = "none";
-    setTimeout(() => show(3), 3600);
+  // G3: live. Proposal, rejection, re-proposal, and approval all go to the real API.
+  // If a call fails or takes over 30 seconds, show the recorded run from agent-log 2026-10-24 20:16, labeled as recorded.
+  const API = "https://api.sloppyornot.com";
+  const PRODUCT = "floodwatch-chs";
+  const NAMES = { firstrun: "FirstRun", "shiftswap-chs": "ShiftSwap CHS", helpdock: "HelpDock", porchlight: "Porchlight" };
+  const RECORDED = {
+    first: { product_id: "firstrun", fills_gap: "onboarding",
+      reason: "FirstRun is a drop-in onboarding engine that adds a three-step guided tour and contextual tooltips from one script tag, which fits a flood map that needs its pin colors and route alerts explained. HelpDock was ruled out: it helps users after they are stuck, not on first use." },
+    second: { product_id: "shiftswap-chs", fills_gap: "onboarding",
+      reason: "ShiftSwap CHS already runs an SMS setup flow, so a new driver could text a code and get a plain-language legend for the pin colors without reading the map first. That onboarding happens in the phone's own messaging app, which answers the screen reader concern a human raised about FirstRun. Onboarding is a side feature for ShiftSwap, so I am less sure of this one." },
+    memory: "A human rejected the FloodWatch CHS and FirstRun match, saying FirstRun fails the accessibility check and drivers need tooltips that work with screen readers. That taught me that the onboarding itself has to be accessible for this user.",
+  };
+  let partner = null;
+  const $id = (id) => document.getElementById(id);
+
+  async function call(path, body) {
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 30000);
+    try {
+      const res = await fetch(API + path, body === undefined ? { signal: ctrl.signal } : {
+        method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body), signal: ctrl.signal });
+      if (!res.ok) throw new Error(path + " " + res.status);
+      return await res.json();
+    } finally { clearTimeout(timer); }
+  }
+
+  function render(proposal, memory, live) {
+    partner = proposal.product_id;
+    $id("partner-name").textContent = NAMES[partner] || partner;
+    $id("partner-gap").textContent = "Fills the gap: " + proposal.fills_gap + ".";
+    $id("why").textContent = proposal.reason;
+    $id("memory").hidden = !memory;
+    $id("memory").textContent = memory ? "What it remembered: " + memory : "";
+    $id("source").textContent = live ? "Live from api.sloppyornot.com" : "Recorded run, Oct 24, summarized. The live call did not answer in time.";
+  }
+
+  async function loadProposal() {
+    try {
+      const profile = await call("/products/" + PRODUCT);
+      const last = (profile.potential_matches || []).slice(-1)[0];
+      if (profile.match_status !== "proposed" || !last) throw new Error("no open proposal");
+      render(last, null, true);
+    } catch { render(RECORDED.first, null, false); }
+  }
+
+  $id("reject").addEventListener("click", () => {
+    $id("reject-box").hidden = false;
+    $id("reason").focus();
   });
-  document.getElementById("reject").addEventListener("click", () => {
-    alert("In the product, a rejection needs a reason, and the agent remembers it next time.");
+
+  $id("send-reject").addEventListener("click", async () => {
+    const reason = $id("reason").value.trim();
+    if (!reason) return $id("reason").focus();
+    $id("reject-box").hidden = true;
+    $id("partner-name").textContent = "The agent is thinking...";
+    $id("partner-gap").textContent = "";
+    $id("why").textContent = "Saving the rejection, then asking the agent to pick again.";
+    $id("memory").hidden = true;
+    $id("source").textContent = "";
+    try {
+      await call("/matches/" + PRODUCT + "/reject", { reason });
+      const result = await call("/agent/propose/" + PRODUCT, {});
+      if (!result.proposal) throw new Error("no proposal");
+      render(result.proposal, result.memory_reference, true);
+    } catch { render(RECORDED.second, RECORDED.memory, false); }
+  });
+
+  // The hug fires only after a human presses Approve
+  $id("approve").addEventListener("click", async () => {
+    $id("hug").classList.add("on");
+    $id("approved-note").classList.add("on");
+    $id("approve").style.display = "none";
+    $id("reject").style.display = "none";
+    ["reject-box", "why", "memory", "source"].forEach((id) => { $id(id).hidden = true; });
+    const bp = $id("blueprint");
+    // Start the Blueprint call now, and let the hug play while the agent writes.
+    const pending = call("/matches/" + PRODUCT + "/approve", { approved_by: "Olivia" });
+    pending.catch(() => {});
+    await wait(2600);
+    $id("hug").classList.remove("on");
+    bp.hidden = false;
+    bp.textContent = "The agent is writing the Super Product Blueprint...";
+    try {
+      const profile = await pending;
+      const b = profile.blueprint || {};
+      bp.innerHTML = "<h3>Super Product Blueprint</h3>";
+      [["The idea", b.combined_concept], ["First build", b.first_build]].forEach(([title, text]) => {
+        if (!text) return;
+        const p = document.createElement("p");
+        p.innerHTML = "<b>" + title + ":</b> ";
+        p.append(text);
+        bp.append(p);
+      });
+    } catch {
+      bp.textContent = "Approved. The Blueprint did not come back in time. It is saved on the live site once the agent finishes.";
+    }
+    setMessage();
   });
 
   // G4: simulated message, nothing is sent
-  const message = "Hi FirstRun team. Our flood alert app gets great reviews but new users get lost on the first screen. Your onboarding could fix that. Want to build something together?";
+  let message = "";
+  function setMessage() {
+    const name = NAMES[partner] || "FirstRun";
+    message = "Hi " + name + " team. Our flood alert app gets great reviews but new users get lost on the first screen. Your onboarding could fix that. Want to build something together?";
+    $id("partner-link").textContent = name;
+  }
   document.getElementById("connect").addEventListener("click", async (e) => {
+    if (!message) setMessage();
     e.target.style.display = "none";
     document.getElementById("chat").classList.add("on");
     const bubble = document.getElementById("bubble");

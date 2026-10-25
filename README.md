@@ -14,7 +14,7 @@ Submit > Review > Agent understands > Gap identified > Match found > Human appro
 
 | Folder | Owner | What goes here | What does NOT go here |
 | --- | --- | --- | --- |
-| `site/` | Olivia | Static HTML, CSS, client JS. The Cloudflare Pages root. | API logic, secrets, agent code |
+| `site/` | Olivia (design), Therese's Claude sessions (code) | Static HTML, CSS, client JS. The Cloudflare Pages root. | API logic, secrets, agent code |
 | `worker/` | Jacky | Cloudflare Worker: API routes, agent, persistent state (Cloudflare KV), automated checks, match logic, Blueprint generation | UI, seed data |
 | `agent/` | Therese | Prompts, tool definitions, matching methodology, eval scenarios. The agent's brain; worker/ loads it. | Runtime code, storage |
 | `shared/` | Therese (owner), nobody edits alone | `profile.schema.json`, the Product Profile contract between site and worker | Anything that is not the contract |
@@ -28,7 +28,7 @@ Not sure where something goes? Read `CONTRIBUTING.md`. The pre-commit hook will 
 ## Live
 
 - API (worker): https://api.sloppyornot.com. Try `/health`. Every merge to main deploys it automatically.
-- Site: sloppyornot.com, once Olivia's first page lands in `site/`.
+- Site: https://sloppyornot.com, served by Cloudflare Pages from `site/`. Every merge to main deploys it.
 
 ## Run the tests
 
@@ -51,4 +51,4 @@ Payments, Stripe, complex accounts, giant profiles, social network, production m
 
 - Therese Grittner: agent intelligence (prompts, decisions, matching methodology, tools, memory requirements), Product Profile, QA, demo, pitch
 - Jacky Schuler: backend and infrastructure (database, persistent storage, APIs, agent runtime and tool integrations, saving and retrieving agent memory, approval state, deployment)
-- Olivia Dennehy: frontend, UX, submission and review flow, match screens, demo polish
+- Olivia Dennehy: design and UX (Figma), the submission and review flow, match screens, demo polish. Therese's Claude sessions turn her designs into code.

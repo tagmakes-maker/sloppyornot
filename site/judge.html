@@ -55,6 +55,7 @@
   <footer data-footer></footer>
 </main>
 <script src="/app.js"></script>
+<script src="/pitch/roast-overlay.js" defer></script>
 <script>
   const $ = (id) => document.getElementById(id);
   let seen = store.get("sloppy-seen", []);
@@ -73,6 +74,7 @@
   }
 
   function render(p) {
+    document.body.dataset.productId = p.id;
     const thumb = $("thumb");
     if (p.thumb_url) {
       thumb.className = "thumb";

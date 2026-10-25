@@ -77,18 +77,22 @@ async function api(path, options = {}) {
 
 // Preview data mirrors the sample responses in issue #41 and the seed products.
 const SAMPLE_PROJECTS = [
-  { id: "firstrun", name: "FirstRun", url: "https://firstrun.pages.dev", by: "Two Bridges Labs", thumb_url: null,
-    likes_and_goals: "Wants to be the first friend every new user makes. Long walks through your settings page.",
-    brings: ["One-script-tag install", "Auto-generated three-step tour", "Contextual first-time tooltips"] },
+  // Order matches the pitch riff: two roasts, then the turn.
+  { id: "helpdock", name: "HelpDock", url: "https://helpdock.pages.dev", by: "Folly Road Devs", thumb_url: null,
+    likes_and_goals: "Wants to answer every customer question before anyone has to call. Loves a good FAQ.",
+    brings: ["One-script-tag help widget", "FAQ bot from your help center", "Hands off to a human by email"] },
+  { id: "porchlight", name: "Porchlight", url: "https://porchlight-lowcountry.pages.dev", by: "Porchlight Team", thumb_url: null,
+    likes_and_goals: "Wants Lowcountry nonprofits to stop begging for volunteers.",
+    brings: ["Match by cause and free hours", "One-tap sign up", "Reminders that actually work"] },
   { id: "floodwatch-chs", name: "FloodWatch CHS", url: "https://floodwatch-chs.pages.dev", by: "Lowtide", thumb_url: null,
     likes_and_goals: "Wants every Charleston driver home dry. Loves a king tide forecast.",
     brings: ["Live street flooding map", "Driver reports in two taps", "Alerts before you leave"] },
   { id: "shiftswap-chs", name: "ShiftSwap CHS", url: "https://shiftswap-chs.pages.dev", by: "Back of House", thumb_url: null,
     likes_and_goals: "Wants servers and front desk staff to trade shifts without the group text chaos.",
     brings: ["Post a shift in one text", "Manager approval built in", "Works for restaurants and hotels"] },
-  { id: "porchlight", name: "Porchlight", url: "https://porchlight-lowcountry.pages.dev", by: "Porchlight Team", thumb_url: null,
-    likes_and_goals: "Wants Lowcountry nonprofits to stop begging for volunteers.",
-    brings: ["Match by cause and free hours", "One-tap sign up", "Reminders that actually work"] },
+  { id: "firstrun", name: "FirstRun", url: "https://firstrun.pages.dev", by: "Two Bridges Labs", thumb_url: null,
+    likes_and_goals: "Wants to be the first friend every new user makes. Long walks through your settings page.",
+    brings: ["One-script-tag install", "Auto-generated three-step tour", "Contextual first-time tooltips"] },
 ];
 
 const HUMAN_QUESTIONS = [
