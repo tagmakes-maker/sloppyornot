@@ -14,6 +14,7 @@ compatibility_date = "2026-10-01"
 #   thumb:<id>     thumbnail bytes, metadata {contentType}
 #   url:<url>      product id for a normalized url, so the first verdict is reused
 #   votes:<id>     {slop, not, list} from the Judge screen. Never returned.
+#   subscriber:<email>  {email, product_id, subscribed_at, unsubscribe_token}, lowercased key. Never returned.
 #   limit:...      counters for the /judge cap. Expire on their own.
 # Created Oct 24 in the dashboard (Workers KV > STORE).
 # `npm run dev` (Wrangler 4) uses a local copy of this namespace, so testing never touches live data.

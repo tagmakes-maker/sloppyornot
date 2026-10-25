@@ -26,7 +26,7 @@ npm run secret           # once; sets ANTHROPIC_API_KEY on the deployed worker
 - #8  POST /products/:id/review, POST /products/:id/check
 - #9  POST /agent/observe/:id, POST /agent/find-gap/:id, POST /agent/propose/:id, GET /agent/log
 - #10 POST /matches/:id/approve, POST /matches/:id/reject, GET /matches/:id/contact
-- #40 POST /judge, POST /judge/:id/answers, GET /projects, GET /projects/next, POST /projects/:id/vote, GET /projects/:id/thumb. Still to build: POST /judge/:id/email, GET /ridicule.
+- #40 POST /judge, POST /judge/:id/answers, GET /projects, GET /projects/next, POST /projects/:id/vote, GET /projects/:id/thumb, POST /judge/:id/email. Still to build: GET /ridicule.
 
 ## The agent
 
@@ -115,6 +115,8 @@ The full spec is docs/build-judge-routes.md. No route ever returns a score. The 
 
 **`POST /judge/:id/answers`** with `{ answers: [{ id, answer }] }` for the eight human questions. Returns `{ id, verdict }`. Answers count once.
 
+**`POST /judge/:id/email`** with `{ email, share_with_match? }` signs the owner up for the weekly State of Slop email. Nothing is sent yet. When `share_with_match` is true, the email is also saved for an approved match partner (`GET /matches/:id/contact`). The newsletter signup alone is not consent to share it. Returns only `{ ok: true }`, never any stored email. `POST /judge` accepts the same two fields.
+
 **`GET /projects`** returns every card: `[{ id, name, url, by, thumb_url, likes_and_goals, brings }]`. **`GET /projects/next?seen=a,b`** returns one card not in `seen`, or `{ done: true }`.
 
 **`POST /projects/:id/vote`** with `{ vote: "slop" }` or `{ vote: "not" }`. Returns `{ ok: true }`. Counts are never returned.
@@ -126,7 +128,7 @@ The full spec is docs/build-judge-routes.md. No route ever returns a score. The 
 - **A cap on new judgments.** 30 per network per hour and 200 per day. Each judgment is a paid Claude call on the team key, and the API is public. The demo room shares one wifi address, so the per-network number is high. A URL that was already judged does not count.
 - **A site that does not load gets no profile or card.** Its Sloppy verdict is saved. The Product Profile schema needs fields only the agent writes, and the agent is skipped for a site that does not load.
 - **Guards that keep profiles valid.** If the agent leaves out a field, the worker fills in a plain fallback. Fields are cut to the schema's lengths. A reply missing any of the six scores is an error, so the submitter can try again, and is never counted as zero. `by` loses any "@" because the card adds its own.
-- **Not built yet:** the email route, `/ridicule`, and Browser Rendering. Until Browser Rendering is set up, pages are read with a plain fetch, and thumbnails come from the page's og:image.
+- **Not built yet:** `/ridicule` and Browser Rendering. Until Browser Rendering is set up, pages are read with a plain fetch, and thumbnails come from the page's og:image.
 
 ### The demo path
 

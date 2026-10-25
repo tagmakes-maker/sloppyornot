@@ -588,6 +588,19 @@ async function newJudgeId(url, env) {
   throw new Error("could not make a unique id for " + host);
 }
 
+const validEmail = (s) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s) && s.length <= 254;
+
+// State of Slop signup. Signing up is not consent to share the email with a match partner,
+// so contact:<id> is saved only when the owner checks share_with_match.
+async function saveEmail(id, email, shareWithMatch, env) {
+  const now = new Date().toISOString();
+  const key = "subscriber:" + email.toLowerCase();
+  if (!(await env.STORE.get(key))) {
+    await env.STORE.put(key, JSON.stringify({ email, product_id: id, subscribed_at: now, unsubscribe_token: crypto.randomUUID() }));
+  }
+  if (shareWithMatch === true) await env.STORE.put("contact:" + id, JSON.stringify({ email, at: now }));
+}
+
 // what POST /judge returns. ai_answers keep their evidence and lose their scores.
 function judgeResult(id, judge, card) {
   return {
@@ -719,6 +732,10 @@ async function handleJudge(request, env) {
   // the url key goes last, so a half-saved judgment is never reused
   await env.STORE.put("url:" + url, id);
 
+  // a bad email is skipped, so it never blocks a verdict
+  const email = String(body.email || "").trim();
+  if (validEmail(email)) await saveEmail(id, email, body.share_with_match, env);
+
   return json(judgeResult(id, judge, card));
 }
 
@@ -769,6 +786,20 @@ async function handleJudgeAnswers(id, request, env) {
     env.STORE.put("product:" + id, JSON.stringify(profile)),
   ]);
   return json({ id, verdict: judge.verdict });
+}
+
+// replies only { ok: true }, so it never reveals who else is subscribed
+async function handleJudgeEmail(id, request, env) {
+  if (!(await env.STORE.get("judge:" + id))) return json({ error: "not found" }, 404);
+
+  const body = await readObject(request);
+  if (!body) return json({ error: "body must be a JSON object" }, 400);
+
+  const email = String(body.email || "").trim();
+  if (!validEmail(email)) return json({ error: "email is not valid" }, 400);
+
+  await saveEmail(id, email, body.share_with_match, env);
+  return json({ ok: true });
 }
 
 // one public card. No verdict, no scores, no email.
@@ -912,6 +943,12 @@ export default {
     const answersMatch = path.match(/^\/judge\/([^\/]+)\/answers$/);
     if (answersMatch && method === "POST") {
       try { return await handleJudgeAnswers(answersMatch[1], request, env); }
+      catch (e) { return json({ error: e.message }, 500); }
+    }
+
+    const emailMatch = path.match(/^\/judge\/([^\/]+)\/email$/);
+    if (emailMatch && method === "POST") {
+      try { return await handleJudgeEmail(emailMatch[1], request, env); }
       catch (e) { return json({ error: e.message }, 500); }
     }
 
