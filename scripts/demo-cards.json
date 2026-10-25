@@ -1,0 +1,42 @@
+{
+  "helpdock": {
+    "likes_and_goals": "Wants to answer every customer question before anyone has to call. Loves a good FAQ.",
+    "brings": [
+      "One-script-tag help widget",
+      "FAQ bot from your help center",
+      "Hands off to a human by email"
+    ]
+  },
+  "porchlight": {
+    "likes_and_goals": "Wants Lowcountry nonprofits to stop begging for volunteers.",
+    "brings": [
+      "Match by cause and free hours",
+      "One-tap sign up",
+      "Reminders that actually work"
+    ]
+  },
+  "floodwatch-chs": {
+    "likes_and_goals": "Wants every Charleston driver home dry. Loves a king tide forecast.",
+    "brings": [
+      "Live street flooding map",
+      "Driver reports in two taps",
+      "Alerts before you leave"
+    ]
+  },
+  "shiftswap-chs": {
+    "likes_and_goals": "Wants servers and front desk staff to trade shifts without the group text chaos.",
+    "brings": [
+      "Post a shift in one text",
+      "Manager approval built in",
+      "Works for restaurants and hotels"
+    ]
+  },
+  "firstrun": {
+    "likes_and_goals": "Wants to be the first friend every new user makes. Long walks through your settings page.",
+    "brings": [
+      "One-script-tag install",
+      "Auto-generated three-step tour",
+      "Contextual first-time tooltips"
+    ]
+  }
+}

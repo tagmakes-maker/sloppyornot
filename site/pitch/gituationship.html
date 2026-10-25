@@ -352,7 +352,7 @@
   });
 
   // G3: live. Proposal, rejection, re-proposal, and approval all go to the real API.
-  // If a call fails or takes over 30 seconds, show the recorded run from agent-log 2026-10-24 20:16, labeled as recorded.
+  // If a call fails or takes over 60 seconds, show the recorded run from agent-log 2026-10-24 20:16, labeled as recorded.
   const API = "https://api.sloppyornot.com";
   const PRODUCT = "floodwatch-chs";
   const NAMES = { firstrun: "FirstRun", "shiftswap-chs": "ShiftSwap CHS", helpdock: "HelpDock", porchlight: "Porchlight" };
@@ -366,9 +366,10 @@
   let partner = null;
   const $id = (id) => document.getElementById(id);
 
+  // The Blueprint took about 26 seconds live on Oct 25, so give every call a full minute before falling back.
   async function call(path, body) {
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 30000);
+    const timer = setTimeout(() => ctrl.abort(), 60000);
     try {
       const res = await fetch(API + path, body === undefined ? { signal: ctrl.signal } : {
         method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body), signal: ctrl.signal });

@@ -62,8 +62,24 @@
   let current = null;
   let busy = false;
 
+  // Pitch demo only (?demo=1): the same live cards, in riff order, so the two roasts come before the turn.
+  const DEMO = new URLSearchParams(location.search).get("demo") === "1";
+  const PITCH_ORDER = ["helpdock", "porchlight", "floodwatch-chs"];
+  let demoDeck = null;
+  async function nextDemoCard() {
+    if (!demoDeck) {
+      const all = await api("/projects");
+      if (!Array.isArray(all)) return null;
+      const rank = (p) => (PITCH_ORDER.includes(p.id) ? PITCH_ORDER.indexOf(p.id) : PITCH_ORDER.length);
+      demoDeck = all.sort((a, b) => rank(a) - rank(b));
+    }
+    return demoDeck.find((p) => !seen.includes(p.id)) || { done: true };
+  }
+
   async function nextCard() {
-    let project = previewMode ? undefined : await api("/projects/next?seen=" + encodeURIComponent(seen.join(",")));
+    let project = previewMode ? undefined
+      : DEMO ? await nextDemoCard()
+      : await api("/projects/next?seen=" + encodeURIComponent(seen.join(",")));
     if (project === null || project === undefined) {
       markPreview();
       project = SAMPLE_PROJECTS.find((p) => !seen.includes(p.id)) || { done: true };

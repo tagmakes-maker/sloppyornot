@@ -13,7 +13,7 @@ Pitch only. The product tone stays clean. Roasts use our seed products only, nev
 - The preview deck in site/app.js now runs HelpDock, Porchlight, FloodWatch CHS, ShiftSwap CHS, FirstRun, so the two roasts come first and the turn lands on the third card.
 - site/judge.html loads the "Roast me" overlay. It only appears with `?demo=1`, so the real product is unaffected. Stage URL: https://sloppyornot.com/judge?demo=1
 - The overlay reads the card on screen at every click, so the roast always matches the product. The lines are the number-free versions below.
-- Once the live judge routes are up, the deck order comes from the API instead. Then the roasts are voiced live over whatever cards come up.
+- The judge routes are live. With `?demo=1` the judge page pulls the live cards and puts HelpDock, Porchlight, and FloodWatch CHS first. Votes still go to the live API. The seed cards exist only after `scripts/reset-demo.sh` runs, so run it before the pitch.
 
 ## The cached roasts (beat 1)
 
