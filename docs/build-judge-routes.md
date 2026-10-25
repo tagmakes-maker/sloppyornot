@@ -24,10 +24,11 @@ Read CLAUDE.md, README.md, CONTRIBUTING.md, shared/profile.schema.json, docs/sco
 - `url:<normalized url>` the product id for that URL. Used to reuse the first verdict.
 - `votes:<id>` `{ slop, not, list: [{ vote, at }] }` from the Judge screen.
 - `subscriber:<lowercased email>` `{ email, product_id, subscribed_at, unsubscribe_token }`. Never returned by any route.
+- `contact:<id>` `{ email, at }`. Saved only when the owner checks "Share my email with an approved match" (`share_with_match: true`). The State of Slop signup alone is not consent to share. GET /matches/:id/contact (PR #46) reads this key after a human approves the match.
 
 ## Routes
 
-### POST /judge  `{ url, by, email?, roast_me? }`
+### POST /judge  `{ url, by, email?, roast_me?, share_with_match? }`
 
 `by` is the user name shown on the card as @username. Optional, trimmed, 1 to 40 characters. The Figma submit screen has no username field yet, so default to "anonymous" when it is missing.
 
@@ -39,7 +40,7 @@ Read CLAUDE.md, README.md, CONTRIBUTING.md, shared/profile.schema.json, docs/sco
 6. Run the agent with `runAgent("judge", { url, page, automated_checks }, env)`. If it returns `enough_content: false` and the page was not rendered, retry once with Browser Rendering. If it still lacks content, return `{ needs_description: true }` so the site can ask for one line, and accept `description` on a second POST /judge to append to page.text.
 7. Make the id a slug from the host (for example `floodwatch-chs-pages-dev`). Add a short suffix if taken.
 8. Save the Product Profile: `builder` set to `by`, the agent's name, what_it_does, target_user, capabilities, plus `url`, `status: "submitted"`, `match_status: "unmatched"`, `automated_checks`, `consent: { roast_me: roast_me === true }`, `agent_observations: [{ at, note: observation, source: "submission" }]`, created_at, updated_at.
-9. Compute lane one from docs/scoring.md: measured 40 plus the sum of the six AI scores. Save `judge:<id>` with lane 1, `card:<id>`, `url:<normalized>`. Save the subscriber if an email came in.
+9. Compute lane one from docs/scoring.md: measured 40 plus the sum of the six AI scores. Save `judge:<id>` with lane 1, `card:<id>`, `url:<normalized>`. Save the subscriber if an email came in. Save `contact:<id>` too if `share_with_match` is true.
 10. Thumbnail: take a screenshot with Browser Rendering (`/browser-rendering/screenshot`, 1200 x 630 viewport, JPEG). If that is not available, fetch the page's og:image. If neither exists, save no thumbnail and the site shows a placeholder. Save to `thumb:<id>`.
 11. Return `{ id, verdict, card, ai_answers, human_questions }`. ai_answers is `[{ id, question, evidence }]` with no scores, for the "agent animation" loading screen that shows the questions being answered. human_questions is the eight questions from agent/judging-questions.md as `[{ id, question }]`. The site holds the verdict until the submitter answers or skips.
 
@@ -53,7 +54,7 @@ Read CLAUDE.md, README.md, CONTRIBUTING.md, shared/profile.schema.json, docs/sco
 
 ### POST /judge/:id/email  `{ email }`
 
-Basic email check. Save `subscriber:<email>` with a random unsubscribe_token. Return `{ ok: true }`. Never echo other subscribers.
+Also accepts `share_with_match`. Basic email check. Save `subscriber:<email>` with a random unsubscribe_token. If `share_with_match` is true, also save `contact:<id>`. Return `{ ok: true }`. Never echo other subscribers.
 
 ### GET /projects
 

@@ -54,6 +54,8 @@
     border: 0; border-radius: 999px; padding: 12px 24px; margin-top: 18px;
   }
   button.ghost { background: transparent; color: var(--ink); border: 2px solid var(--ink); }
+  label.check { display: flex; gap: 8px; align-items: center; font-weight: 400; font-size: 15px; }
+  label.check input { width: auto; }
   .gh-link { display: inline-block; margin-top: 12px; color: var(--ink); font-size: 15px; }
   .connected {
     display: none; margin-top: 18px; padding: 12px; border-radius: 10px;
@@ -155,8 +157,9 @@
   <div class="card">
     <label for="url">Paste your live link</label>
     <input id="url" type="url" placeholder="https://your-product.com">
-    <label for="email">Email <small>(shared only after a match is approved)</small></label>
+    <label for="email">Email <small>(optional)</small></label>
     <input id="email" type="email" placeholder="you@example.com">
+    <label class="check"><input type="checkbox" id="share" checked> Share my email with an approved match</label>
     <a href="#" class="gh-link" id="gh">Have a repo? Connect GitHub (optional)</a>
     <div><button id="add">Find my match</button></div>
     <div class="connected" id="connected">Connected! FloodWatch CHS is in the pool.</div>
