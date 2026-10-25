@@ -1,0 +1,24 @@
+# Gituationship
+
+> Gituationship finds a project's missing piece. You submit a project, Dot (the Sloppy or Not agent) judges it and names its gaps, and then you meet complementary projects that bring what yours is missing. A human approves every match. It is free and educational.
+
+Gituationship is the matching half of Sloppy or Not (https://sloppyornot.com). It was built in Charleston, SC, at HarborHacks, the Agent in the Loop hackathon hosted by Charleston Hacks, by AI Tech Girlfriends: Therese Grittner (agent intelligence, pitch, and demo; TaG Makes, https://tagmakessc.com), Olivia Dennehy (design, frontend, and UX), and Jacky Schuler (backend, storage, and agent runtime).
+
+How it works:
+
+- Submit one public URL, a live site or a public GitHub repository.
+- Dot reviews it on Sloppy or Not and turns each weakness into a capability tag, such as onboarding, accessibility, or shared accounts.
+- A persistent agent looks for a project whose capabilities fill that gap and that needs what yours brings in return. Matches are built on complementarity, not a mystery score.
+- The agent proposes and explains. A person approves every match. An owner's email reaches a partner only if that owner opted in.
+- After a match is approved, the agent drafts a Super Product Blueprint for the combined product.
+
+## Pages
+
+- [Home](https://gituationship.com/): what Gituationship is and how matching works.
+- [Submit a project](https://gituationship.com/submit): send a public URL to Dot for review on Sloppy or Not.
+- [Example matches](https://gituationship.com/matches): an illustrative result showing gaps and complementary projects.
+
+## Optional
+
+- [Sloppy or Not](https://sloppyornot.com/): the review that every match starts with.
+- [Source code](https://github.com/tagmakes-maker/sloppyornot): the sites, the worker API, the agent prompts, and the matching rules.

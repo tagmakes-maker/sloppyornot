@@ -119,6 +119,7 @@
       <a href="/criteria" class="pill pill-ghost">How we judge</a>
       <a href="/judge" class="pill pill-pink"><img src="/assets/icon-eye.svg" alt="">Go judge</a>
       <a href="/" class="pill pill-white">Go home</a>
+      <a href="https://gituationship.com/matches" class="pill pill-pink" id="gitu-back" hidden>See how matching works on Gituationship</a>
     </div>
   </section>
 
@@ -132,6 +133,11 @@
   const showError = (id, msg) => { $(id).textContent = msg; $(id).hidden = !msg; };
 
   let lane = "agent";
+
+  // Handoff from gituationship.com: fill in the link and offer the way back.
+  const handoff = new URLSearchParams(location.search);
+  if (handoff.get("url")) $("url").value = handoff.get("url");
+  if (handoff.get("from") === "gituationship") $("gitu-back").hidden = false;
   let result = null;
 
   document.querySelectorAll(".choice").forEach((b) => b.addEventListener("click", () => (lane = b.dataset.lane)));

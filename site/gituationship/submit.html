@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Submit a project | Gituationship</title>
+<meta name="description" content="Every good match starts with an honest look. Paste one public URL and Dot reviews it on Sloppy or Not, so we can find what your project is missing.">
+<link rel="canonical" href="https://gituationship.com/submit">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Gituationship">
+<meta property="og:title" content="Submit a project | Gituationship">
+<meta property="og:description" content="Every good match starts with an honest look. Paste one public URL and Dot reviews it on Sloppy or Not, so we can find what your project is missing.">
+<meta property="og:url" content="https://gituationship.com/submit">
+<meta property="og:image" content="https://gituationship.com/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/robots.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=Space+Mono&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="wordmark" href="./" aria-label="Gituationship home"><img src="assets/wordmark.webp" alt="Gituationship" width="290" height="68"></a>
+  <a class="btn btn-cream" href="submit">Submit a project</a>
+</div></header>
+<main class="wrap">
+
+<section class="crumbs">
+  <p class="eyebrow">01 Submit &nbsp;/&nbsp; 02 Get judged &nbsp;/&nbsp; 03 Meet your match</p>
+  <h1 class="page-h">Every good match starts<br>with an honest look.</h1>
+  <p class="lede" style="max-width:none">Show us your project. We&rsquo;ll find what it&rsquo;s missing, not what&rsquo;s wrong with you.</p>
+</section>
+
+<div class="submit-grid">
+  <form class="form-card" id="send" novalidate>
+    <h2>Start with what you&rsquo;ve built.</h2>
+    <p class="sub">One public URL. Dot will take it from here.</p>
+    <label for="url">Project URL</label>
+    <input id="url" type="url" inputmode="url" autocomplete="url" placeholder="Paste your project URL" required>
+    <p class="hint">Public GitHub repository or live site &middot; https:// required</p>
+    <p class="error" id="err" role="alert" hidden></p>
+    <div><button class="btn btn-pink" type="submit">Send it to Dot</button></div>
+    <div class="judged">
+      <img src="assets/sloppy-logo.png" alt="Sloppy or Not" width="56">
+      <div><strong>Judged by Sloppy or Not</strong><span>Honest feedback first. Complementary projects next.</span></div>
+    </div>
+    <p class="fine" style="margin-top:12px">You&rsquo;ll leave for Sloppy or Not to complete the review. Matching comes next, and a person approves every match before anyone is introduced.</p>
+  </form>
+  <div class="dot-row">
+    <div class="dot-frame"><img src="assets/dot-square.webp" alt="Dot, the Sloppy or Not agent"></div>
+    <div class="bubble small"><p class="eyebrow">Dot says</p><p>Paste the project.<br>Not your pitch deck.<br>I have standards.</p></div>
+  </div>
+</div>
+
+<section class="nudge">
+  <h3>A useful nudge, not a final verdict.</h3>
+  <p>Free and educational. Sloppy or Not uses research-based criteria and a mix of human and AI review. Feedback can miss context, and matches are starting points for a conversation, not endorsements. Never submit secrets or private code.</p>
+</section>
+</main>
+<footer class="foot"><div class="wrap">
+  <div>
+    <strong>Better together. Better built.</strong>
+    <p>&copy; 2026 Gituationship &middot; Built by <a href="https://aitechgirlfriends.com" target="_blank" rel="noopener">AI Tech Girlfriends</a></p>
+    <p>A free educational project. Your work stays yours.</p>
+  </div>
+  <a class="universe" href="https://sloppyornot.com" target="_blank" rel="noopener">From the Sloppy or Not universe &#8599;</a>
+</div></footer>
+<script>
+  document.getElementById("send").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const err = document.getElementById("err");
+    let v = document.getElementById("url").value.trim();
+    if (v && !/^https?:\/\//i.test(v)) v = "https://" + v;
+    let ok = false;
+    try { ok = new URL(v).hostname.includes("."); } catch {}
+    if (!ok) { err.textContent = "Enter a full public link, like https://github.com/you/project."; err.hidden = false; return; }
+    location.href = "https://sloppyornot.com/submit?url=" + encodeURIComponent(v) + "&from=gituationship";
+  });
+</script>
+</body>
+</html>
