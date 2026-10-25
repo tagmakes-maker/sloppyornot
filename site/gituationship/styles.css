@@ -63,6 +63,8 @@ h1, h2, h3 { font-family: var(--display); font-weight: 700; margin: 0; letter-sp
 .bubble.small .eyebrow { color: var(--bg); font-weight: 700; font-size: 10px; letter-spacing: 0.08em; margin-bottom: 10px; }
 .bubble.small p { margin: 0; font-size: 18px; font-weight: 600; line-height: 1.3; }
 .robots { width: 300px; height: auto; margin: 56px 0 0 16px; image-rendering: pixelated; }
+.robots-movie { display: block; aspect-ratio: 1208 / 760; }
+.match-movie { width: min(360px, 100%); height: auto; margin: 16px auto 0; }
 .section { padding-top: 112px; display: flex; flex-direction: column; gap: 32px; }
 .cards3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .card { background: var(--surface); border-radius: 24px; padding: 28px 24px; display: flex; flex-direction: column; gap: 12px; }
