@@ -35,7 +35,7 @@ function renderLayout() {
     footer.className = "site-footer";
     footer.innerHTML = `
       <div class="legal">
-        <p>&copy; 2026 Sloppy or Not. All rights reserved.</p>
+        <p>&copy; 2026 Sloppy or Not. All rights reserved. Built by <a href="https://aitechgirlfriends.com" target="_blank" rel="noopener">AI Tech Girlfriends</a>.</p>
         <p>Submitted projects remain the property of their creators. Sloppy or Not is a free educational project. Scores reflect research-based criteria and a mix of human and AI review, and are not a final judgment of you or your work.</p>
         <p>Privacy: We collect only what you submit (your project link, your answers, and your email if you give one) to generate your score. We don't sell your data.</p>
       </div>
