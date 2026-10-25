@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gigs Tonight CHS</title>
+<meta name="description" content="Tonight's live music in Charleston on one page. A demo project for Sloppy or Not and Gituationship.">
+<meta name="robots" content="noindex">
+<style>
+  body { margin: 0; font: 16px/1.5 system-ui, sans-serif; background: #101418; color: #f2f2f2; }
+  .demo { background: #fff3b0; color: #222; text-align: center; padding: 10px 16px; font-size: 14px; }
+  .demo a { color: #222; }
+  header { padding: 40px 24px 16px; max-width: 900px; margin: 0 auto; }
+  h1 { margin: 0; font-size: 44px; letter-spacing: -0.02em; }
+  h1 span { color: #ff6b3d; }
+  .sub { color: #9aa3ab; margin: 8px 0 0; }
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; max-width: 900px; margin: 16px auto; padding: 0 24px; }
+  /* Mouse-only chips: the accessibility gap this demo is about */
+  .chip { background: #1d242b; border-radius: 999px; padding: 8px 16px; cursor: pointer; color: #cfd6dc; user-select: none; }
+  .chip.on { background: #ff6b3d; color: #101418; }
+  main { max-width: 900px; margin: 0 auto; padding: 0 24px 64px; display: grid; gap: 16px; }
+  .show { display: grid; grid-template-columns: 120px 1fr auto; gap: 20px; align-items: center; background: #171e24; border-radius: 16px; padding: 16px; }
+  .poster { width: 120px; height: 120px; border-radius: 12px; background-size: cover; }
+  .show h2 { margin: 0; font-size: 22px; }
+  .venue { margin: 2px 0 0; color: #cfd6dc; }
+  .time { margin: 4px 0 0; color: #4a535b; font-size: 14px; }
+  .add { background: none; border: 1px solid #ff6b3d; color: #ff6b3d; border-radius: 999px; padding: 8px 14px; }
+  @media (max-width: 600px) { .show { grid-template-columns: 80px 1fr; } .poster { width: 80px; height: 80px; } .add { grid-column: 1 / -1; } h1 { font-size: 34px; } }
+</style>
+</head>
+<body>
+<p class="demo"><strong>Demo project.</strong> Gigs Tonight CHS was built by AI Tech Girlfriends to show matching on <a href="https://gituationship.com/matches?id=gigs-tonight-chs">Gituationship</a>. The venues and bands are made up.</p>
+<header>
+  <h1>Gigs <span>Tonight</span> CHS</h1>
+  <p class="sub">Every live show in Charleston that starts in the next few hours.</p>
+</header>
+<div class="filters">
+  <div class="chip on" data-f="all">All tonight</div>
+  <div class="chip" data-f="free">No cover</div>
+  <div class="chip" data-f="late">After 9 PM</div>
+</div>
+<main id="list"></main>
+<script>
+  const shows = [
+    { band: "The Pluff Mud Revival", venue: "Marsh Hen Hall, King Street", time: "7:30 PM", cover: "$10", late: false, hue: 18 },
+    { band: "Low Tide Choir", venue: "The Oyster Shed, Folly Road", time: "8:00 PM", cover: "No cover", late: false, hue: 200 },
+    { band: "Sweetgrass Static", venue: "Porchlight Social, Park Circle", time: "9:30 PM", cover: "$8", late: true, hue: 300 },
+    { band: "Haint Blue Hours", venue: "Cannonborough Listening Room", time: "10:00 PM", cover: "No cover", late: true, hue: 160 },
+  ];
+  const list = document.getElementById("list");
+  function render(f) {
+    list.innerHTML = shows.filter((s) => f === "all" || (f === "free" && s.cover === "No cover") || (f === "late" && s.late)).map((s) => `
+      <article class="show">
+        <div class="poster" style="background:linear-gradient(135deg,hsl(${s.hue} 80% 55%),hsl(${s.hue + 60} 70% 30%))"></div>
+        <div><h2>${s.band}</h2><p class="venue">${s.venue}</p><p class="time">${s.time} &middot; ${s.cover}</p></div>
+        <button class="add">Add to calendar</button>
+      </article>`).join("");
+  }
+  document.querySelectorAll(".chip").forEach((c) => c.addEventListener("click", () => {
+    document.querySelectorAll(".chip").forEach((x) => x.classList.toggle("on", x === c));
+    render(c.dataset.f);
+  }));
+  render("all");
+</script>
+</body>
+</html>
