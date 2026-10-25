@@ -71,6 +71,9 @@ async function handleReview(id, request, env) {
     return json({ error: "invalid JSON" }, 400);
   }
 
+  // test swipes prove the route works but never touch real scores
+  if (body.test === true) return json({ ignored: true, reason: "test swipe", id });
+
   // save the raw swipe
   const rawKey = "reviews:" + id;
   const raw = (await env.STORE.get(rawKey, "json")) || [];

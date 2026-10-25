@@ -54,6 +54,8 @@ Everything below uses the Product Profile from `shared/profile.schema.json`. Rou
 
 The worker averages each field into `human_review`, adds 1 to `human_review.swipe_count`, and sets `human_review.verified` to true at 5 swipes. Returns the profile.
 
+Add `"test": true` to a swipe and the worker throws it away without saving or counting it, then returns `{"ignored": true, "reason": "test swipe", "id": "..."}`. Scripts use this so testing never changes real scores. The site should never send it.
+
 ### Agent
 
 These call Claude, so each one takes a few seconds. Show a loading state.

@@ -42,7 +42,7 @@ echo ""
 echo "--- 3. POST /products/$A_ID/review ---"
 curl -s -X POST "$BASE/products/$A_ID/review" \
   -H "Content-Type: application/json" \
-  -d '{"would_use":1,"understood_immediately":0,"feels_distinctive":1,"easy_to_use":1,"looks_like_slop":0}' \
+  -d '{"test":true,"would_use":1,"understood_immediately":0,"feels_distinctive":1,"easy_to_use":1,"looks_like_slop":0}' \
   | python3 -I -c "import json,sys; raw=sys.stdin.read(); print(raw[:200] if not raw.startswith('{') else json.dumps(json.loads(raw), indent=2))" 2>&1 || echo "(empty response)"
 
 # 4. Agent: observe
