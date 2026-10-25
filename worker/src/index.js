@@ -638,10 +638,114 @@ const validEmail = (s) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s) && s.length <= 25
 async function saveEmail(id, email, shareWithMatch, env) {
   const now = new Date().toISOString();
   const key = "subscriber:" + email.toLowerCase();
-  if (!(await env.STORE.get(key))) {
-    await env.STORE.put(key, JSON.stringify({ email, product_id: id, subscribed_at: now, unsubscribe_token: crypto.randomUUID() }));
+  let subscriber = await env.STORE.get(key, "json");
+  if (!subscriber) {
+    subscriber = { email, product_id: id, subscribed_at: now, unsubscribe_token: crypto.randomUUID() };
+    await env.STORE.put(key, JSON.stringify(subscriber));
   }
   if (shareWithMatch === true) await env.STORE.put("contact:" + id, JSON.stringify({ email, at: now }));
+  return subscriber;
+}
+
+// ---- Results email (Resend, sent from aitechgirlfriends.com) ----
+
+const escapeHtml = (s) =>
+  String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+
+// The verdict word, the card, and an unsubscribe link. No numbers, same as the site.
+function resultsEmail(profile, judge, card, unsubscribeUrl) {
+  const verdict = judge.verdict === "Not" ? "Not" : "Sloppy";
+  const name = profile?.name || "Your project";
+  const url = profile?.url || "";
+  const brings = card?.brings || [];
+  const line = verdict === "Not"
+    ? "The agent and the humans agree. This one is not slop."
+    : "The agent says it reads as slop right now. That is fixable, and the Judge screen will tell you how others see it.";
+  const color = verdict === "Not" ? "#1f9d55" : "#e0287d";
+
+  const html = `<!doctype html><html><body style="margin:0;padding:24px;background:#faf7f2;font-family:Helvetica,Arial,sans-serif;color:#1a1a1a">
+<div style="max-width:560px;margin:0 auto;background:#fff;border-radius:16px;padding:32px">
+<p style="margin:0 0 8px;font-size:14px;color:#666">Sloppy or Not verdict for</p>
+<h1 style="margin:0 0 4px;font-size:24px">${escapeHtml(name)}</h1>
+${url ? `<p style="margin:0 0 24px;font-size:14px"><a href="${escapeHtml(url)}" style="color:#666">${escapeHtml(url)}</a></p>` : ""}
+<p style="margin:0 0 16px;font-size:56px;font-weight:800;color:${color}">${verdict}</p>
+<p style="margin:0 0 24px;font-size:16px;line-height:1.5">${line}</p>
+${card?.likes_and_goals ? `<h2 style="margin:0 0 8px;font-size:16px">Likes and goals</h2><p style="margin:0 0 20px;font-size:15px;line-height:1.5">${escapeHtml(card.likes_and_goals)}</p>` : ""}
+${brings.length ? `<h2 style="margin:0 0 8px;font-size:16px">What it brings to the table</h2><ul style="margin:0 0 24px;padding-left:20px;font-size:15px;line-height:1.6">${brings.map((b) => `<li>${escapeHtml(b)}</li>`).join("")}</ul>` : ""}
+<p style="margin:0 0 24px"><a href="https://sloppyornot.com" style="display:inline-block;background:#1a1a1a;color:#fff;padding:12px 20px;border-radius:999px;text-decoration:none">Judge other projects</a></p>
+<p style="margin:0;font-size:12px;color:#888">You are getting this because you asked for your verdict and the weekly State of Slop email. <a href="${escapeHtml(unsubscribeUrl)}" style="color:#888">Unsubscribe</a>.</p>
+</div></body></html>`;
+
+  const text = [
+    `Sloppy or Not verdict for ${name}${url ? " (" + url + ")" : ""}`,
+    "",
+    verdict,
+    line,
+    card?.likes_and_goals ? "\nLikes and goals: " + card.likes_and_goals : "",
+    brings.length ? "\nWhat it brings to the table:\n" + brings.map((b) => "- " + b).join("\n") : "",
+    "",
+    "Judge other projects: https://sloppyornot.com",
+    "Unsubscribe: " + unsubscribeUrl,
+  ].filter((l) => l !== "").join("\n");
+
+  return { subject: `Your Sloppy or Not verdict: ${verdict}`, html, text };
+}
+
+// Sends through Resend. Never throws, so a mail problem never blocks a signup.
+async function sendResultsEmail(id, subscriber, request, env) {
+  if (!env.RESEND_KEY) return { sent: false, reason: "RESEND_KEY is not set" };
+
+  // one results email per address per project per day, so the route cannot be used to spam someone
+  const onceKey = "emailed:" + subscriber.email.toLowerCase() + ":" + id;
+  if (await env.STORE.get(onceKey)) return { sent: false, reason: "already sent today" };
+
+  const [profile, judge, card] = await Promise.all([
+    env.STORE.get("product:" + id, "json"),
+    env.STORE.get("judge:" + id, "json"),
+    env.STORE.get("card:" + id, "json"),
+  ]);
+  const origin = new URL(request.url).origin;
+  const unsubscribeUrl = `${origin}/unsubscribe?email=${encodeURIComponent(subscriber.email)}&token=${encodeURIComponent(subscriber.unsubscribe_token)}`;
+  const { subject, html, text } = resultsEmail(profile, judge, card, unsubscribeUrl);
+
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { authorization: "Bearer " + env.RESEND_KEY, "content-type": "application/json" },
+      body: JSON.stringify({
+        from: env.RESEND_FROM || "Sloppy or Not <results@aitechgirlfriends.com>",
+        to: [subscriber.email],
+        subject,
+        html,
+        text,
+        headers: { "List-Unsubscribe": "<" + unsubscribeUrl + ">" },
+      }),
+    });
+    if (!res.ok) {
+      const reason = "resend " + res.status + ": " + (await res.text()).slice(0, 300);
+      console.log("results email failed", reason);
+      return { sent: false, reason };
+    }
+    await env.STORE.put(onceKey, "1", { expirationTtl: 86400 });
+    return { sent: true };
+  } catch (e) {
+    console.log("results email failed", e.message);
+    return { sent: false, reason: e.message };
+  }
+}
+
+// GET /unsubscribe?email=&token= from the link in every email
+async function handleUnsubscribe(url, env) {
+  const page = (msg, status = 200) =>
+    new Response(`<!doctype html><meta name="viewport" content="width=device-width"><title>Sloppy or Not</title><body style="font-family:Helvetica,Arial,sans-serif;padding:40px;text-align:center"><p>${msg}</p><p><a href="https://sloppyornot.com">sloppyornot.com</a></p></body>`,
+      { status, headers: { "content-type": "text/html; charset=utf-8" } });
+  const email = String(url.searchParams.get("email") || "").trim().toLowerCase();
+  const token = String(url.searchParams.get("token") || "");
+  const subscriber = email ? await env.STORE.get("subscriber:" + email, "json") : null;
+  if (!subscriber) return page("You are not on the list. Nothing else will be sent.");
+  if (!token || subscriber.unsubscribe_token !== token) return page("That unsubscribe link is not valid.", 400);
+  await env.STORE.delete("subscriber:" + email);
+  return page("You are unsubscribed. Nothing else will be sent.");
 }
 
 // what POST /judge returns. ai_answers keep their evidence and lose their scores.
@@ -863,7 +967,8 @@ async function handleJudgeEmail(id, request, env) {
   const email = String(body.email || "").trim();
   if (!validEmail(email)) return json({ error: "email is not valid" }, 400);
 
-  await saveEmail(id, email, body.share_with_match, env);
+  const subscriber = await saveEmail(id, email, body.share_with_match, env);
+  await sendResultsEmail(id, subscriber, request, env);
   return json({ ok: true });
 }
 
@@ -1031,6 +1136,8 @@ export default {
       try { return await handleJudgeEmail(emailMatch[1], request, env); }
       catch (e) { return json({ error: e.message }, 500); }
     }
+
+    if (path === "/unsubscribe" && method === "GET") return handleUnsubscribe(url, env);
 
     if (path === "/projects" && method === "GET") return handleGetProjects(env);
     if (path === "/projects/next" && method === "GET") return handleNextProject(url, env);

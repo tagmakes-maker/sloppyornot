@@ -15,6 +15,7 @@ compatibility_date = "2026-10-01"
 #   url:<url>      product id for a normalized url, so the first verdict is reused
 #   votes:<id>     {slop, not, list} from the Judge screen. Never returned.
 #   subscriber:<email>  {email, product_id, subscribed_at, unsubscribe_token}, lowercased key. Never returned.
+#   emailed:<email>:<id>  one results email per address per project per day. Expires on its own.
 #   limit:...      counters for the /judge cap. Expire on their own.
 # Created Oct 24 in the dashboard (Workers KV > STORE).
 # `npm run dev` (Wrangler 4) uses a local copy of this namespace, so testing never touches live data.
@@ -28,8 +29,11 @@ PROMPTS_BASE = "https://raw.githubusercontent.com/tagmakes-maker/sloppyornot/mai
 ANTHROPIC_MODEL = "claude-opus-5-5"
 # the Tagmakes account, for the Browser Rendering REST endpoints
 CF_ACCOUNT_ID = "24e9a7cf816f435cac65da9daef6dc82"
+# results email sender. aitechgirlfriends.com is verified in Resend.
+RESEND_FROM = "Sloppy or Not <results@aitechgirlfriends.com>"
 
 # Secrets (never in this file): npx wrangler secret put ANTHROPIC_API_KEY
+# RESEND_KEY sends the results email after POST /judge/:id/email. Without it signups still save.
 # Optional: PAGESPEED_API_KEY raises Google's PageSpeed quota. Without it /judge still works.
 # CF_BROWSER_TOKEN (Browser Rendering Edit) turns on screenshots and rendered pages. Without it /judge
 # falls back to a plain fetch and og:image. For local dev it also goes in worker/.dev.vars.
