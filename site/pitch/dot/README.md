@@ -6,6 +6,7 @@ Open `/pitch/dot` on the big screen. Press Start demo (browsers block sound unti
 - `?page=/judge` opens a different page in the frame.
 - Press S during the intro to skip.
 - Press C for the close: a QR card for sloppyornot.com/submit, then Gituationship with a QR card for gituationship.com. Dot says one line over each, from her corner, and her glow follows her voice. The cards stay up for scanning. Escape leaves the close. Keys work even after someone clicks into the site.
+- After a URL is judged on /submit in the frame, a Not verdict holds on screen for 4 seconds, Dot says "Not sloppy. Let's find its match.", and the frame jumps to the Gituationship match by itself (the same page G opens). A Sloppy verdict stays put. Escape cancels the jump.
 - If the video cannot play, the page goes straight to the live site. It never shows a blank screen.
 
 ## Files

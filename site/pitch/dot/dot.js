@@ -4,6 +4,7 @@
 // ?practice=1 is the rehearsal mode: G makes a fresh Gigs Tonight copy every run, so the stage pair stays untouched.
 // Keys: S skips the intro. G opens the Gituationship match page. C plays the close. Escape leaves the close.
 // L starts the live mic (and mutes or unmutes it once live). X ends the live conversation.
+// A Not verdict on /submit jumps to the Gituationship match by itself after a few seconds. Escape cancels it.
 (function () {
   const params = new URLSearchParams(location.search);
   const page = params.get("page") || "/";
@@ -285,6 +286,7 @@
     if (k === "s" && !wentLive) { gate.hidden = true; goLive(); }
     else if (k === "g") openMatch();
     else if (k === "c" && !closing) playClose();
+    else if (k === "escape" && jumpTimer) { clearTimeout(jumpTimer); jumpTimer = 0; setState(convo ? "listening" : "idle"); }
     else if (k === "escape" && closing) endClose();
     else if (k === "l") startLive();
     else if (k === "x") endLive();
@@ -300,8 +302,27 @@
         if (e.target.closest && e.target.closest("input, textarea, select, [contenteditable]")) return;
         onKey(e);
       });
+      watchVerdict(site.contentDocument);
     } catch (err) { /* another origin: keys only work outside the frame */ }
   });
+
+  // Stage flow: paste a URL on /submit, and once the verdict says Not, hold it on screen for the room,
+  // then jump to the Gituationship match by itself. A Sloppy verdict stays put. Escape cancels the jump.
+  const VERDICT_HOLD_MS = 4000;
+  let jumpTimer = 0;
+  function watchVerdict(doc) {
+    const step = doc.getElementById("step-verdict");
+    if (!step) return;
+    const seen = new MutationObserver(() => {
+      if (step.hidden) return;
+      const word = doc.getElementById("verdict-word")?.textContent;
+      if (word !== "Not") return;
+      seen.disconnect();
+      if (!convo) { dot.dataset.state = "listening"; status.textContent = "Not sloppy. Let's find its match."; }
+      jumpTimer = setTimeout(() => { jumpTimer = 0; if (!convo) setState("idle"); openMatch(); }, VERDICT_HOLD_MS);
+    });
+    seen.observe(step, { attributes: true, attributeFilter: ["hidden"] });
+  }
 
   // Dot's overlay states: idle, listening, speaking, muted. The live voice sets these.
   const LABELS = { idle: "Dot is watching", listening: "Dot is listening", speaking: "Dot is talking", muted: "Mic off" };
