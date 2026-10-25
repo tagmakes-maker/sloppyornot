@@ -43,6 +43,17 @@ if [ "$(cat "$TMP/names.json")" != "[]" ]; then
 fi
 
 echo ""
+echo "--- Waiting for the delete to reach every Cloudflare location (up to a minute) ---"
+# KV deletes take time to spread, and reloading too soon gets 409 "already exists"
+for f in "$ROOT"/seed/*.json; do
+  ID=$(basename "$f" .json)
+  for i in $(seq 1 30); do
+    [ "$(curl -s -o /dev/null -w "%{http_code}" "$BASE/products/$ID")" = "404" ] && break
+    sleep 3
+  done
+done
+
+echo ""
 echo "--- Reloading seed products ---"
 for f in "$ROOT"/seed/*.json; do
   CODE=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$BASE/products" \
