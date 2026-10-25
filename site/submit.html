@@ -51,11 +51,27 @@
   </section>
 
   <!-- Step 2: the agent animation -->
-  <section id="step-thinking" class="thinking" hidden aria-live="polite">
-    <img class="robot" src="/assets/robot.svg" alt="">
-    <h1 class="section-title">The agent is reading your project</h1>
-    <p class="hero-sub">This takes 30 to 60 seconds. It checks the six questions every project gets.</p>
-    <ol class="qlist" id="ai-qs"></ol>
+  <section id="step-thinking" class="agent" hidden aria-live="polite">
+    <div class="agent-main">
+      <div class="segs" id="segs"></div>
+      <p class="eyebrow" id="agent-count">Answering question 1 of 6</p>
+      <p class="note agent-intro">Dot answers six questions from your site. This takes 30 to 60 seconds. The nine questions about your thinking are yours to answer.</p>
+      <ol class="acards" id="ai-qs"></ol>
+    </div>
+    <aside class="agent-side">
+      <p class="agent-badge"><span></span>Agent: Dot (active)</p>
+      <button type="button" class="pill pill-cyan" id="answer-myself"><span class="stop-mark"></span>Stop! I'll answer myself</button>
+      <img class="dot" src="/assets/dot.webp" alt="Dot, the Sloppy or Not agent, a retro robot with a heart on her chest">
+      <div class="card agent-status">
+        <strong id="agent-title">Dot is on it</strong>
+        <span id="agent-status">Reading your site, one question at a time.</span>
+        <div class="bar"><i id="agent-bar"></i></div>
+      </div>
+    </aside>
+    <div class="agent-foot">
+      <p class="eyebrow">Agent mode: automatic</p>
+      <button type="button" class="pill pill-cyan" id="agent-next" disabled><img src="/assets/icon-plus.svg" alt=""><span id="agent-next-label">Answers in progress</span></button>
+    </div>
   </section>
 
   <!-- Step 3: human questions (manual lane only) -->
@@ -109,17 +125,61 @@
 
   document.querySelectorAll(".choice").forEach((b) => b.addEventListener("click", () => (lane = b.dataset.lane)));
 
-  // Agent animation: light up the six questions while the judge runs.
+  // Dot's screen: work through the six questions while the judge runs,
+  // then fill each card with her real evidence from ai_answers.
+  function setProgress(n, total) {
+    [...$("segs").children].forEach((s, k) => s.classList.toggle("on", k < n));
+    $("agent-count").textContent = n >= total ? `Answered ${total} of ${total}` : `Answering question ${n + 1} of ${total}`;
+    $("agent-bar").style.width = Math.round((n / total) * 100) + "%";
+  }
+
   function startThinking() {
-    $("ai-qs").innerHTML = AI_QUESTIONS.map((q) => `<li><span class="mark"></span><span>${escapeHTML(q)}</span></li>`).join("");
+    const total = AI_QUESTIONS.length;
+    $("segs").innerHTML = AI_QUESTIONS.map(() => "<i></i>").join("");
+    $("ai-qs").innerHTML = AI_QUESTIONS.map((q, n) => `
+      <li><strong>${n + 1}. ${escapeHTML(q.replace(/\?$/, ""))}<span class="q">?</span></strong>
+      <p class="answer">Waiting for Dot...</p></li>`).join("");
+    $("agent-title").textContent = "Dot is on it";
+    $("agent-status").textContent = "Reading your site, one question at a time.";
+    $("agent-next").disabled = true;
+    $("agent-next-label").textContent = "Answers in progress";
+    $("answer-myself").hidden = lane === "manual";
     const items = [...$("ai-qs").children];
     let i = 0;
-    items[0].classList.add("on");
-    const timer = setInterval(() => {
-      if (i < items.length - 1) { items[i].classList.add("done"); i += 1; items[i].classList.add("on"); }
-    }, 1800);
-    return () => { clearInterval(timer); items.forEach((li) => li.classList.add("on", "done")); };
+    const mark = () => {
+      items.forEach((li, k) => li.classList.toggle("on", k === i));
+      items.forEach((li, k) => { if (k < i) li.querySelector(".answer").textContent = "Checked. Writing it up..."; });
+      items[i].querySelector(".answer").textContent = "Answering...";
+      setProgress(i, total);
+    };
+    mark();
+    const timer = setInterval(() => { if (i < items.length - 1) { i += 1; mark(); } }, 1800);
+    return async (answers) => {
+      clearInterval(timer);
+      for (let k = 0; k < items.length; k++) {
+        const a = (answers || [])[k];
+        items[k].classList.remove("on");
+        items[k].classList.add("done");
+        items[k].querySelector(".answer").textContent = a?.evidence ? a.evidence : "Done.";
+        setProgress(k + 1, total);
+        if (answers) await new Promise((r) => setTimeout(r, 350));
+      }
+    };
   }
+
+  function nextStep() {
+    if (lane === "manual") showQuestions(result.human_questions || HUMAN_QUESTIONS);
+    else showVerdict(result.verdict);
+  }
+
+  $("answer-myself").addEventListener("click", () => {
+    lane = "manual";
+    $("answer-myself").hidden = true;
+    if (result) return nextStep();
+    $("agent-status").textContent = "Got it. Dot is finishing her read of your site, then the questions are yours.";
+  });
+
+  $("agent-next").addEventListener("click", nextStep);
 
   function normalizeUrl(raw) {
     let v = raw.trim();
@@ -139,6 +199,7 @@
     const description = $("description").value.trim();
     if (description) body.description = description;
 
+    result = null;
     show("step-thinking");
     const stop = startThinking();
     const started = Date.now();
@@ -161,10 +222,14 @@
       // Let the animation finish its pass so the questions feel answered.
       const wait = Math.max(0, 4000 - (Date.now() - started));
       await new Promise((r) => setTimeout(r, wait));
-      stop();
+      await stop(data.ai_answers);
       result = data;
-      if (lane === "manual") showQuestions(data.human_questions || HUMAN_QUESTIONS);
-      else showVerdict(data.verdict);
+      $("agent-title").textContent = "Dot is done";
+      $("agent-status").textContent = lane === "manual" ? "Your turn. Nine questions about your thinking." : "Your verdict is ready.";
+      $("agent-next-label").textContent = lane === "manual" ? "Answer my questions" : "See my verdict";
+      $("agent-next").disabled = false;
+      $("answer-myself").hidden = true;
+      $("agent-next").focus();
     } catch (err) {
       stop();
       show("step-enter");

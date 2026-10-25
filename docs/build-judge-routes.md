@@ -43,13 +43,13 @@ Read CLAUDE.md, README.md, CONTRIBUTING.md, shared/profile.schema.json, docs/sco
 9. Compute the agent review from docs/scoring.md ("Agent review" section): the five 0 to 1 metrics from A1 to A5, then the weakness tags. Save the metrics as `agent_review` inside `judge:<id>` and the tags to the profile's `weaknesses`. This is what lets the existing find-gap and propose routes match these projects.
 10. Compute lane one from docs/scoring.md: measured 40 plus the sum of the six AI scores. Save `judge:<id>` with lane 1, `card:<id>`, `url:<normalized>`. Save the subscriber if an email came in. Save `contact:<id>` too if `share_with_match` is true.
 11. Thumbnail: take a screenshot with Browser Rendering (`/browser-rendering/screenshot`, 1200 x 630 viewport, JPEG). If that is not available, fetch the page's og:image. If neither exists, save no thumbnail and the site shows a placeholder. Save to `thumb:<id>`.
-12. Return `{ id, verdict, card, ai_answers, human_questions }`. ai_answers is `[{ id, question, evidence }]` with no scores, for the "agent animation" loading screen that shows the questions being answered. human_questions is the eight questions from agent/judging-questions.md as `[{ id, question }]`. The site holds the verdict until the submitter answers or skips.
+12. Return `{ id, verdict, card, ai_answers, human_questions }`. ai_answers is `[{ id, question, evidence }]` with no scores, for the "agent animation" loading screen that shows the questions being answered. human_questions is the nine questions from agent/judging-questions.md as `[{ id, question }]`. The site holds the verdict until the submitter answers or skips.
 
 ### POST /judge/:id/answers  `{ answers: [{ id, answer }] }`
 
 1. Load `judge:<id>`. If lane is already 2, return the saved verdict (answers count once).
 2. Run `runAgent("score-answers", { profile, answers }, env)`.
-3. human_score = sum of the eight 0 to 5 scores x 1.25. total = ai_score / 2 + human_score. Apply the AI floor: if ai_score / 2 is under 30, the verdict is Sloppy. Otherwise 70 or above is Not.
+3. human_score = sum of the nine 0 to 5 scores x 10 / 9. total = ai_score / 2 + human_score. Apply the AI floor: if ai_score / 2 is under 30, the verdict is Sloppy. Otherwise 70 or above is Not.
 4. Save lane 2 to `judge:<id>`. Append the observation to the profile's agent_observations.
 5. Return `{ id, verdict }`.
 

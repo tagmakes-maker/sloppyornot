@@ -113,7 +113,7 @@ The full spec is docs/build-judge-routes.md. No route ever returns a score. The 
 
 **`POST /judge`** with `{ url, by?, roast_me?, description? }`. Judging takes about 20 to 60 seconds, so show the loading animation. Returns `{ id, verdict, card, ai_answers, human_questions }`, where `verdict` is `"Sloppy"` or `"Not"` and `ai_answers` are `[{ id, question, evidence }]` with no scores. Returns `{ needs_description: true }` when the page has too little text. Send the same request again with a one-line `description`. The same URL always returns its first verdict. A 429 means the cap on new judgments was hit, and its `error` says so.
 
-**`POST /judge/:id/answers`** with `{ answers: [{ id, answer }] }` for the eight human questions. Returns `{ id, verdict }`. Answers count once.
+**`POST /judge/:id/answers`** with `{ answers: [{ id, answer }] }` for the nine human questions. Returns `{ id, verdict }`. Answers count once.
 
 **`POST /judge/:id/email`** with `{ email, share_with_match? }` signs the owner up for the weekly State of Slop email. Nothing is sent yet. When `share_with_match` is true, the email is also saved for an approved match partner (`GET /matches/:id/contact`). The newsletter signup alone is not consent to share it. Returns only `{ ok: true }`, never any stored email. `POST /judge` accepts the same two fields.
 
