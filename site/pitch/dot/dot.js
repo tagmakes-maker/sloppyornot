@@ -1,7 +1,8 @@
 // Pitch demo only. Not part of the product.
 // Plays Dot's intro, cuts to TV static, dissolves into the live site, and seats Dot in the corner.
 // URL options: ?skip=1 goes straight to the live site. ?page=/judge opens a different page in the frame.
-// Keys: S skips the intro. C plays the close (submit QR, then Gituationship). Escape leaves the close.
+// ?practice=1 is the rehearsal copy: G makes a fresh Gigs Tonight copy every run, so the stage pair stays untouched.
+// Keys: S skips the intro. G opens the Gituationship match page. C plays the close. Escape leaves the close.
 (function () {
   const params = new URLSearchParams(location.search);
   const page = params.get("page") || "/";
@@ -20,6 +21,12 @@
   const dot = document.getElementById("dot");
   const status = dot.querySelector(".dot-status");
   const head = dot.querySelector(".dot-head");
+
+  const practice = params.get("practice") === "1";
+  // The demo couple on stage. Matching is one-shot, so rehearsals use a fresh copy instead.
+  const STAGE_MATCH_ID = "gigs-tonight-chs";
+  const API = "https://api.sloppyornot.com";
+  if (practice) body.classList.add("practice");
 
   let staticRunning = false;
   let wentLive = false;
@@ -148,9 +155,41 @@
     setState("idle");
   }
 
+  // Practice: copy the Gigs Tonight profile under a new id, with matching consent off so
+  // the copy is never offered as someone else's match. Then open its match page.
+  let opening = false;
+  async function openMatch() {
+    if (opening) return;
+    opening = true;
+    gate.hidden = true;
+    if (!wentLive) { body.classList.add("skipped"); goLive(); }
+    let id = STAGE_MATCH_ID;
+    try {
+      if (practice) {
+        const seed = await (await fetch("/pitch/dot/practice/gigs-tonight.json")).json();
+        const stamp = new Date().toISOString().replace(/\D/g, "").slice(4, 14);
+        id = `gigs-tonight-practice-${stamp}`;
+        const now = new Date().toISOString();
+        const res = await fetch(API + "/products", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...seed, id, created_at: now, updated_at: now }),
+        });
+        if (!res.ok) throw new Error(`practice copy failed: ${res.status} ${await res.text()}`);
+      }
+      site.src = `/gituationship/matches?id=${encodeURIComponent(id)}`;
+    } catch (err) {
+      console.warn(err);
+      status.textContent = "Practice copy failed. Press G to try again.";
+      dot.dataset.state = "muted";
+    } finally {
+      opening = false;
+    }
+  }
+
   function onKey(e) {
     const k = e.key.toLowerCase();
     if (k === "s" && !wentLive) { gate.hidden = true; goLive(); }
+    else if (k === "g") openMatch();
     else if (k === "c" && !closing) playClose();
     else if (k === "escape" && closing) endClose();
   }
@@ -182,7 +221,7 @@
     head.style.transform = `rotate(${(l * 3 - 1).toFixed(2)}deg) translateY(${(-l * 1.5).toFixed(2)}%)`;
     dot.style.setProperty("--level", (0.35 + l * 0.65).toFixed(2));
   }
-  window.DotOverlay = { setState, setLevel, goLive, playClose, endClose };
+  window.DotOverlay = { setState, setLevel, goLive, playClose, endClose, openMatch };
 
   if (params.get("skip") === "1") { gate.hidden = true; body.classList.add("skipped"); goLive(); }
 })();

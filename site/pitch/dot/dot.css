@@ -123,3 +123,11 @@ body.live #dot { animation: rise 4s cubic-bezier(.16, .84, .3, 1) forwards; }
 .close-line { margin: 0; max-width: 40ch; color: var(--text); font: 400 clamp(16px, 1.5vw, 21px)/1.45 "Inter", system-ui, sans-serif; }
 .close-git h2 { font-size: clamp(28px, 3.4vw, 50px); }
 @keyframes close-in { from { opacity: 0; transform: translateY(12px); } }
+
+/* Rehearsal mode, so nobody mistakes it for the stage run. */
+body.practice::after {
+  content: "Practice run"; position: fixed; top: 10px; left: 10px; z-index: 20;
+  padding: 6px 12px; border-radius: 999px; background: #ffd23f; color: #141216;
+  font: 700 12px/1 "Space Mono", ui-monospace, monospace; letter-spacing: .12em; text-transform: uppercase;
+  pointer-events: none;
+}
