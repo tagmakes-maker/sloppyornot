@@ -1,6 +1,7 @@
 // Pitch demo only. Not part of the product.
 // Plays Dot's intro, cuts to TV static, dissolves into the live site, and seats Dot in the corner.
 // URL options: ?skip=1 goes straight to the live site. ?page=/judge opens a different page in the frame.
+// Keys: S skips the intro. C plays the close (submit QR, then Gituationship). Escape leaves the close.
 (function () {
   const params = new URLSearchParams(location.search);
   const page = params.get("page") || "/";
@@ -87,9 +88,82 @@
   video.addEventListener("stalled", () => setTimeout(() => { if (!wentLive && video.paused) goLive(); }, 4000));
 
   start.addEventListener("click", play);
+
+  // The close. Dot speaks each line from her corner while its card is up.
+  const closeEl = document.getElementById("close");
+  const cards = closeEl.querySelectorAll(".close-card");
+  const lines = [document.getElementById("close-1"), document.getElementById("close-2")];
+  let closing = false;
+  let meter = null;
+
+  // Drive her speaking state from the audio itself, so the glow and head move with the words.
+  function speak(audio) {
+    return new Promise((resolve) => {
+      try {
+        if (!meter) {
+          const ac = new AudioContext();
+          const an = ac.createAnalyser(); an.fftSize = 256; an.connect(ac.destination);
+          meter = { ac, an, buf: new Uint8Array(an.frequencyBinCount), wired: new Set() };
+        }
+        if (!meter.wired.has(audio)) { meter.ac.createMediaElementSource(audio).connect(meter.an); meter.wired.add(audio); }
+        meter.ac.resume();
+      } catch (err) { console.warn("No level meter:", err); }
+      setState("speaking");
+      let raf;
+      const tick = () => {
+        if (meter) {
+          meter.an.getByteTimeDomainData(meter.buf);
+          let peak = 0;
+          for (const v of meter.buf) peak = Math.max(peak, Math.abs(v - 128));
+          setLevel(peak / 64);
+        }
+        raf = requestAnimationFrame(tick);
+      };
+      const done = () => { cancelAnimationFrame(raf); setState("idle"); resolve(); };
+      audio.currentTime = 0;
+      audio.onended = done;
+      audio.onerror = done;
+      audio.play().then(tick).catch(done);
+    });
+  }
+
+  async function playClose() {
+    if (closing) return;
+    closing = true;
+    gate.hidden = true;
+    if (!wentLive) { body.classList.add("skipped"); goLive(); }
+    closeEl.hidden = false;
+    for (let i = 0; i < cards.length && closing; i++) {
+      cards.forEach((c, j) => { c.hidden = j !== i; });
+      await speak(lines[i]);
+      if (i < cards.length - 1) await new Promise((r) => setTimeout(r, 500));
+    }
+  }
+  function endClose() {
+    closing = false;
+    lines.forEach((a) => a.pause());
+    closeEl.hidden = true;
+    setState("idle");
+  }
+
+  function onKey(e) {
+    const k = e.key.toLowerCase();
+    if (k === "s" && !wentLive) { gate.hidden = true; goLive(); }
+    else if (k === "c" && !closing) playClose();
+    else if (k === "escape" && closing) endClose();
+  }
   document.addEventListener("keydown", (e) => {
-    if (e.target !== document.body && e.target !== start) return;
-    if ((e.key === "s" || e.key === "S") && !wentLive) { gate.hidden = true; goLive(); }
+    if (e.target !== document.body && e.target !== start && e.target !== site) return;
+    onKey(e);
+  });
+  // Once someone clicks the site, keys go to the frame. Listen there too, but never while typing in a form.
+  site.addEventListener("load", () => {
+    try {
+      site.contentDocument.addEventListener("keydown", (e) => {
+        if (e.target.closest && e.target.closest("input, textarea, select, [contenteditable]")) return;
+        onKey(e);
+      });
+    } catch (err) { /* another origin: keys only work outside the frame */ }
   });
 
   // Dot's overlay states: idle, listening, speaking, muted. The live voice sets these.
@@ -106,7 +180,7 @@
     head.style.transform = `rotate(${(l * 3 - 1).toFixed(2)}deg) translateY(${(-l * 1.5).toFixed(2)}%)`;
     dot.style.setProperty("--level", (0.35 + l * 0.65).toFixed(2));
   }
-  window.DotOverlay = { setState, setLevel, goLive };
+  window.DotOverlay = { setState, setLevel, goLive, playClose, endClose };
 
   if (params.get("skip") === "1") { gate.hidden = true; body.classList.add("skipped"); goLive(); }
 })();

@@ -101,3 +101,24 @@ body.live #dot { animation: rise 4s cubic-bezier(.16, .84, .3, 1) forwards; }
   #dot, .dot-head, .dot-figure { transition: none; animation: none !important; }
   body.live #dot { opacity: 1; transform: none; }
 }
+
+/* The close: two cards over the site. Dot stays in her corner and talks. */
+#close {
+  position: fixed; inset: 0; z-index: 4;
+  display: grid; place-items: center;
+  background: rgba(11, 10, 15, .96);
+  backdrop-filter: blur(6px);
+  font-family: "Poppins", system-ui, sans-serif;
+  animation: close-in .5s ease;
+}
+#close[hidden], .close-card[hidden] { display: none; }
+.close-card { display: grid; justify-items: center; gap: 14px; text-align: center; padding: 24px; animation: close-in .5s ease; }
+.close-card h2 { margin: 0; font-weight: 900; font-size: clamp(32px, 4.4vw, 64px); line-height: 1.05; color: var(--text); }
+.close-kicker { margin: 0; color: var(--pink); letter-spacing: .2em; text-transform: uppercase; font: 700 14px/1 "Space Mono", ui-monospace, monospace; }
+.close-qr { width: clamp(180px, 22vh, 280px); height: auto; background: #fff; border-radius: 16px; padding: 10px; box-shadow: 0 0 40px rgba(255, 92, 192, .35); }
+.close-url { margin: 0; color: var(--muted); font: 700 clamp(16px, 1.6vw, 22px)/1 "Space Mono", ui-monospace, monospace; }
+.close-wordmark { width: clamp(260px, 32vw, 520px); height: auto; }
+.close-robots { width: clamp(140px, 14vw, 220px); height: auto; margin-top: -8px; image-rendering: pixelated; }
+.close-line { margin: 0; max-width: 40ch; color: var(--text); font: 400 clamp(16px, 1.5vw, 21px)/1.45 "Inter", system-ui, sans-serif; }
+.close-git h2 { font-size: clamp(28px, 3.4vw, 50px); }
+@keyframes close-in { from { opacity: 0; transform: translateY(12px); } }

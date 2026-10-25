@@ -5,6 +5,7 @@ Open `/pitch/dot` on the big screen. Press Start demo (browsers block sound unti
 - `?skip=1` skips the intro and goes straight to the live site with Dot in the corner.
 - `?page=/judge` opens a different page in the frame.
 - Press S during the intro to skip.
+- Press C for the close: a QR card for sloppyornot.com/submit, then Gituationship with a QR card for gituationship.com. Dot says one line over each, from her corner, and her glow follows her voice. The cards stay up for scanning. Escape leaves the close. Keys work even after someone clicks into the site.
 - If the video cannot play, the page goes straight to the live site. It never shows a blank screen.
 
 ## Files
@@ -31,6 +32,13 @@ The page cuts to static drawn in code at 19.4 seconds, when the TV screen fills 
 ## Watcher
 
 `scripts/dot-watcher-cut.py` makes `silhouette/dot-watcher.png` from the clip's last frame: it upscales 2x, treats everything reachable from the frame edge through white or pink pixels as background, and keeps the pink glow as partial transparency.
+
+## The close
+
+`close/close-1-submit.mp3`: "Scan the code, go to sloppyornot.com, and add your project."
+`close/close-2-gituationship.mp3`: "And then? Gituationship. A project matchmaker that uses the Sloppy or Not data to pair two products into one super product. Do you have a match? Check gituationship.com."
+
+Both voiced with ElevenLabs eleven_v3 and tone tags, and checked with speech to text. The QR codes are SVGs in `close/`. The Gituationship wordmark and robots come from `site/gituationship/assets/`.
 
 ## Not built yet
 
