@@ -283,9 +283,20 @@ async function handlePropose(id, env) {
   return json(result);
 }
 
+// Sloppy or Not scores never go public (docs/build-judge-routes.md), so the public log drops them.
+// The stored log keeps them for the agent's memory.
+const PRIVATE_SCORES = { judge: "ai_answers", "score-answers": "human_answers" };
+
+function hideScores(entry) {
+  const field = PRIVATE_SCORES[entry.step];
+  const list = field && entry.result?.[field];
+  if (!Array.isArray(list)) return entry;
+  return { ...entry, result: { ...entry.result, [field]: list.map(({ score, ...rest }) => rest) } };
+}
+
 async function handleAgentLog(env) {
   const log = (await env.STORE.get("agentlog", "json")) || [];
-  return json(log);
+  return json(log.map(hideScores));
 }
 
 // ---- Issue #10: approvals ----
@@ -899,6 +910,21 @@ async function handleNextProject(url, env) {
   return json({ done: true });
 }
 
+// the public board: only projects whose owner checked Roast Me, with the verdict and still no numbers
+async function handleRidicule(env) {
+  const { ids, thumbs } = await cardIdsAndThumbs(env);
+  const rows = await Promise.all(ids.map(async (id) => {
+    const [profile, card, judge] = await Promise.all([
+      env.STORE.get("product:" + id, "json"),
+      env.STORE.get("card:" + id, "json"),
+      env.STORE.get("judge:" + id, "json"),
+    ]);
+    if (!profile || !card || profile.consent?.roast_me !== true || !judge?.verdict) return null;
+    return { ...projectCard(id, profile, card, thumbs.has(id)), verdict: judge.verdict };
+  }));
+  return json(rows.filter(Boolean));
+}
+
 async function handleThumb(id, env) {
   const { value, metadata } = await env.STORE.getWithMetadata("thumb:" + id, "arrayBuffer");
   if (!value) return json({ error: "not found" }, 404);
@@ -1008,6 +1034,7 @@ export default {
 
     if (path === "/projects" && method === "GET") return handleGetProjects(env);
     if (path === "/projects/next" && method === "GET") return handleNextProject(url, env);
+    if (path === "/ridicule" && method === "GET") return handleRidicule(env);
 
     const thumbMatch = path.match(/^\/projects\/([^\/]+)\/thumb$/);
     if (thumbMatch && method === "GET") return handleThumb(thumbMatch[1], env);
