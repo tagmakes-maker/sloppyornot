@@ -66,3 +66,15 @@ The agent scores each of the eight human questions 0 to 5 with agent/prompts/sco
 
 - Swipes. They are stored per project and feed the weekly State of Slop email, not the verdict.
 - Roast Me. It only controls whether a project may appear on the public board.
+
+### Agent review: the five review questions from the agent's answers
+
+The worker turns the agent's AI answers into the five review metrics, on the same 0 to 1 scale as swipes. This is how every submission feeds matching without a human swipe.
+
+- understood_immediately = A1 / 10
+- would_use = A2 / 10
+- feels_distinctive = A3 / 10
+- easy_to_use = A5 / 10
+- looks_like_slop = 1 - (A3 + A4) / 20. Reversed like the swipe version: high is bad.
+
+Apply the weakness rules at the top of this file to these five numbers and to automated_checks. Write the tags to the profile's weaknesses list. These numbers never go into human_review, which stays swipes only. They never change the verdict either.

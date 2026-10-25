@@ -18,7 +18,7 @@ Read CLAUDE.md, README.md, CONTRIBUTING.md, shared/profile.schema.json, docs/sco
 ## Storage (KV, env.STORE). Add these keys to the comment in worker/wrangler.toml
 
 - `product:<id>` existing Product Profile. Must still validate the schema. No new fields.
-- `judge:<id>` private. `{ url, lane, ai_answers, automated_checks, ai_score, human_answers, human_score, total, verdict, judged_at }`. Never returned by any public route except as the verdict on the ridicule board.
+- `judge:<id>` private. `{ url, lane, ai_answers, agent_review, automated_checks, ai_score, human_answers, human_score, total, verdict, judged_at }`. Never returned by any public route except as the verdict on the ridicule board.
 - `card:<id>` `{ likes_and_goals, brings: [string] }` from the judge agent.
 - `thumb:<id>` the thumbnail image bytes (PNG or JPEG), stored with metadata `{ contentType }`.
 - `url:<normalized url>` the product id for that URL. Used to reuse the first verdict.
@@ -39,9 +39,10 @@ Read CLAUDE.md, README.md, CONTRIBUTING.md, shared/profile.schema.json, docs/sco
 6. Run the agent with `runAgent("judge", { url, page, automated_checks }, env)`. If it returns `enough_content: false` and the page was not rendered, retry once with Browser Rendering. If it still lacks content, return `{ needs_description: true }` so the site can ask for one line, and accept `description` on a second POST /judge to append to page.text.
 7. Make the id a slug from the host (for example `floodwatch-chs-pages-dev`). Add a short suffix if taken.
 8. Save the Product Profile: `builder` set to `by`, the agent's name, what_it_does, target_user, capabilities, plus `url`, `status: "submitted"`, `match_status: "unmatched"`, `automated_checks`, `consent: { roast_me: roast_me === true }`, `agent_observations: [{ at, note: observation, source: "submission" }]`, created_at, updated_at.
-9. Compute lane one from docs/scoring.md: measured 40 plus the sum of the six AI scores. Save `judge:<id>` with lane 1, `card:<id>`, `url:<normalized>`. Save the subscriber if an email came in.
-10. Thumbnail: take a screenshot with Browser Rendering (`/browser-rendering/screenshot`, 1200 x 630 viewport, JPEG). If that is not available, fetch the page's og:image. If neither exists, save no thumbnail and the site shows a placeholder. Save to `thumb:<id>`.
-11. Return `{ id, verdict, card, ai_answers, human_questions }`. ai_answers is `[{ id, question, evidence }]` with no scores, for the "agent animation" loading screen that shows the questions being answered. human_questions is the eight questions from agent/judging-questions.md as `[{ id, question }]`. The site holds the verdict until the submitter answers or skips.
+9. Compute the agent review from docs/scoring.md ("Agent review" section): the five 0 to 1 metrics from A1 to A5, then the weakness tags. Save the metrics as `agent_review` inside `judge:<id>` and the tags to the profile's `weaknesses`. This is what lets the existing find-gap and propose routes match these projects.
+10. Compute lane one from docs/scoring.md: measured 40 plus the sum of the six AI scores. Save `judge:<id>` with lane 1, `card:<id>`, `url:<normalized>`. Save the subscriber if an email came in.
+11. Thumbnail: take a screenshot with Browser Rendering (`/browser-rendering/screenshot`, 1200 x 630 viewport, JPEG). If that is not available, fetch the page's og:image. If neither exists, save no thumbnail and the site shows a placeholder. Save to `thumb:<id>`.
+12. Return `{ id, verdict, card, ai_answers, human_questions }`. ai_answers is `[{ id, question, evidence }]` with no scores, for the "agent animation" loading screen that shows the questions being answered. human_questions is the eight questions from agent/judging-questions.md as `[{ id, question }]`. The site holds the verdict until the submitter answers or skips.
 
 ### POST /judge/:id/answers  `{ answers: [{ id, answer }] }`
 
