@@ -1,0 +1,4 @@
+# Cloudflare Pages response headers for site/.
+# HSTS: the site is HTTPS only. It is also one of the security headers the Sloppy or Not judge checks for.
+/*
+  Strict-Transport-Security: max-age=31536000
