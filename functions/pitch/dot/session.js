@@ -2,9 +2,9 @@
 // Hands the pitch page a one-time signed URL for Dot's live voice agent, so the agent can keep auth on
 // and the ElevenLabs key never reaches the browser.
 // Secret: ELEVENLABS_API_KEY on the sloppyornot-site Pages project (production and preview).
-// The time limit is enforced by ElevenLabs on the agent (max_duration_seconds). MAX_SECONDS must match it.
+// The time limit is enforced by ElevenLabs on the agent (max_duration_seconds, 150). MAX_SECONDS must match it.
 const AGENT_ID = "agent_7901m5rd7f3pejesmpnwjb0dsehp";
-const MAX_SECONDS = 300;
+const MAX_SECONDS = 150;
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json", "cache-control": "no-store" } });

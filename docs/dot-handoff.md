@@ -75,3 +75,11 @@ Practice mode makes a fresh copy (`gigs-tonight-practice-<timestamp>`) and has t
 - Branch previews only build for branches in the project's `preview_branch_includes`.
 - The Cloudflare API is reachable from the session (account `24e9a7cf816f435cac65da9daef6dc82`). `ELEVENLABS_API_KEY` is in the session environment.
 - gituationship.com is the hand-deployed `gituationship` worker, which proxies `site/gituationship/` on sloppyornot.com, so it updates with every merge.
+
+## Oct 26: Ask Dot on the live site
+
+- `site/ask-dot.js`, loaded on home, submit, judge, about, and criteria. Dot's face and an Ask Dot pill sit bottom right; on phones just her face. The 1 MB voice client loads only on click. It never shows on /pitch/ or inside the pitch page's frame.
+- Credit guards: four questions per call (the page mutes the mic after the fourth and hangs up when she finishes answering), three calls per browser per day (localStorage, a convenience only), 150 seconds per call (`max_duration_seconds` on the agent, `MAX_SECONDS` in `functions/pitch/dot/session.js`), and on the agent: auth on, 50 conversations a day, 3 at once. With auth on, only signed URLs from `/pitch/dot/session` connect, so the ElevenLabs talk page no longer works.
+- Dot's prompt, edited live: no pet names (sugar, darling, honey are banned), first message "Hi, I am Dot. Ask me anything about Sloppy or Not.", a question limit note, redo is "coming soon", and a Timing section so she never calls Oct 25 facts "today". Copy these into ai-tech-girlfriends `robot/qa/pitch.md` too.
+- Recording: ElevenLabs already keeps every conversation with transcript and audio (retention -1, meaning forever). List them with GET /v1/convai/conversations?agent_id=agent_7901m5rd7f3pejesmpnwjb0dsehp and read one with GET /v1/convai/conversations/<id>. Nothing is copied into our own storage yet.
+- Tested Oct 26 locally with spoken questions fed in as fake mic audio: four questions, four answers, then it hung up by itself.

@@ -46,6 +46,7 @@ Both voiced with ElevenLabs eleven_v3 and tone tags, and checked with speech to 
 Press L (or Ask Dot, left of her) to open the live mic. Dot answers out loud and her glow and head follow her voice. L again mutes or unmutes the mic. X (or End) hangs up. A countdown shows the time left and turns yellow in the last 30 seconds.
 
 - The page gets a one-time signed URL from `/pitch/dot/session`, a Cloudflare Pages Function in `functions/pitch/dot/session.js`. It needs the `ELEVENLABS_API_KEY` secret on the `sloppyornot-site` Pages project.
-- The time limit is enforced by ElevenLabs on the agent (`max_duration_seconds`, 300). `MAX_SECONDS` in the function must match it.
+- The time limit is enforced by ElevenLabs on the agent (`max_duration_seconds`, 150 since Oct 26). `MAX_SECONDS` in the function must match it.
+- The same agent and session also power Ask Dot on the live site (`site/ask-dot.js`).
 - The voice client is `vendor/elevenlabs-client-1.27.0.js`, the `@elevenlabs/client` browser build, kept here so the stage never waits on a CDN.
 - If the mic cannot connect, Dot's status says so and L tries again. The rest of the demo keeps working.
