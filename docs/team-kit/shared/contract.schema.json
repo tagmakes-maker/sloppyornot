@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "contract.schema.json",
+  "title": "{{MAIN_OBJECT}}",
+  "description": "The one shape every lane builds against. Change it only with everyone's yes.",
+  "type": "object",
+  "required": ["id"],
+  "additionalProperties": false,
+  "properties": {
+    "id": { "type": "string" }
+  }
+}
