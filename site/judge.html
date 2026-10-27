@@ -21,20 +21,20 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,700;1,400&family=Poppins:wght@400;700;900&family=Space+Mono:wght@400;700&display=swap">
 <link rel="stylesheet" href="/styles.css">
 </head>
-<body>
+<body class="judge-page">
 <div class="glow glow-tl" style="width:840px;height:840px;left:-270px;top:-270px"><img src="/assets/glow-pink-lg.svg" alt=""></div>
 <div class="glow glow-br" style="width:700px;height:700px"><img src="/assets/glow-cyan-lg.svg" alt=""></div>
 <main class="page compact">
   <header data-header="small"></header>
 
-  <div class="thinking" style="gap:12px">
+  <div class="thinking judge-intro" style="gap:12px">
     <h1 class="section-title">Slop or not? You decide.</h1>
     <p class="hero-sub" style="font-size:18px">Meet the project. Read its goals. Make the call: left for slop, right for not.</p>
   </div>
 
   <article class="card profile" id="card" aria-live="polite">
     <div class="thumb" id="thumb"></div>
-    <div>
+    <div class="profile-head">
       <h2><a id="title" href="#" target="_blank" rel="noopener"></a></h2>
       <p class="by" id="by"></p>
     </div>
@@ -49,8 +49,8 @@
   </article>
 
   <div class="vote" id="vote">
-    <button class="pill pill-pink" data-vote="slop"><img src="/assets/icon-x.svg" alt="">&larr; SLOP</button>
-    <button class="pill pill-cyan" data-vote="not"><img src="/assets/icon-heart.svg" alt="">NOT &rarr;</button>
+    <button class="pill pill-pink" data-vote="slop"><img src="/assets/icon-x.svg" alt=""><span>&larr; SLOP</span></button>
+    <button class="pill pill-cyan" data-vote="not"><img src="/assets/icon-heart.svg" alt=""><span>NOT &rarr;</span></button>
   </div>
 
   <section class="thinking" id="done" hidden>
@@ -118,6 +118,7 @@
     $("brings").innerHTML = (p.brings || []).slice(0, 3)
       .map((b) => `<li><img src="/assets/icon-check.svg" alt="">${escapeHTML(b)}</li>`).join("");
     $("card").className = "card profile";
+    $("card").style.transform = $("card").style.opacity = "";
   }
 
   async function vote(choice) {
@@ -147,15 +148,38 @@
     if (e.key === "ArrowRight") vote("not");
   });
 
-  // Swipe on phones
-  let startX = null;
-  $("card").addEventListener("touchstart", (e) => (startX = e.touches[0].clientX), { passive: true });
-  $("card").addEventListener("touchend", (e) => {
+  // Swipe on phones: the card follows the finger and tilts, past 70px it is a vote
+  let startX = null, dx = 0;
+  const card = $("card");
+  card.addEventListener("touchstart", (e) => { if (busy) return; startX = e.touches[0].clientX; dx = 0; card.style.transition = "none"; }, { passive: true });
+  card.addEventListener("touchmove", (e) => {
     if (startX === null) return;
-    const dx = e.changedTouches[0].clientX - startX;
+    dx = e.touches[0].clientX - startX;
+    card.style.transform = `translateX(${dx}px) rotate(${dx / 20}deg)`;
+    card.dataset.lean = dx < -30 ? "slop" : dx > 30 ? "not" : "";
+  }, { passive: true });
+  card.addEventListener("touchend", () => {
+    if (startX === null) return;
     startX = null;
-    if (Math.abs(dx) > 70) vote(dx < 0 ? "slop" : "not");
+    card.style.transition = "";
+    card.dataset.lean = "";
+    if (Math.abs(dx) > 70) {
+      // fly out from where the finger let go
+      card.style.transform = `translateX(${dx < 0 ? -120 : 120}%) rotate(${dx < 0 ? -12 : 12}deg)`;
+      card.style.opacity = "0";
+      vote(dx < 0 ? "slop" : "not");
+    } else card.style.transform = "";
   });
+
+  // Phones: size the card so it and the vote buttons fill exactly one screen
+  function fitCard() {
+    if (!matchMedia("(max-width: 700px)").matches) return card.style.removeProperty("--card-h");
+    const top = card.getBoundingClientRect().top + scrollY;
+    const below = $("vote").offsetHeight + 12 + 16; // the gap, then room under the buttons
+    card.style.setProperty("--card-h", `${Math.round(innerHeight - top - below)}px`);
+  }
+  addEventListener("resize", fitCard);
+  fitCard();
 
   $("again").addEventListener("click", () => {
     seen = [];
