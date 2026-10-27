@@ -2,15 +2,17 @@
 // Capped so nobody burns credits: QUESTION_CAP questions per call, CALLS_PER_DAY calls per browser, and
 // ElevenLabs ends any call at the agent's max_duration_seconds. The agent's daily limit is the hard ceiling.
 // The voice client (1 MB) loads only when someone presses Ask Dot.
-// On the homepage on wide screens Dot stands full body instead of the round face. She walks in once per
+// On the homepage Dot stands full body instead of the round face. On wide screens she walks in once per
 // browser (muted, since browsers block sound until a click), and Replay plays the walk-in again with her voice.
+// On phones she is smaller, rises in, and her voice agent note shows for a few seconds since there is no hover.
 (function () {
   if (window.top !== window || location.pathname.startsWith("/pitch/")) return; // the pitch page has its own Dot
 
   const QUESTION_CAP = 4;
   const CALLS_PER_DAY = 3;
   const CLIENT = "/pitch/dot/vendor/elevenlabs-client-1.27.0.js";
-  const STAND = (location.pathname === "/" || location.pathname === "/index.html") && matchMedia("(min-width: 900px)").matches;
+  const STAND = location.pathname === "/" || location.pathname === "/index.html";
+  const WIDE = matchMedia("(min-width: 900px)").matches; // phones skip the walk-in video and get a smaller Dot
   // Safari plays WebM but drops the transparency, so it gets the still with a CSS rise instead of the video
   const ALPHA_VIDEO = !/^((?!chrome|android|crios|fxios).)*safari/i.test(navigator.userAgent);
   const CALM = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -62,6 +64,12 @@
 .ask-dot button.ask-dot-replay { background: none; color: var(--muted, #a19fb4); padding: 6px 4px; font-weight: 400; font-size: 11px;
   text-decoration: underline; text-underline-offset: 3px; }
 .ask-dot button.ask-dot-replay:hover { color: var(--text, #f5f2ed); }
+.ask-dot-stand.tip-on .ask-dot-tip { opacity: 1; transform: none; }
+@media (max-width: 899px) {
+  body:has(.ask-dot-stand) { padding-bottom: 150px; }
+  .ask-dot-stand { height: 130px; }
+  .ask-dot-tip { right: 0; top: auto; bottom: 100%; margin: 0 0 6px; width: 170px; font-size: 12px; transform: translateY(6px); }
+}
 @media (prefers-reduced-motion: reduce) { .ask-dot img, .ask-dot-stand { animation: none !important; } }`;
   document.head.appendChild(css);
 
@@ -77,7 +85,7 @@
         <button type="button" class="ask-dot-end" hidden>End</button>
         <button type="button" class="ask-dot-go">Ask Dot</button>
       </div>
-      ${STAND ? '<button type="button" class="ask-dot-replay">Replay her intro</button>' : ""}
+      ${STAND && WIDE ? '<button type="button" class="ask-dot-replay">Replay her intro</button>' : ""}
     </div>
     ${STAND ? `<div class="ask-dot-stand" role="button" tabindex="0" aria-label="Ask Dot, a voice agent">
       <img src="/assets/dot-walkin/dot-standing.webp" alt="">
@@ -192,7 +200,6 @@
   // The walk-in sits over the standing still and ends on the same frame, then gets out of the way.
   function walkIn() {
     const still = face.querySelector("img");
-    const replay = root.querySelector(".ask-dot-replay");
     let seen = false;
     try { seen = localStorage.getItem("dot-walkin") === "1"; localStorage.setItem("dot-walkin", "1"); } catch {}
     function play(withSound) {
@@ -211,7 +218,12 @@
       face.prepend(v);
       v.play().catch(done);
     }
-    replay.addEventListener("click", () => play(true));
+    if (!WIDE) {
+      if (!CALM) still.classList.add("rise");
+      if (!seen) { face.classList.add("tip-on"); setTimeout(() => face.classList.remove("tip-on"), 5000); }
+      return;
+    }
+    root.querySelector(".ask-dot-replay").addEventListener("click", () => play(true));
     if (!seen && !CALM) play(false);
   }
   end.addEventListener("click", stop);
