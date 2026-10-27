@@ -40,10 +40,13 @@
   .ask-dot[data-state="idle"] .ask-dot-go { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); padding: 0; }
   .ask-dot img { width: 48px; height: 48px; }
 }
-.ask-dot-stand { position: relative; width: min(30vh, 266px); aspect-ratio: 504 / 720; cursor: pointer; margin: 0 -16px -16px 0;
+.ask-dot-stand { position: relative; height: min(52vh, 440px); aspect-ratio: 401 / 977; cursor: pointer; margin-bottom: -4px;
   transition: filter .2s ease; }
-.ask-dot .ask-dot-stand img, .ask-dot .ask-dot-stand video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
-  border-radius: 0; box-shadow: none; background: none; animation: none; }
+.ask-dot .ask-dot-stand img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
+  border-radius: 0; box-shadow: none; background: none; animation: none; transition: opacity .5s ease; }
+/* the walk-in ends thigh up, so it sits scaled to her standing pose and its cut edge fades out */
+.ask-dot .ask-dot-stand video { position: absolute; top: 0; left: -17%; height: 64%; width: auto; transition: opacity .5s ease;
+  -webkit-mask-image: linear-gradient(#000 82%, transparent); mask-image: linear-gradient(#000 82%, transparent); }
 .ask-dot .ask-dot-stand img.rise { animation: ask-dot-rise 1.2s ease-out both; }
 @keyframes ask-dot-rise { from { opacity: 0; transform: translateY(40px); } }
 .ask-dot[data-state="listening"] .ask-dot-stand { animation: ask-dot-glow 1.6s ease-in-out infinite; }
@@ -200,8 +203,9 @@
       v.src = "/assets/dot-walkin/dot-walkin.webm";
       v.muted = !withSound; v.playsInline = true; v.preload = "auto";
       v.setAttribute("aria-hidden", "true");
-      still.style.visibility = "hidden";
-      const done = () => { still.style.visibility = ""; v.remove(); };
+      still.style.opacity = "0";
+      // crossfade into the standing pose, which differs from the walk-in's last frame
+      const done = () => { still.style.opacity = ""; v.style.opacity = "0"; setTimeout(() => v.remove(), 500); };
       v.addEventListener("ended", done);
       v.addEventListener("error", done);
       face.prepend(v);
