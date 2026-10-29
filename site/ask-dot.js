@@ -2,12 +2,20 @@
 // Capped so nobody burns credits: QUESTION_CAP questions per call, CALLS_PER_DAY calls per browser, and
 // ElevenLabs ends any call at the agent's max_duration_seconds. The agent's daily limit is the hard ceiling.
 // The voice client (1 MB) loads only when someone presses Ask Dot.
+// On the homepage Dot stands full body instead of the round face. On wide screens she walks in once per
+// browser (muted, since browsers block sound until a click), and Replay plays the walk-in again with her voice.
+// On phones she is smaller, rises in, and her voice agent note shows for a few seconds since there is no hover.
 (function () {
   if (window.top !== window || location.pathname.startsWith("/pitch/")) return; // the pitch page has its own Dot
 
   const QUESTION_CAP = 4;
   const CALLS_PER_DAY = 3;
   const CLIENT = "/pitch/dot/vendor/elevenlabs-client-1.27.0.js";
+  const STAND = location.pathname === "/" || location.pathname === "/index.html";
+  const WIDE = matchMedia("(min-width: 900px)").matches; // phones skip the walk-in video and get a smaller Dot
+  // Safari plays WebM but drops the transparency, so it gets the still with a CSS rise instead of the video
+  const ALPHA_VIDEO = !/^((?!chrome|android|crios|fxios).)*safari/i.test(navigator.userAgent);
+  const CALM = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const css = document.createElement("style");
   css.textContent = `
@@ -34,7 +42,35 @@
   .ask-dot[data-state="idle"] .ask-dot-go { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); padding: 0; }
   .ask-dot img { width: 48px; height: 48px; }
 }
-@media (prefers-reduced-motion: reduce) { .ask-dot img { animation: none !important; } }`;
+.ask-dot-stand { position: relative; height: min(52vh, 440px); aspect-ratio: 401 / 977; cursor: pointer; margin-bottom: -4px;
+  transition: filter .2s ease; }
+.ask-dot .ask-dot-stand img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain;
+  border-radius: 0; box-shadow: none; background: none; animation: none; transition: opacity .5s ease; }
+/* the walk-in ends thigh up, so it sits scaled to her standing pose and its cut edge fades out */
+.ask-dot .ask-dot-stand video { position: absolute; top: 0; left: -17%; height: 64%; width: auto; transition: opacity .5s ease;
+  -webkit-mask-image: linear-gradient(#000 82%, transparent); mask-image: linear-gradient(#000 82%, transparent); }
+.ask-dot .ask-dot-stand img.rise { animation: ask-dot-rise 1.2s ease-out both; }
+@keyframes ask-dot-rise { from { opacity: 0; transform: translateY(40px); } }
+.ask-dot[data-state="listening"] .ask-dot-stand { animation: ask-dot-glow 1.6s ease-in-out infinite; }
+.ask-dot[data-state="speaking"] .ask-dot-stand { filter: drop-shadow(0 0 calc(6px + var(--level, .5) * 22px) rgba(255, 0, 255, .8)); }
+@keyframes ask-dot-glow { 50% { filter: drop-shadow(0 0 14px rgba(255, 0, 255, .65)); } }
+.ask-dot-tip { position: absolute; right: 100%; top: 18%; margin-right: 4px; width: 190px; padding: 10px 12px; border-radius: 10px;
+  font: 400 13px/1.4 var(--body, Inter, system-ui, sans-serif); color: var(--text, #f5f2ed); background: rgba(11, 10, 15, .92);
+  box-shadow: 0 0 0 1px var(--pink, #ff00ff); opacity: 0; transform: translateX(6px); transition: opacity .2s ease, transform .2s ease;
+  pointer-events: none; }
+.ask-dot-stand:hover .ask-dot-tip, .ask-dot-stand:focus-visible .ask-dot-tip { opacity: 1; transform: none; }
+.ask-dot[data-state="listening"] .ask-dot-tip, .ask-dot[data-state="speaking"] .ask-dot-tip { display: none; }
+.ask-dot-stand:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.ask-dot button.ask-dot-replay { background: none; color: var(--muted, #a19fb4); padding: 6px 4px; font-weight: 400; font-size: 11px;
+  text-decoration: underline; text-underline-offset: 3px; }
+.ask-dot button.ask-dot-replay:hover { color: var(--text, #f5f2ed); }
+.ask-dot-stand.tip-on .ask-dot-tip { opacity: 1; transform: none; }
+@media (max-width: 899px) {
+  body:has(.ask-dot-stand) { padding-bottom: 150px; }
+  .ask-dot-stand { height: 130px; }
+  .ask-dot-tip { right: 0; top: auto; bottom: 100%; margin: 0 0 6px; width: 170px; font-size: 12px; transform: translateY(6px); }
+}
+@media (prefers-reduced-motion: reduce) { .ask-dot img, .ask-dot-stand { animation: none !important; } }`;
   document.head.appendChild(css);
 
   const root = document.createElement("div");
@@ -49,8 +85,12 @@
         <button type="button" class="ask-dot-end" hidden>End</button>
         <button type="button" class="ask-dot-go">Ask Dot</button>
       </div>
+      ${STAND && WIDE ? '<button type="button" class="ask-dot-replay">Replay her intro</button>' : ""}
     </div>
-    <img src="/assets/dot.webp" alt="">`;
+    ${STAND ? `<div class="ask-dot-stand" role="button" tabindex="0" aria-label="Ask Dot, a voice agent">
+      <img src="/assets/dot-walkin/dot-standing.webp" alt="">
+      <span class="ask-dot-tip">I am Dot, a voice agent. Click me and ask anything about Sloppy or Not.</span>
+    </div>` : '<img src="/assets/dot.webp" alt="">'}`;
   document.body.appendChild(root);
   const go = root.querySelector(".ask-dot-go");
   const end = root.querySelector(".ask-dot-end");
@@ -152,6 +192,39 @@
   }
 
   go.addEventListener("click", start);
-  root.querySelector("img").addEventListener("click", () => { if (!convo) start(); });
+  const face = root.querySelector(STAND ? ".ask-dot-stand" : "img");
+  face.addEventListener("click", () => { if (!convo) start(); });
+  face.addEventListener("keydown", (e) => { if ((e.key === "Enter" || e.key === " ") && !convo) { e.preventDefault(); start(); } });
+  if (STAND) walkIn();
+
+  // The walk-in sits over the standing still and ends on the same frame, then gets out of the way.
+  function walkIn() {
+    const still = face.querySelector("img");
+    let seen = false;
+    try { seen = localStorage.getItem("dot-walkin") === "1"; localStorage.setItem("dot-walkin", "1"); } catch {}
+    function play(withSound) {
+      if (convo || starting) return;
+      face.querySelector("video")?.remove();
+      if (!ALPHA_VIDEO) { still.classList.remove("rise"); void still.offsetWidth; still.classList.add("rise"); return; }
+      const v = document.createElement("video");
+      v.src = "/assets/dot-walkin/dot-walkin.webm";
+      v.muted = !withSound; v.playsInline = true; v.preload = "auto";
+      v.setAttribute("aria-hidden", "true");
+      still.style.opacity = "0";
+      // crossfade into the standing pose, which differs from the walk-in's last frame
+      const done = () => { still.style.opacity = ""; v.style.opacity = "0"; setTimeout(() => v.remove(), 500); };
+      v.addEventListener("ended", done);
+      v.addEventListener("error", done);
+      face.prepend(v);
+      v.play().catch(done);
+    }
+    if (!WIDE) {
+      if (!CALM) still.classList.add("rise");
+      if (!seen) { face.classList.add("tip-on"); setTimeout(() => face.classList.remove("tip-on"), 5000); }
+      return;
+    }
+    root.querySelector(".ask-dot-replay").addEventListener("click", () => play(true));
+    if (!seen && !CALM) play(false);
+  }
   end.addEventListener("click", stop);
 })();

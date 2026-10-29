@@ -289,6 +289,35 @@ textarea.input { height: auto; min-height: 120px; padding: 18px 24px; border-rad
   .credits { grid-template-columns: 1fr; }
   .qtable { font-size: 15px; }
 }
+/* Judge on phones: one screen, Tinder style. Big screenshot on top, name over it, swipe or tap the round buttons. */
+@media (max-width: 700px) {
+  .judge-page .page { min-height: 100dvh; padding-top: 12px; gap: 12px; }
+  .judge-page .judge-intro { display: none; }
+  .judge-page .site-header .pill-white { padding: 8px 12px; font-size: 12px; }
+  .judge-page .profile { position: relative; height: var(--card-h, calc(100dvh - 220px)); min-height: 320px; padding: 0; gap: 10px; overflow: hidden; }
+  .judge-page .thumb { flex: 1 1 auto; height: auto; min-height: 0; border-radius: 24px 24px 0 0; }
+  .judge-page .thumb img { object-position: top; }
+  .judge-page .profile-head { position: absolute; left: 0; right: 0; top: 0; padding: 14px 18px 40px;
+    background: linear-gradient(rgba(11, 10, 15, .85), transparent); pointer-events: none; }
+  .judge-page .profile-head a { pointer-events: auto; }
+  .judge-page .profile h2 { font-size: 24px; line-height: 1.15; }
+  .judge-page .profile > div:not(.thumb):not(.profile-head) { padding: 0 18px; }
+  .judge-page .profile > div:last-child { padding-bottom: 16px; }
+  .judge-page .goals { font-size: 15px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .judge-page .brings li { font-size: 14px; }
+  .judge-page .brings li:nth-child(n+3) { display: none; }
+  .judge-page .profile::after { position: absolute; top: 70px; padding: 6px 14px; border: 3px solid; border-radius: 10px;
+    font: 900 28px/1 var(--display); letter-spacing: .04em; opacity: 0; transition: opacity .15s ease; pointer-events: none; }
+  .judge-page .profile[data-lean="slop"]::after { content: "SLOP"; right: 20px; color: var(--pink); transform: rotate(12deg); opacity: 1; }
+  .judge-page .profile[data-lean="not"]::after { content: "NOT"; left: 20px; color: var(--cyan); transform: rotate(-12deg); opacity: 1; }
+  .judge-page .vote { gap: 40px; }
+  .judge-page .vote .pill { width: 68px; height: 68px; padding: 0; border-radius: 50%; justify-content: center; }
+  @media (max-height: 700px) {
+    .judge-page .goals { -webkit-line-clamp: 2; }
+    .judge-page .brings li:nth-child(n+2) { display: none; }
+  }
+  .judge-page .vote .pill span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+}
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 1ms !important; }
 }
